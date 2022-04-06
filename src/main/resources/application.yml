@@ -1,0 +1,24 @@
+server:
+  port: 8090
+  servlet:
+    context-path: /smackmap
+
+spring:
+  profiles:
+    active: local
+  flyway:
+    locations: classpath:db/migration
+  jpa:
+    properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+      show-sql: true
+
+springdoc:
+  packagesToScan: com.smackmap.smackmapbackend
+  pathsToMatch: /**
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO

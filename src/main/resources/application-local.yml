@@ -1,0 +1,9 @@
+spring:
+  flyway:
+    url: jdbc:postgresql://localhost:5431/smackmap
+    user: admin
+    password: alma123
+  datasource:
+    url: jdbc:postgresql://localhost:5431/smackmap
+    username: admin
+    password: alma123
