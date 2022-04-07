@@ -30,6 +30,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.bouncycastle:bcprov-jdk15on:1.70")
+    implementation("io.jsonwebtoken:jjwt:0.9.1")
 
     implementation("org.flywaydb:flyway-core")
     implementation("org.postgresql:postgresql")
