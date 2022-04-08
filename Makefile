@@ -1,3 +1,3 @@
 
 run-deps:
-	docker-compose -f ./deployment/local/docker-compose.yml up
+	docker-compose -f ./distribution/local/docker-compose.yml up

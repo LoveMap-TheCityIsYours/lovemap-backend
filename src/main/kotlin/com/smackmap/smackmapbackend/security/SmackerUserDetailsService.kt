@@ -12,7 +12,7 @@ class SmackerUserDetailsService(
 
     override fun loadUserByUsername(username: String): UserDetails {
         val smacker = smackerService.getSmackerByUserName(username)
-        val password = smackerService.getPasswordBySmacker(smacker)
+        val password = smackerService.getPasswordOfSmacker(smacker)
         return SmackerUserDetails.of(smacker, password)
     }
 }

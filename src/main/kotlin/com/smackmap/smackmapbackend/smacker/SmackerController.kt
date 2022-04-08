@@ -1,29 +1,31 @@
 package com.smackmap.smackmapbackend.smacker
 
 import com.smackmap.smackmapbackend.security.JwtTokenUtil
+import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.userdetails.User
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import kotlin.math.log
 
 @RestController
 @RequestMapping("/smacker")
 class SmackerController(
-    private val authenticationManager: AuthenticationManager,
+    private val smackerService: SmackerService,
     private val jwtTokenUtil: JwtTokenUtil,
-    private val smackerService: SmackerService
 ) {
 
     @PostMapping("/register")
     fun register(@RequestBody createSmackerRequest: CreateSmackerRequest): ResponseEntity<SmackerResponse> {
-        val smackerResponse = smackerService.createSmacker(createSmackerRequest)
-        return ResponseEntity.ok(smackerResponse)
+        val (smacker, password) = smackerService.createSmacker(createSmackerRequest)
+        return login(LoginSmackerRequest(smacker.userName, smacker.email, password.passwordHash))
     }
 
     @PostMapping("/login")
@@ -31,14 +33,10 @@ class SmackerController(
         if (loginSmackerRequest.email == null && loginSmackerRequest.userName == null) {
             return ResponseEntity.badRequest().build()
         }
-        val authentication: Authentication = authenticationManager
-            .authenticate(
-                UsernamePasswordAuthenticationToken(
-                    loginSmackerRequest.userName, loginSmackerRequest.password
-                )
-            )
-        val principal = authentication.principal
-        TODO("Not yet implemented")
+        val (user, smacker) = smackerService.loginSmacker(loginSmackerRequest)
+        return ResponseEntity.ok()
+            .header(HttpHeaders.AUTHORIZATION, jwtTokenUtil.generateToken(user))
+            .body(SmackerResponse.of(smacker))
     }
 
     @GetMapping("/{smackerId}")
