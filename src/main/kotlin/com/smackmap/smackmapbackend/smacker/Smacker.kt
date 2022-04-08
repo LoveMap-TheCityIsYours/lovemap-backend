@@ -22,7 +22,14 @@ data class Smacker(
     @Column(name = "email")
     var email: String,
 
+    @Column(name = "link")
+    var link: String? = null,
+
     @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     @JoinColumn(name = "partner_id", nullable = true)
     var partner: Smacker? = null
 )
+
+enum class PartnershipStatus {
+    REQUESTED, WAITING_FOR_YOUR_RESPONSE, LIVE
+}

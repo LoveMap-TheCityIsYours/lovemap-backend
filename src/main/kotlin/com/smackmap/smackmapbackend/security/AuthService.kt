@@ -38,9 +38,9 @@ class AuthService(
 
     fun loginSmacker(request: LoginSmackerRequest): Pair<UserDetails, Smacker> {
         val smacker = if (request.email != null) {
-            smackerService.getSmackerByEmail(request.email)
+            smackerService.getByEmail(request.email)
         } else {
-            smackerService.getSmackerByUserName(request.userName!!)
+            smackerService.getByUserName(request.userName!!)
         }
         val user: UserDetails = authenticateAndGetUser(smacker.userName, request.password)
         return Pair(user, smacker)

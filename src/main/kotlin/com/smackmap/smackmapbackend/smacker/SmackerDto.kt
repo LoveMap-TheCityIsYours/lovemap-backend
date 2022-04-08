@@ -48,7 +48,12 @@ data class RequestPartnershipRequest(
     val requestedPartnerSmackerId: Long,
 )
 
-data class AcceptPartnershipRequest(
+data class RespondPartnershipRequest(
     val requestingSmackerId: Long,
     val acceptingSmackerId: Long,
+    val response: PartnershipResponse
 )
+
+enum class PartnershipResponse {
+    ACCEPT, DENY
+}
