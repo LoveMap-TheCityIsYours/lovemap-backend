@@ -30,17 +30,10 @@ class SecurityConfiguration(
 ) : WebSecurityConfigurerAdapter(false) {
 
     override fun configure(httpSecurity: HttpSecurity) {
-        // Enable CORS and disable CSRF
         httpSecurity.cors().and().csrf().disable()
-
-        // Set session management to stateless
-        httpSecurity
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-
-        // Set unauthorized requests exception handler
-        httpSecurity
             .exceptionHandling()
             .authenticationEntryPoint { _: HttpServletRequest,
                                         response: HttpServletResponse,
@@ -51,28 +44,26 @@ class SecurityConfiguration(
                 )
             }
             .and()
+            .authorizeRequests() // Our public endpoints
+            .antMatchers("/auth/**").permitAll()
+            .antMatchers("/swagger-ui/**").permitAll()
+            .antMatchers("/v3/api-docs/**").permitAll()
+            .antMatchers("/smacker").authenticated()
+            .and()
+            .userDetailsService(smackerUserDetailsService)
+            .addFilterBefore(
+                jwtAuthenticationFilter,
+                UsernamePasswordAuthenticationFilter::class.java
+            )
 
-        // TODO: proper endpoint permissions
-        // Set permissions on endpoints
-        httpSecurity.authorizeRequests() // Our public endpoints
-            .antMatchers("/**").permitAll()
-            .antMatchers(HttpMethod.POST, "/api/book/search").permitAll() // Our private endpoints
-            .anyRequest().authenticated()
-
-        // Add JWT token filter
-        httpSecurity.addFilterBefore(
-            jwtAuthenticationFilter,
-            UsernamePasswordAuthenticationFilter::class.java
-        )
-
-        httpSecurity
-            .csrf()
-            .disable()
-            .authorizeRequests()
-            .antMatchers("/**")
-            .permitAll()
-            .anyRequest()
-            .anonymous()
+//        httpSecurity
+//            .csrf()
+//            .disable()
+//            .authorizeRequests()
+//            .antMatchers("/**")
+//            .permitAll()
+//            .anyRequest()
+//            .anonymous()
     }
 
     override fun configure(auth: AuthenticationManagerBuilder) {

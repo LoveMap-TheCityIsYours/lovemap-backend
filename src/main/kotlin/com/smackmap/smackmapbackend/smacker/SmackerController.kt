@@ -13,35 +13,20 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import javax.annotation.security.RolesAllowed
 import kotlin.math.log
 
 @RestController
+@RolesAllowed("USER")
 @RequestMapping("/smacker")
 class SmackerController(
     private val smackerService: SmackerService,
     private val jwtTokenUtil: JwtTokenUtil,
 ) {
 
-    @PostMapping("/register")
-    fun register(@RequestBody createSmackerRequest: CreateSmackerRequest): ResponseEntity<SmackerResponse> {
-        val (smacker, password) = smackerService.createSmacker(createSmackerRequest)
-        return login(LoginSmackerRequest(smacker.userName, smacker.email, password.passwordHash))
-    }
-
-    @PostMapping("/login")
-    fun login(@RequestBody loginSmackerRequest: LoginSmackerRequest): ResponseEntity<SmackerResponse> {
-        if (loginSmackerRequest.email == null && loginSmackerRequest.userName == null) {
-            return ResponseEntity.badRequest().build()
-        }
-        val (user, smacker) = smackerService.loginSmacker(loginSmackerRequest)
-        return ResponseEntity.ok()
-            .header(HttpHeaders.AUTHORIZATION, jwtTokenUtil.generateToken(user))
-            .body(SmackerResponse.of(smacker))
-    }
-
     @GetMapping("/{smackerId}")
     fun getSmacker(@PathVariable smackerId: Long): ResponseEntity<SmackerResponse> {
-        TODO("Not yet implemented")
+        return ResponseEntity.ok(null)
     }
 
     @PostMapping("/generateLink")

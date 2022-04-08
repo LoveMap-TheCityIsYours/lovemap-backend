@@ -1,6 +1,6 @@
 package com.smackmap.smackmapbackend.security
 
-import com.smackmap.smackmapbackend.smacker.Password
+import com.smackmap.smackmapbackend.security.password.Password
 import com.smackmap.smackmapbackend.smacker.Smacker
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
