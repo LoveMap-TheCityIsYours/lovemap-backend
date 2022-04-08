@@ -4,7 +4,6 @@ import com.smackmap.smackmapbackend.security.JwtAuthenticationFilter
 import com.smackmap.smackmapbackend.security.SmackerUserDetailsService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -48,7 +47,8 @@ class SecurityConfiguration(
             .antMatchers("/auth/**").permitAll()
             .antMatchers("/swagger-ui/**").permitAll()
             .antMatchers("/v3/api-docs/**").permitAll()
-            .antMatchers("/smacker").authenticated()
+            .antMatchers("/smacker").hasRole("USER")
+            .anyRequest().authenticated()
             .and()
             .userDetailsService(smackerUserDetailsService)
             .addFilterBefore(

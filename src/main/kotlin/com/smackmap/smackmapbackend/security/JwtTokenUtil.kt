@@ -3,7 +3,6 @@ package com.smackmap.smackmapbackend.security
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
-import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import java.io.Serializable
@@ -43,7 +42,7 @@ class JwtTokenUtil : Serializable {
         return expiration.before(Date())
     }
 
-    fun generateToken(user: User): String {
+    fun generateToken(user: UserDetails): String {
         val claims = Jwts.claims().setSubject(user.username)
         claims["scopes"] = user.authorities
         return Jwts.builder()
@@ -51,7 +50,8 @@ class JwtTokenUtil : Serializable {
             .setIssuer("http://smackmap.com")
             .setIssuedAt(Date(System.currentTimeMillis()))
             .setExpiration(Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY_SECONDS * 1000))
-            .signWith(SignatureAlgorithm.ES512, SIGNING_KEY)
+                // TODO: better signing algo
+            .signWith(SignatureAlgorithm.HS512, SIGNING_KEY)
             .compact()
     }
 

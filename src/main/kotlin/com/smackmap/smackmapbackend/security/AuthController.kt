@@ -3,7 +3,6 @@ package com.smackmap.smackmapbackend.security
 import com.smackmap.smackmapbackend.smacker.CreateSmackerRequest
 import com.smackmap.smackmapbackend.smacker.LoginSmackerRequest
 import com.smackmap.smackmapbackend.smacker.SmackerResponse
-import com.smackmap.smackmapbackend.smacker.SmackerService
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -19,8 +18,8 @@ class AuthController(
 ) {
     @PostMapping("/register")
     fun register(@RequestBody createSmackerRequest: CreateSmackerRequest): ResponseEntity<SmackerResponse> {
-        val (smacker, password) = authService.createSmacker(createSmackerRequest)
-        return login(LoginSmackerRequest(smacker.userName, smacker.email, password.passwordHash))
+        val smacker = authService.createSmacker(createSmackerRequest)
+        return login(LoginSmackerRequest(smacker.userName, smacker.email, createSmackerRequest.password))
     }
 
     @PostMapping("/login")

@@ -9,7 +9,7 @@ import com.smackmap.smackmapbackend.smacker.SmackerService
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.userdetails.User
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -21,7 +21,7 @@ class AuthService(
     private val passwordEncoder: PasswordEncoder,
 ) {
 
-    fun createSmacker(request: CreateSmackerRequest): Pair<Smacker, Password> {
+    fun createSmacker(request: CreateSmackerRequest): Smacker {
         var smacker = Smacker(
             userName = request.userName,
             email = request.email,
@@ -33,22 +33,22 @@ class AuthService(
             smacker = smacker
         )
         passwordRepository.save(password)
-        return Pair(smacker, password)
+        return smacker
     }
 
-    fun loginSmacker(request: LoginSmackerRequest): Pair<User, Smacker> {
+    fun loginSmacker(request: LoginSmackerRequest): Pair<UserDetails, Smacker> {
         val smacker = if (request.email != null) {
             smackerService.getSmackerByEmail(request.email)
         } else {
             smackerService.getSmackerByUserName(request.userName!!)
         }
-        val user: User = authenticateAndGetUser(smacker.userName, request.password)
+        val user: UserDetails = authenticateAndGetUser(smacker.userName, request.password)
         return Pair(user, smacker)
     }
 
-    private fun authenticateAndGetUser(userName: String, password: String): User {
+    private fun authenticateAndGetUser(userName: String, password: String): UserDetails {
         val authentication: Authentication = authenticationManager
             .authenticate(UsernamePasswordAuthenticationToken(userName, password))
-        return authentication.principal as User
+        return authentication.principal as UserDetails
     }
 }

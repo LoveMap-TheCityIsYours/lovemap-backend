@@ -1,6 +1,5 @@
 package com.smackmap.smackmapbackend.smacker
 
-import com.smackmap.smackmapbackend.security.password.PasswordRepository
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
