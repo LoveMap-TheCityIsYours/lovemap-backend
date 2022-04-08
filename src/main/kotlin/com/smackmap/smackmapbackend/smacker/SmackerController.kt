@@ -3,6 +3,8 @@ package com.smackmap.smackmapbackend.smacker
 import com.smackmap.smackmapbackend.security.JwtTokenUtil
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -29,6 +31,13 @@ class SmackerController(
         if (loginSmackerRequest.email == null && loginSmackerRequest.userName == null) {
             return ResponseEntity.badRequest().build()
         }
+        val authentication: Authentication = authenticationManager
+            .authenticate(
+                UsernamePasswordAuthenticationToken(
+                    loginSmackerRequest.userName, loginSmackerRequest.password
+                )
+            )
+        val principal = authentication.principal
         TODO("Not yet implemented")
     }
 

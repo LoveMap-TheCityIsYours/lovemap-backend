@@ -52,6 +52,7 @@ class SecurityConfiguration(
             }
             .and()
 
+        // TODO: proper endpoint permissions
         // Set permissions on endpoints
         httpSecurity.authorizeRequests() // Our public endpoints
             .antMatchers("/**").permitAll()

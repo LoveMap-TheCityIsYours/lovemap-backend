@@ -2,6 +2,7 @@ package com.smackmap.smackmapbackend.security
 
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.SignatureException
+import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -19,9 +20,9 @@ class JwtAuthenticationFilter(
 ) : OncePerRequestFilter() {
 
     override fun doFilterInternal(req: HttpServletRequest, res: HttpServletResponse, chain: FilterChain) {
-        val header: String? = req.getHeader(AUTHORIZATION_HEADER)
+        val header: String? = req.getHeader(HttpHeaders.AUTHORIZATION)
         if (header == null) {
-            logger.warn("'$AUTHORIZATION_HEADER' header was not found in the request.")
+            logger.warn("'${HttpHeaders.AUTHORIZATION}' header was not found in the request.")
         } else if (!header.startsWith(TOKEN_PREFIX)) {
             logger.warn("Could not find the Bearer prefix in header, ignoring the header.")
         } else {

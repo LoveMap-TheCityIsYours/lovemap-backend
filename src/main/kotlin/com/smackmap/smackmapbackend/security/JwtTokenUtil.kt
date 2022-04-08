@@ -10,8 +10,8 @@ import java.io.Serializable
 import java.util.Date
 import java.util.function.Function
 
-const val AUTHORIZATION_HEADER = "Authorization"
 const val ACCESS_TOKEN_VALIDITY_SECONDS = (5 * 60 * 60).toLong()
+// TODO: proper configurable signing key
 const val SIGNING_KEY = "SmackMapDummySignKey"
 const val TOKEN_PREFIX = "Bearer "
 
