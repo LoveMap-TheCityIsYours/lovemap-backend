@@ -25,7 +25,6 @@ class AuthService(
         var smacker = Smacker(
             userName = request.userName,
             email = request.email,
-            partner = null
         )
         smacker = smackerService.save(smacker)
         val password = Password(

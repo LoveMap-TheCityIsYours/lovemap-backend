@@ -22,9 +22,9 @@ data class SmackerResponse(
         fun of(smacker: Smacker): SmackerResponse {
             return SmackerResponse(
                 id = smacker.id,
-                partnerId = smacker.partner?.id,
                 userName = smacker.userName,
-                email = smacker.email
+                email = smacker.email,
+                partnerId = null
             )
         }
     }
