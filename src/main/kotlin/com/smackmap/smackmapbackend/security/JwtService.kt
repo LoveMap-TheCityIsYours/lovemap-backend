@@ -17,7 +17,7 @@ import org.springframework.security.core.userdetails.User
 import org.springframework.stereotype.Service
 import java.nio.charset.StandardCharsets.UTF_8
 import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.ZoneOffset.UTC
 import java.util.Date
 import java.util.stream.Collectors
 
@@ -27,6 +27,7 @@ class JwtService {
 
     private val HEADER_PREFIX = "Bearer "
     private val AUTHORITIES_KEY = "roles"
+    // TODO: extract properly
     private val SECRET = "smackmap-secret-key-aaaaaaaaaaaaaa"
     private val SECRET_KEY = Keys.hmacShaKeyFor(SECRET.toByteArray(UTF_8))
 
@@ -40,12 +41,15 @@ class JwtService {
                     .collect(Collectors.joining(","))
         }
         val now = Date()
-        return Jwts.builder()
+        val expirationLocalDate = LocalDateTime.now().plusYears(10)
+        val expirationDate = Date.from(expirationLocalDate.toInstant(UTC))
+        val builder = Jwts.builder()
+        builder
             .setClaims(claims)
             .setIssuedAt(now)
-            .setExpiration(Date(LocalDateTime.now().plusYears(10).toEpochSecond(ZoneOffset.UTC)))
+            .setExpiration(expirationDate)
             .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
-            .compact()
+        return builder.compact()
     }
 
     fun getAuthentication(token: String): Authentication {
@@ -65,13 +69,13 @@ class JwtService {
                 .parserBuilder().setSigningKey(SECRET_KEY).build()
                 .parseClaimsJws(token)
             //  parseClaimsJws will check expiration date. No need do here.
-            logger.info("expiration date: {}", claims.body.expiration)
+            logger.debug("Token validated. Expiration date: {}", claims.body.expiration)
             return true
         } catch (e: JwtException) {
-            logger.info("Invalid JWT token: {}", e.message)
+            logger.debug("Invalid JWT token: {}", e.message)
             logger.trace("Invalid JWT token trace.", e)
         } catch (e: IllegalArgumentException) {
-            logger.info("Invalid JWT token: {}", e.message)
+            logger.debug("Invalid JWT token: {}", e.message)
             logger.trace("Invalid JWT token trace.", e)
         }
         return false

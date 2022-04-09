@@ -7,17 +7,15 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import javax.annotation.security.RolesAllowed
 
 @RestController
-@RolesAllowed("USER")
 @RequestMapping("/smacker")
 class SmackerController(
     private val smackerService: SmackerService,
 ) {
 
     @GetMapping
-    fun test() = ResponseEntity.ok("banan")
+    suspend fun test() = ResponseEntity.ok("banan")
 
     @GetMapping("/{smackerId}")
     suspend fun getSmacker(@PathVariable smackerId: Long): ResponseEntity<SmackerResponse> {

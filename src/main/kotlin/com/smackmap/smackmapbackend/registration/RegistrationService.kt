@@ -1,4 +1,4 @@
-package com.smackmap.smackmapbackend.security
+package com.smackmap.smackmapbackend.registration
 
 import com.smackmap.smackmapbackend.security.password.Password
 import com.smackmap.smackmapbackend.security.password.PasswordService
@@ -6,24 +6,22 @@ import com.smackmap.smackmapbackend.smacker.CreateSmackerRequest
 import com.smackmap.smackmapbackend.smacker.LoginSmackerRequest
 import com.smackmap.smackmapbackend.smacker.Smacker
 import com.smackmap.smackmapbackend.smacker.SmackerService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.springframework.http.HttpStatus
+import kotlinx.coroutines.reactor.awaitSingle
+import mu.KotlinLogging
 import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
 
 @Service
-class AuthService(
+class RegistrationService(
     private val smackerService: SmackerService,
     private val passwordRepository: PasswordService,
     private val authenticationManager: ReactiveAuthenticationManager,
     private val passwordEncoder: PasswordEncoder,
 ) {
+    private val logger = KotlinLogging.logger {}
 
     suspend fun createSmacker(request: CreateSmackerRequest): Smacker {
         var smacker = Smacker(
@@ -40,6 +38,7 @@ class AuthService(
     }
 
     suspend fun loginSmacker(request: LoginSmackerRequest): Pair<Authentication, Smacker> {
+        logger.debug { "Logging in '$request'" }
         val smacker = if (request.email != null) {
             smackerService.getByEmail(request.email)
         } else {
@@ -52,9 +51,6 @@ class AuthService(
     private suspend fun authenticateAndGetUser(userName: String, password: String): Authentication {
         val authenticationMono = authenticationManager
             .authenticate(UsernamePasswordAuthenticationToken(userName, password))
-        // TODO: temporary solution
-        return withContext(Dispatchers.IO) {
-            authenticationMono.block()
-        } ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
+        return authenticationMono.awaitSingle()
     }
 }

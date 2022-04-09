@@ -4,10 +4,6 @@ spring:
     user: admin
     password: alma123
   r2dbc:
-    url: r2dbc:postgresql://smackmap@localhost:5432/reactive
+    url: r2dbc:postgresql://localhost:5431/smackmap
     username: admin
     password: alma123
-#  datasource:
-#    url: jdbc:postgresql://localhost:5431/smackmap
-#    username: admin
-#    password: alma123
