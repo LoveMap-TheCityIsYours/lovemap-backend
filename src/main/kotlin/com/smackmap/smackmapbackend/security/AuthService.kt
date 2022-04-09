@@ -6,22 +6,26 @@ import com.smackmap.smackmapbackend.smacker.CreateSmackerRequest
 import com.smackmap.smackmapbackend.smacker.LoginSmackerRequest
 import com.smackmap.smackmapbackend.smacker.Smacker
 import com.smackmap.smackmapbackend.smacker.SmackerService
-import org.springframework.security.authentication.AuthenticationManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.springframework.http.HttpStatus
+import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 
 @Service
 class AuthService(
     private val smackerService: SmackerService,
     private val passwordRepository: PasswordService,
-    private val authenticationManager: AuthenticationManager,
+    private val authenticationManager: ReactiveAuthenticationManager,
     private val passwordEncoder: PasswordEncoder,
 ) {
 
-    fun createSmacker(request: CreateSmackerRequest): Smacker {
+    suspend fun createSmacker(request: CreateSmackerRequest): Smacker {
         var smacker = Smacker(
             userName = request.userName,
             email = request.email,
@@ -29,25 +33,28 @@ class AuthService(
         smacker = smackerService.save(smacker)
         val password = Password(
             passwordHash = passwordEncoder.encode(request.password),
-            smacker = smacker
+            smackerId = smacker.id
         )
         passwordRepository.save(password)
         return smacker
     }
 
-    fun loginSmacker(request: LoginSmackerRequest): Pair<UserDetails, Smacker> {
+    suspend fun loginSmacker(request: LoginSmackerRequest): Pair<Authentication, Smacker> {
         val smacker = if (request.email != null) {
             smackerService.getByEmail(request.email)
         } else {
             smackerService.getByUserName(request.userName!!)
         }
-        val user: UserDetails = authenticateAndGetUser(smacker.userName, request.password)
-        return Pair(user, smacker)
+        val authentication  = authenticateAndGetUser(smacker.userName, request.password)
+        return Pair(authentication, smacker)
     }
 
-    private fun authenticateAndGetUser(userName: String, password: String): UserDetails {
-        val authentication: Authentication = authenticationManager
+    private suspend fun authenticateAndGetUser(userName: String, password: String): Authentication {
+        val authenticationMono = authenticationManager
             .authenticate(UsernamePasswordAuthenticationToken(userName, password))
-        return authentication.principal as UserDetails
+        // TODO: temporary solution
+        return withContext(Dispatchers.IO) {
+            authenticationMono.block()
+        } ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
     }
 }

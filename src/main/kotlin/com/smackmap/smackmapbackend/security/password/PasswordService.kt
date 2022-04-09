@@ -9,11 +9,11 @@ import org.springframework.transaction.annotation.Transactional
 class PasswordService(
     private val passwordRepository: PasswordRepository
 ) {
-    fun save(password: Password): Password {
+    suspend fun save(password: Password): Password {
         return passwordRepository.save(password)
     }
 
-    fun getPasswordOfSmacker(smacker: Smacker): Password {
-        return passwordRepository.findBySmacker(smacker)
+    suspend fun getPasswordOfSmacker(smacker: Smacker): Password {
+        return passwordRepository.findBySmackerId(smacker.id)
     }
 }

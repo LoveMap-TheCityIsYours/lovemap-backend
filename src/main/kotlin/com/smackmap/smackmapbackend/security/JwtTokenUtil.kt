@@ -14,7 +14,7 @@ const val ACCESS_TOKEN_VALIDITY_SECONDS = (5 * 60 * 60).toLong()
 const val SIGNING_KEY = "SmackMapDummySignKey"
 const val TOKEN_PREFIX = "Bearer "
 
-@Component
+//@Component
 class JwtTokenUtil : Serializable {
 
     fun getUsernameFromToken(token: String?): String {
@@ -30,14 +30,14 @@ class JwtTokenUtil : Serializable {
         return claimsResolver.apply(claims)
     }
 
-    private fun getAllClaimsFromToken(token: String?): Claims {
+    fun getAllClaimsFromToken(token: String?): Claims {
         return Jwts.parser()
             .setSigningKey(SIGNING_KEY)
             .parseClaimsJws(token)
             .body
     }
 
-    private fun isTokenExpired(token: String?): Boolean {
+    fun isTokenExpired(token: String?): Boolean {
         val expiration = getExpirationDateFromToken(token)
         return expiration.before(Date())
     }
@@ -55,8 +55,12 @@ class JwtTokenUtil : Serializable {
             .compact()
     }
 
-    fun validateToken(token: String?, userDetails: UserDetails): Boolean {
+    fun validateTokenBetter(token: String?, userDetails: UserDetails): Boolean {
         val username = getUsernameFromToken(token)
         return username == userDetails.username && !isTokenExpired(token)
+    }
+
+    fun validateToken(token: String): Boolean {
+        return !isTokenExpired(token)
     }
 }

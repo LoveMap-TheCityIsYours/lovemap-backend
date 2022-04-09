@@ -1,8 +1,7 @@
 package com.smackmap.smackmapbackend.security.password
 
-import com.smackmap.smackmapbackend.smacker.Smacker
-import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 
-interface PasswordRepository : JpaRepository<Password, Long> {
-    fun findBySmacker(smacker: Smacker): Password
+interface PasswordRepository : CoroutineCrudRepository<Password, Long> {
+    suspend fun findBySmackerId(smackerId: Long): Password
 }

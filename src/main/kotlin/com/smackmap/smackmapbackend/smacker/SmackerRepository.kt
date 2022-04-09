@@ -1,9 +1,9 @@
 package com.smackmap.smackmapbackend.smacker
 
-import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 
-interface SmackerRepository : JpaRepository<Smacker, Long> {
-    fun findByUserName(userName: String): Smacker?
-    fun findByEmail(email: String): Smacker?
-    fun findByLink(link: String): Smacker?
+interface SmackerRepository : CoroutineCrudRepository<Smacker, Long> {
+    suspend fun findByUserName(userName: String): Smacker?
+    suspend fun findByEmail(email: String): Smacker?
+    suspend fun findByLink(link: String): Smacker?
 }

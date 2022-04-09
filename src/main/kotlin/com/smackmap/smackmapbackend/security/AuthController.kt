@@ -5,6 +5,7 @@ import com.smackmap.smackmapbackend.smacker.LoginSmackerRequest
 import com.smackmap.smackmapbackend.smacker.SmackerResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -14,22 +15,25 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/auth")
 class AuthController(
     private val authService: AuthService,
-    private val jwtTokenUtil: JwtTokenUtil,
+    private val jwtService: JwtService
 ) {
+    @GetMapping
+    fun test() = ResponseEntity.ok("alma")
+
     @PostMapping("/register")
-    fun register(@RequestBody createSmackerRequest: CreateSmackerRequest): ResponseEntity<SmackerResponse> {
+    suspend fun register(@RequestBody createSmackerRequest: CreateSmackerRequest): ResponseEntity<SmackerResponse> {
         val smacker = authService.createSmacker(createSmackerRequest)
         return login(LoginSmackerRequest(smacker.userName, smacker.email, createSmackerRequest.password))
     }
 
     @PostMapping("/login")
-    fun login(@RequestBody loginSmackerRequest: LoginSmackerRequest): ResponseEntity<SmackerResponse> {
+    suspend fun login(@RequestBody loginSmackerRequest: LoginSmackerRequest): ResponseEntity<SmackerResponse> {
         if (loginSmackerRequest.email == null && loginSmackerRequest.userName == null) {
             return ResponseEntity.badRequest().build()
         }
-        val (user, smacker) = authService.loginSmacker(loginSmackerRequest)
+        val (authentication, smacker) = authService.loginSmacker(loginSmackerRequest)
         return ResponseEntity.ok()
-            .header(HttpHeaders.AUTHORIZATION, jwtTokenUtil.generateToken(user))
+            .header(HttpHeaders.AUTHORIZATION, jwtService.generateToken(authentication))
             .body(SmackerResponse.of(smacker))
     }
 }
