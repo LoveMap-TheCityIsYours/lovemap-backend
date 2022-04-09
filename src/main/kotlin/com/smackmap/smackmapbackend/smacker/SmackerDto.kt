@@ -14,7 +14,7 @@ data class LoginSmackerRequest(
 
 data class SmackerResponse(
     val id: Long,
-    val partnerId: Long?,
+    val partnerIds: List<Long>,
     val userName: String,
     val email: String,
 ) {
@@ -24,7 +24,7 @@ data class SmackerResponse(
                 id = smacker.id,
                 userName = smacker.userName,
                 email = smacker.email,
-                partnerId = null
+                partnerIds = emptyList()
             )
         }
     }

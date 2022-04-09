@@ -40,7 +40,7 @@ class SmackerController(
     @PutMapping("/requestPartnership")
     suspend fun requestPartnership(@RequestBody request: RequestPartnershipRequest)
             : ResponseEntity<SmackerResponse> {
-//        smackerService.requestPartnership(request)
+        smackerService.requestPartnership(request)
         TODO("Not yet implemented")
     }
 
