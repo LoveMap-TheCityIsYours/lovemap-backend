@@ -16,7 +16,3 @@ data class Smacker(
     @Column("link")
     var link: String? = null,
 )
-
-enum class PartnershipStatus {
-    REQUESTED, WAITING_FOR_YOUR_RESPONSE, LIVE
-}

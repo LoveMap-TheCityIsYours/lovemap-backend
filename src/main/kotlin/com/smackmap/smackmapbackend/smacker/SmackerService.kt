@@ -46,8 +46,4 @@ class SmackerService(
         return smackerRepository.findByLink(uuidLink)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Smacker not found by link: $link")
     }
-
-    fun requestPartnership(request: RequestPartnershipRequest): Smacker {
-        TODO("Not yet implemented")
-    }
 }

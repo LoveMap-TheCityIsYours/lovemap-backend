@@ -36,18 +36,4 @@ class SmackerController(
         val link = smackerService.generateSmackerLink(request.smackerId)
         return ResponseEntity.ok(SmackerLinkResponse(request.smackerId, link))
     }
-
-    @PutMapping("/requestPartnership")
-    suspend fun requestPartnership(@RequestBody request: RequestPartnershipRequest)
-            : ResponseEntity<SmackerResponse> {
-        smackerService.requestPartnership(request)
-        TODO("Not yet implemented")
-    }
-
-    @PutMapping("/respondPartnership")
-    suspend fun acceptPartnership(@RequestBody request: RespondPartnershipRequest)
-            : ResponseEntity<SmackerResponse> {
-
-        TODO("Not yet implemented")
-    }
 }

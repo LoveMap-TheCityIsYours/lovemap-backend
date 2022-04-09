@@ -37,6 +37,7 @@ class SecurityConfiguration(
             .pathMatchers("/v3/api-docs/**").permitAll()
             .pathMatchers("/registration/**").permitAll()
             .pathMatchers("/smacker").hasRole("USER")
+            .pathMatchers("/partnership").hasRole("USER")
             .anyExchange().authenticated()
             .and()
             .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.HTTP_BASIC)

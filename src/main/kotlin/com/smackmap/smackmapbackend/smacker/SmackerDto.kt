@@ -42,18 +42,3 @@ data class SmackerLinkResponse(
 data class GetSmackerByLinkRequest(
     val smackerLink: String
 )
-
-data class RequestPartnershipRequest(
-    val requestingSmackerId: Long,
-    val requestedPartnerSmackerId: Long,
-)
-
-data class RespondPartnershipRequest(
-    val requestingSmackerId: Long,
-    val acceptingSmackerId: Long,
-    val response: PartnershipResponse
-)
-
-enum class PartnershipResponse {
-    ACCEPT, DENY
-}
