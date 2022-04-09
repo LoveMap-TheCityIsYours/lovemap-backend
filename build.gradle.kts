@@ -21,21 +21,27 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-security")
 
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+    runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.1")
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.apache.commons:commons-lang3:3.12.0")
+    implementation("io.github.microutils:kotlin-logging:2.1.21")
+
     implementation("org.bouncycastle:bcprov-jdk15on:1.70")
-    implementation("io.jsonwebtoken:jjwt:0.9.1")
+    implementation("io.jsonwebtoken:jjwt-api:0.11.2")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
+    implementation("io.jsonwebtoken:jjwt-jackson:0.11.2")
 
     implementation("org.flywaydb:flyway-core")
-    implementation("org.postgresql:postgresql")
+    runtimeOnly("io.r2dbc:r2dbc-postgresql")
 
-    implementation("org.springdoc:springdoc-openapi-ui:1.6.6")
+    implementation("org.springdoc:springdoc-openapi-webflux-core:1.6.6")
+    implementation("org.springdoc:springdoc-openapi-webflux-ui:1.6.6")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

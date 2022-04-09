@@ -1,24 +1,19 @@
 package com.smackmap.smackmapbackend.smacker
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Column
 
-@Entity
 data class Smacker(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0,
 
-    @Column(name = "username")
+    @Column("username")
     var userName: String,
 
-    @Column(name = "email")
+    @Column("email")
     var email: String,
 
-    @Column(name = "link")
+    @Column("link")
     var link: String? = null,
 )
 

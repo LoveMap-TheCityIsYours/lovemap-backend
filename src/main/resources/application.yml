@@ -21,5 +21,7 @@ springdoc:
 logging:
   level:
     root: INFO
-    org.springframework.security: DEBUG
+    com.smackmap: DEBUG
+    org.springframework.r2dbc: DEBUG
+    org.springframework.security: INFO
     org.springframework.web: INFO
