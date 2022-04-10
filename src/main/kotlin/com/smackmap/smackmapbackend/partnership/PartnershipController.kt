@@ -1,5 +1,7 @@
 package com.smackmap.smackmapbackend.partnership
 
+import com.smackmap.smackmapbackend.relation.Relation
+import com.smackmap.smackmapbackend.relation.SmackerRelations
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -17,21 +19,21 @@ class PartnershipController(
     suspend fun getSmackerPartnerships(
         @RequestParam("smackerId", required = true) smackerId: Long
     ): ResponseEntity<SmackerPartnershipsResponse> {
-        val smackerPartnerships: SmackerPartnerships = partnershipService.getSmackerPartnerships(smackerId)
-        return ResponseEntity.ok(SmackerPartnershipsResponse.of(smackerPartnerships))
+        val smackerRelations: SmackerRelations = partnershipService.getSmackerPartnerships(smackerId)
+        return ResponseEntity.ok(SmackerPartnershipsResponse.of(smackerRelations))
     }
 
-    @PutMapping("/requestPartnership")
+    @PutMapping("requestPartnership")
     suspend fun requestPartnership(@RequestBody request: RequestPartnershipRequest)
             : ResponseEntity<PartnershipResponse> {
-        val partnership: Partnership = partnershipService.requestPartnership(request)
-        return ResponseEntity.ok(PartnershipResponse.of(partnership))
+        val relation: Relation = partnershipService.requestPartnership(request)
+        return ResponseEntity.ok(PartnershipResponse.of(relation))
     }
 
-    @PutMapping("/respondPartnership")
+    @PutMapping("respondPartnership")
     suspend fun respondPartnership(@RequestBody request: RespondPartnershipRequest)
             : ResponseEntity<PartnershipResponse> {
-        val partnership: Partnership = partnershipService.respondPartnership(request)
-        return ResponseEntity.ok(PartnershipResponse.of(partnership))
+        val relation: Relation = partnershipService.respondPartnership(request)
+        return ResponseEntity.ok(PartnershipResponse.of(relation))
     }
 }

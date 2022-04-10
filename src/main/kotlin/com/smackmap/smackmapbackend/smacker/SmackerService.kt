@@ -13,6 +13,10 @@ private const val LINK_PREFIX = "smacker://"
 class SmackerService(
     private val smackerRepository: SmackerRepository,
 ) {
+    suspend fun exists(id: Long): Boolean {
+        return smackerRepository.existsById(id)
+    }
+
     suspend fun getById(id: Long): Smacker {
         return smackerRepository.findById(id)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Smacker not found by id: $id")

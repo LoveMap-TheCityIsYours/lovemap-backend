@@ -6,29 +6,32 @@ import java.sql.Timestamp
 
 data class Partnership(
     @Id
-    var id: Long,
+    var id: Long = 0,
 
-    @Column("partnership_status")
-    var partnershipStatus: PartnershipStatus,
+    @Column("status")
+    var status: Status,
 
-    @Column("requestor_id")
-    var requestorId: Long,
+    @Column("initiator_id")
+    var initiatorId: Long,
 
-    @Column("requestee_id")
-    var requesteeId: Long,
+    @Column("respondent_id")
+    var respondentId: Long,
 
-    @Column("start_date")
-    var startDate: Timestamp?,
+    @Column("initiate_date")
+    var initiateDate: Timestamp? = null,
+
+    @Column("respond_date")
+    var respondDate: Timestamp? = null,
 
     @Column("end_date")
-    var endDate: Timestamp?
-)
-
-enum class PartnershipStatus {
-    REQUESTED, LIVE, ENDED
+    var endDate: Timestamp? = null
+) {
+    enum class Status {
+        PARTNERSHIP_REQUESTED, PARTNER
+    }
 }
 
 data class SmackerPartnerships(
     val smackerId: Long,
-    val partnerships: List<Partnership>
+    val relations: List<Partnership>
 )
