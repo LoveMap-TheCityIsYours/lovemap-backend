@@ -1,1 +1,1 @@
-CREATE DATABASE smackmap;
+--CREATE DATABASE smackmap;

@@ -17,11 +17,10 @@ class SmackerController(
         return ResponseEntity.ok(SmackerResponse.of(smackerService.getById(smackerId)))
     }
 
-    @GetMapping("/byLink")
-    suspend fun getSmackerByLink(@RequestBody request: GetSmackerByLinkRequest)
+    @GetMapping("/byLink/")
+    suspend fun getSmackerByLink(@RequestParam smackerLink: String)
             : ResponseEntity<SmackerResponse> {
-        val link = request.smackerLink
-        val smacker = smackerService.getByLink(link)
+        val smacker = smackerService.getByLink(smackerLink)
         return ResponseEntity.ok(SmackerResponse.of(smacker))
     }
 
