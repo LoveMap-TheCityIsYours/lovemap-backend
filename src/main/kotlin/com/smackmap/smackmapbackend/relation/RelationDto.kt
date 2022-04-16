@@ -1,15 +1,14 @@
 package com.smackmap.smackmapbackend.relation
 
 enum class RelationApiStatus {
-    PARTNERSHIP_REQUESTED, IN_PARTNERSHIP, FOLLOWING, BLOCKED;
+    PARTNER, FOLLOWING, BLOCKED;
 
     companion object {
-        fun of(relationStatus: RelationStatus): RelationApiStatus {
+        fun of(relationStatus: Relation.Status): RelationApiStatus {
             return when (relationStatus) {
-                RelationStatus.PARTNERSHIP_REQUESTED -> PARTNERSHIP_REQUESTED
-                RelationStatus.PARTNER -> IN_PARTNERSHIP
-                RelationStatus.FOLLOWING -> FOLLOWING
-                RelationStatus.BLOCKED -> BLOCKED
+                Relation.Status.FOLLOWING -> FOLLOWING
+                Relation.Status.PARTNER -> PARTNER
+                Relation.Status.BLOCKED -> BLOCKED
             }
         }
     }

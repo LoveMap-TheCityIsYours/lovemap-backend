@@ -1,9 +1,5 @@
 package com.smackmap.smackmapbackend.partnership
 
-import com.smackmap.smackmapbackend.relation.Relation
-import com.smackmap.smackmapbackend.relation.RelationStatus
-import com.smackmap.smackmapbackend.relation.SmackerRelations
-import java.lang.IllegalArgumentException
 import java.time.Instant
 
 data class RequestPartnershipRequest(
@@ -26,7 +22,7 @@ data class SmackerPartnershipsResponse(
     val partnerships: List<PartnershipResponse>
 ) {
     companion object {
-        fun of(smackerPartnerShips: SmackerRelations): SmackerPartnershipsResponse {
+        fun of(smackerPartnerShips: SmackerPartnerships): SmackerPartnershipsResponse {
             return SmackerPartnershipsResponse(
                 smackerId = smackerPartnerShips.smackerId,
                 partnerships = smackerPartnerShips.relations.map { PartnershipResponse.of(it) }
@@ -40,18 +36,18 @@ data class PartnershipResponse(
     val initiatorId: Long,
     val respondentId: Long,
     val partnershipStatus: PartnershipApiStatus,
-    val partnershipStartDate: Instant?,
-    val partnershipEndDate: Instant?
+    val initiateDate: Instant?,
+    val respondDate: Instant?
 ) {
     companion object {
-        fun of(relation: Relation): PartnershipResponse {
+        fun of(partnership: Partnership): PartnershipResponse {
             return PartnershipResponse(
-                id = relation.id,
-                initiatorId = relation.sourceId,
-                respondentId = relation.targetId,
-                partnershipStatus = PartnershipApiStatus.of(relation.relationStatus),
-                partnershipStartDate = relation.partnershipRespondDate?.toInstant(),
-                partnershipEndDate = relation.partnershipEndDate?.toInstant()
+                id = partnership.id,
+                initiatorId = partnership.initiatorId,
+                respondentId = partnership.respondentId,
+                partnershipStatus = PartnershipApiStatus.of(partnership.status),
+                initiateDate = partnership.initiateDate?.toInstant(),
+                respondDate = partnership.respondDate?.toInstant()
             )
         }
     }
@@ -61,11 +57,10 @@ enum class PartnershipApiStatus {
     PARTNERSHIP_REQUESTED, IN_PARTNERSHIP;
 
     companion object {
-        fun of(relationStatus: RelationStatus): PartnershipApiStatus {
-            return when (relationStatus) {
-                RelationStatus.PARTNERSHIP_REQUESTED -> PARTNERSHIP_REQUESTED
-                RelationStatus.PARTNER -> IN_PARTNERSHIP
-                else -> throw IllegalArgumentException("Cannot convert '$relationStatus' to PartnershipApiStatus.")
+        fun of(partnershipStatus: Partnership.Status): PartnershipApiStatus {
+            return when (partnershipStatus) {
+                Partnership.Status.PARTNERSHIP_REQUESTED -> PARTNERSHIP_REQUESTED
+                Partnership.Status.PARTNER -> IN_PARTNERSHIP
             }
         }
     }

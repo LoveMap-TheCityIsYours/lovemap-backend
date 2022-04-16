@@ -38,10 +38,11 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-jackson:0.11.2")
 
     implementation("org.flywaydb:flyway-core")
+    runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("io.r2dbc:r2dbc-postgresql")
 
-    implementation("org.springdoc:springdoc-openapi-webflux-core:1.6.6")
-    implementation("org.springdoc:springdoc-openapi-webflux-ui:1.6.6")
+    implementation("org.springdoc:springdoc-openapi-webflux-core:1.6.7")
+    implementation("org.springdoc:springdoc-openapi-webflux-ui:1.6.7")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
