@@ -2,7 +2,11 @@ package com.smackmap.smackmapbackend.partnership
 
 import com.smackmap.smackmapbackend.partnership.Partnership.Status.PARTNER
 import com.smackmap.smackmapbackend.partnership.Partnership.Status.PARTNERSHIP_REQUESTED
+import com.smackmap.smackmapbackend.partnership.PartnershipReaction.ACCEPT
+import com.smackmap.smackmapbackend.partnership.PartnershipReaction.DENY
+import com.smackmap.smackmapbackend.relation.Relation
 import com.smackmap.smackmapbackend.relation.RelationService
+import com.smackmap.smackmapbackend.security.SmackerAuthorizationService
 import com.smackmap.smackmapbackend.smacker.SmackerService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
@@ -21,6 +25,7 @@ private const val HOURS_TO_REREQUEST_PARTNERSHIP: Long = 12
 @Service
 @Transactional
 class PartnershipService(
+    private val authorizationService: SmackerAuthorizationService,
     private val partnershipRepository: PartnershipRepository,
     private val relationService: RelationService,
     private val smackerService: SmackerService
@@ -28,6 +33,7 @@ class PartnershipService(
     private val logger = KotlinLogging.logger {}
 
     suspend fun getSmackerPartnerships(smackerId: Long): SmackerPartnerships {
+        authorizationService.checkAccessFor(smackerId)
         if (smackerService.exists(smackerId)) {
             return SmackerPartnerships(
                 smackerId = smackerId,
@@ -39,13 +45,17 @@ class PartnershipService(
     }
 
     suspend fun requestPartnership(request: RequestPartnershipRequest): Partnership {
-        relationService.checkBlockingBetweenSmackers(request.initiatorId, request.respondentId)
-        val initiatorPartnership: Partnership? = getInitiatorPartnership(request.initiatorId, request.respondentId)
+        val initiatorId = request.initiatorId
+        val respondentId = request.respondentId
+        authorizationService.checkAccessFor(initiatorId)
+        validateInitiatorRespondentIds(initiatorId, respondentId)
+        relationService.checkBlockingBetweenSmackers(initiatorId, respondentId)
+        val initiatorPartnership: Partnership? = getInitiatorPartnership(initiatorId, respondentId)
         return if (initiatorPartnership != null) {
             handleInitiatorPartnership(initiatorPartnership, request)
         } else {
             val respondentPartnership: Partnership? =
-                getRespondentPartnership(request.initiatorId, request.respondentId)
+                getRespondentPartnership(initiatorId, respondentId)
             if (respondentPartnership != null) {
                 handleRespondentPartnership(respondentPartnership, request)
             } else {
@@ -54,33 +64,61 @@ class PartnershipService(
         }
     }
 
-    suspend fun respondToPartnershipRequest(request: RespondPartnershipRequest): Partnership {
+    suspend fun respondToPartnershipRequest(request: RespondPartnershipRequest): SmackerPartnerships {
         val initiatorId = request.initiatorId
         val respondentId = request.respondentId
+        authorizationService.checkAccessFor(respondentId)
+        val partnership = validatePartnershipResponse(initiatorId, respondentId)
+        return when (partnership.status) {
+            PARTNER -> throw ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "User '$initiatorId' and user '$respondentId' are already partners."
+            )
+            PARTNERSHIP_REQUESTED -> {
+                handlePartnershipResponse(request, partnership, respondentId)
+            }
+        }
+    }
+
+    private suspend fun validatePartnershipResponse(
+        initiatorId: Long,
+        respondentId: Long
+    ): Partnership {
+        validateInitiatorRespondentIds(initiatorId, respondentId)
         try {
             relationService.checkBlockingBetweenSmackers(initiatorId, respondentId)
         } catch (e: ResponseStatusException) {
             denyPartnershipRequest(initiatorId, respondentId)
             throw e
         }
-        val partnership = partnershipRepository.findByInitiatorIdAndRespondentId(initiatorId, respondentId)
-        return if (partnership == null) {
-            throw ResponseStatusException(
+        return partnershipRepository.findByInitiatorIdAndRespondentId(initiatorId, respondentId)
+            ?: throw ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
                 "Partnership was never requested from user '$initiatorId' to user '$respondentId'."
             )
-        } else {
-            when (partnership.status) {
-                PARTNER -> throw ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "User '$initiatorId' and user '$respondentId' are already partners."
+    }
+
+    private suspend fun handlePartnershipResponse(
+        request: RespondPartnershipRequest,
+        partnership: Partnership,
+        respondentId: Long
+    ): SmackerPartnerships {
+        return when (request.response) {
+            ACCEPT -> {
+                partnership.status = PARTNER
+                partnership.respondDate = Timestamp.from(Instant.now())
+                partnershipRepository.save(partnership)
+                relationService.updateRelations(
+                    partnership.initiatorId,
+                    partnership.respondentId,
+                    Relation.Status.PARTNER
                 )
-                PARTNERSHIP_REQUESTED -> {
-                    partnership.status = PARTNER
-                    partnershipRepository.save(partnership)
-                    sendPushNotification(partnership)
-                    partnership
-                }
+                sendPushNotification(partnership)
+                getSmackerPartnerships(respondentId)
+            }
+            DENY -> {
+                partnershipRepository.delete(partnership)
+                getSmackerPartnerships(respondentId)
             }
         }
     }
@@ -186,6 +224,15 @@ class PartnershipService(
 
     private suspend fun respondentPartnershipsOfSmacker(smackerId: Long): Flow<Partnership> {
         return partnershipRepository.findByRespondentId(smackerId)
+    }
+
+    private fun validateInitiatorRespondentIds(initiatorId: Long, respondentId: Long) {
+        if (initiatorId == respondentId) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "InitiatorId and respondentId cannot be the same! '${initiatorId}'"
+            )
+        }
     }
 
     private fun hoursPassedSince(hours: Long, it: Timestamp) = Instant.now().minus(hours, HOURS).isAfter(it.toInstant())

@@ -10,7 +10,7 @@ services:
     networks:
       - smackmap_network
     ports:
-      - 5431:5432
+      - 5432:5432
 
 volumes:
   smackmap_postgres_data: # named volumes can be managed easier using docker-compose

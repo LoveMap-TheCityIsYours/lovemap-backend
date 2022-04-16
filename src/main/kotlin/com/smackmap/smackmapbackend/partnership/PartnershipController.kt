@@ -25,8 +25,8 @@ class PartnershipController(
 
     @PutMapping("respondPartnership")
     suspend fun respondPartnership(@RequestBody request: RespondPartnershipRequest)
-            : ResponseEntity<PartnershipResponse> {
-        val partnership: Partnership = partnershipService.respondToPartnershipRequest(request)
-        return ResponseEntity.ok(PartnershipResponse.of(partnership))
+            : ResponseEntity<SmackerPartnershipsResponse> {
+        val smackerPartnerships: SmackerPartnerships = partnershipService.respondToPartnershipRequest(request)
+        return ResponseEntity.ok(SmackerPartnershipsResponse.of(smackerPartnerships))
     }
 }

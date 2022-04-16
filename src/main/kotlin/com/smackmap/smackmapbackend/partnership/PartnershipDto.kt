@@ -1,5 +1,6 @@
 package com.smackmap.smackmapbackend.partnership
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import java.time.Instant
 
 data class RequestPartnershipRequest(
@@ -36,7 +37,9 @@ data class PartnershipResponse(
     val initiatorId: Long,
     val respondentId: Long,
     val partnershipStatus: PartnershipApiStatus,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "UTC")
     val initiateDate: Instant?,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "UTC")
     val respondDate: Instant?
 ) {
     companion object {

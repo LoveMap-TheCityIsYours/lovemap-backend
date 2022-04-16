@@ -3,6 +3,8 @@ server:
 #  servlet:
 #    context-path: /smackmap/api
 
+
+
 spring:
   profiles:
     active: local
@@ -14,6 +16,9 @@ spring:
     hibernate:
       ddl-auto: validate
       show-sql: true
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
 
 springdoc:
   packagesToScan: com.smackmap.smackmapbackend
