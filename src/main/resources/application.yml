@@ -3,11 +3,9 @@ server:
 #  servlet:
 #    context-path: /smackmap/api
 
-
-
 spring:
   profiles:
-    active: local
+    active: dev
   flyway:
     enabled: true
     locations: classpath:db/migration

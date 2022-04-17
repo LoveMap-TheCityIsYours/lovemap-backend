@@ -9,7 +9,7 @@ metadata:
     io.kompose.service: smackmap
   name: smackmap
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
     - name: "8090"
       port: 8090

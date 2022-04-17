@@ -21,14 +21,13 @@ spec:
         kompose.version: 1.26.1 (a9d05d509)
       creationTimestamp: null
       labels:
-        io.kompose.network/smackmap-network: "true"
         io.kompose.service: smackmap
     spec:
       containers:
         - env:
             - name: spring_profiles_active
-              value: local
-          image: docker.io/attilapalfi92/smackmap-backend:latest
+              value: prod
+          image: europe-central2-docker.pkg.dev/smackmap/smackmap-docker/smackmap-backend:latest
           name: smackmap
           ports:
             - containerPort: 8090

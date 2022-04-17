@@ -1,9 +1,9 @@
 spring:
   flyway:
-    url: jdbc:postgresql://localhost:5432/smackmap
+    url: jdbc:postgresql://postgres:5432/smackmap
     user: admin
     password: alma123
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/smackmap
+    url: r2dbc:postgresql://postgres:5432/smackmap
     username: admin
     password: alma123

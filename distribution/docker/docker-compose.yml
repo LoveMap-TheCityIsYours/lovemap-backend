@@ -1,11 +1,9 @@
 version: "3.8"
 services:
   smackmap:
-#    image: docker.io/smackmap/smackmap-backend:0.0.1-SNAPSHOT
     image: docker.io/attilapalfi92/smackmap-backend:latest
     environment:
-      spring_profiles_active: docker-compose
-#      spring_datasource_url: jdbc:postgresql://postgres:5432/smackmap
+      spring_profiles_active: local
     ports:
       - "127.0.0.1:8090:8090"
     networks:
