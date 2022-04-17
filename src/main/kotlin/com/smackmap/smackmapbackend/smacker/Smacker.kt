@@ -15,4 +15,11 @@ data class Smacker(
 
     @Column("link")
     var link: String? = null,
+) {
+    fun toView() = SmackerView(id, userName)
+}
+
+data class SmackerView(
+    val id: Long,
+    val userName: String
 )

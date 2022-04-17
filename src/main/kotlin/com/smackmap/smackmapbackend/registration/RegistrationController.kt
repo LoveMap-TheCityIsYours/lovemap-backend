@@ -1,10 +1,7 @@
 package com.smackmap.smackmapbackend.registration
 
 import com.smackmap.smackmapbackend.security.JwtService
-import com.smackmap.smackmapbackend.smacker.CreateSmackerRequest
-import com.smackmap.smackmapbackend.smacker.LoginSmackerRequest
-import com.smackmap.smackmapbackend.smacker.SmackerResponse
-import com.smackmap.smackmapbackend.smacker.SmackerService
+import com.smackmap.smackmapbackend.smacker.*
 import mu.KotlinLogging
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -18,28 +15,19 @@ import org.springframework.web.server.ResponseStatusException
 class RegistrationController(
     private val registrationService: RegistrationService,
     private val jwtService: JwtService,
-
-    private val smackerService: SmackerService
 ) {
     private val logger = KotlinLogging.logger {}
 
-    @GetMapping
-    suspend fun test(): ResponseEntity<SmackerResponse> {
-        return ResponseEntity.ok(SmackerResponse.of(smackerService.getById(1)))
-    }
-
     @PostMapping("/register")
-    suspend fun register(@RequestBody createSmackerRequest: CreateSmackerRequest): ResponseEntity<SmackerResponse> {
+    suspend fun register(@RequestBody createSmackerRequest: CreateSmackerRequest): ResponseEntity<SmackerRelationsDto> {
         logger.debug { "Registering user '${createSmackerRequest.userName}'" }
         val smacker = registrationService.createSmacker(createSmackerRequest)
         return login(LoginSmackerRequest(smacker.userName, smacker.email, createSmackerRequest.password))
     }
 
     @PostMapping("/login")
-    suspend fun login(@RequestBody loginSmackerRequest: LoginSmackerRequest): ResponseEntity<SmackerResponse> {
-        if (loginSmackerRequest.email.isNullOrEmpty() && loginSmackerRequest.userName.isNullOrEmpty()) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Both email and username are missing from loginRequest.")
-        }
+    suspend fun login(@RequestBody loginSmackerRequest: LoginSmackerRequest): ResponseEntity<SmackerRelationsDto> {
+        validateLoginRequest(loginSmackerRequest)
         try {
             val (authentication, smacker) = registrationService.loginSmacker(loginSmackerRequest)
             logger.debug { "User login finished '$smacker'. Generating token." }
@@ -47,11 +35,22 @@ class RegistrationController(
             logger.debug { "Jwt token generated for '$smacker'." }
             return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION, jwtToken)
-                .body(SmackerResponse.of(smacker))
+                .body(smacker)
         } catch (e: BadCredentialsException) {
-            logger.debug(e) { "Login failed with username '${loginSmackerRequest.userName}', " +
-                    "email ${loginSmackerRequest.email}." }
+            logger.debug(e) {
+                "Login failed with username '${loginSmackerRequest.userName}', " +
+                        "email ${loginSmackerRequest.email}."
+            }
             throw ResponseStatusException(HttpStatus.FORBIDDEN, e.message)
+        }
+    }
+
+    private fun validateLoginRequest(loginSmackerRequest: LoginSmackerRequest) {
+        if (loginSmackerRequest.email.isNullOrEmpty() && loginSmackerRequest.userName.isNullOrEmpty()) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Both email and username are missing from loginRequest."
+            )
         }
     }
 }

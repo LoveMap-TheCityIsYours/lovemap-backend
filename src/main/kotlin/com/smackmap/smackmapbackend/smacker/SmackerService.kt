@@ -26,16 +26,14 @@ class SmackerService(
         } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Smacker not found by id: $id")
     }
 
-    suspend fun getByUserName(userName: String): Smacker {
-        return smackerRepository.findByUserName(userName)?.also {
-            authorizationService.checkAccessFor(it)
-        } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Smacker not found by userName: $userName")
+    suspend fun unAuthorizedGetByUserName(userName: String): Smacker {
+        return smackerRepository.findByUserName(userName)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Smacker not found by userName: $userName")
     }
 
-    suspend fun getByEmail(email: String): Smacker {
-        return smackerRepository.findByEmail(email)?.also {
-            authorizationService.checkAccessFor(it)
-        } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Smacker not found by email: $email")
+    suspend fun unAuthorizedGetByEmail(email: String): Smacker {
+        return smackerRepository.findByEmail(email)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Smacker not found by email: $email")
     }
 
     suspend fun save(smacker: Smacker): Smacker {
@@ -43,8 +41,7 @@ class SmackerService(
     }
 
     suspend fun generateSmackerLink(smackerId: Long): String {
-        authorizationService.checkAccessFor(smackerId)
-        val smacker = getById(smackerId)
+        val smacker = authorizationService.checkAccessFor(smackerId)
         if (smacker.link == null) {
             smacker.link = UUID.randomUUID().toString()
             save(smacker)
@@ -52,10 +49,9 @@ class SmackerService(
         return "$LINK_PREFIX${smacker.link}"
     }
 
-    suspend fun getByLink(link: String): Smacker {
+    suspend fun getByLink(link: String, caller: Smacker): Smacker {
         val uuidLink = link.substringAfter(LINK_PREFIX)
-        return smackerRepository.findByLink(uuidLink)?.also {
-            authorizationService.checkAccessFor(it)
-        } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Smacker not found by link: $link")
+        return smackerRepository.findByLink(uuidLink)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Smacker not found by link: $link")
     }
 }

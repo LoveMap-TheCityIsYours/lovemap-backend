@@ -21,7 +21,7 @@ class SmackerUserDetailsService(
 
     override fun findByUsername(username: String): Mono<UserDetails> {
         logger.debug { "Finding by username '$username'" }
-        val smackerMono = mono { smackerService.getByUserName(username) }
+        val smackerMono = mono { smackerService.unAuthorizedGetByUserName(username) }
         val userDetails: Mono<Mono<UserDetails>> = smackerMono.map { smacker ->
             val passwordMono = mono { passwordService.getPasswordOfSmacker(smacker) }
             passwordMono.map { password ->
@@ -33,7 +33,7 @@ class SmackerUserDetailsService(
 
     override fun updatePassword(user: UserDetails, newPassword: String): Mono<UserDetails> {
         logger.debug { "Updating password for user '$user'" }
-        val smackerMono = mono { smackerService.getByUserName(user.username) }
+        val smackerMono = mono { smackerService.unAuthorizedGetByUserName(user.username) }
         smackerMono.map { smacker ->
             val passwordMono = mono { passwordService.getPasswordOfSmacker(smacker) }
             passwordMono.map {

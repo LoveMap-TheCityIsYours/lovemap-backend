@@ -1,5 +1,9 @@
 package com.smackmap.smackmapbackend.relation
 
+import com.smackmap.smackmapbackend.relation.Relation.Status.FOLLOWING
+import com.smackmap.smackmapbackend.relation.Relation.Status.PARTNER
+import com.smackmap.smackmapbackend.smacker.SmackerService
+import kotlinx.coroutines.flow.map
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -9,7 +13,8 @@ import org.springframework.web.server.ResponseStatusException
 @Service
 @Transactional
 class RelationService(
-    private val relationRepository: RelationRepository
+    private val smackerService: SmackerService,
+    private val relationRepository: RelationRepository,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -40,8 +45,10 @@ class RelationService(
 
     suspend fun updateRelations(user1: Long, user2: Long, status: Relation.Status) {
         if (user1 == user2) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "Source and Target in a relation cannot be the same. '$user1'")
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Source and Target in a relation cannot be the same. '$user1'"
+            )
         }
         val relation12: Relation = relationRepository.findBySourceIdAndTargetId(user1, user2)
             ?: Relation(status = status, sourceId = user1, targetId = user2)
@@ -50,5 +57,25 @@ class RelationService(
         val relation21: Relation = relationRepository.findBySourceIdAndTargetId(user2, user1)
             ?: Relation(status = status, sourceId = user2, targetId = user1)
         relation21.status = status
+    }
+
+    suspend fun getRelation(fromId: Long, toId: Long): Relation {
+        return relationRepository.findBySourceIdAndTargetId(fromId, toId)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Relation not found from '$fromId' to '$toId'.")
+    }
+
+    suspend fun getRelationStatusDto(fromId: Long, toId: Long): RelationStatusDto {
+        return RelationStatusDto.of(relationRepository.findBySourceIdAndTargetId(fromId, toId)?.status)
+    }
+
+    suspend fun getRelationsFrom(fromId: Long): SmackerRelations {
+        val relationFlow = relationRepository.findBySourceIdAndStatusIn(fromId, setOf(FOLLOWING, PARTNER))
+        val smackerRelationFlow = relationFlow.map { value: Relation ->
+            SmackerRelation(
+                smackerService.getById(value.targetId).toView(),
+                value.status
+            )
+        }
+        return SmackerRelations(fromId, smackerRelationFlow)
     }
 }

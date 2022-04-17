@@ -19,16 +19,15 @@ import java.sql.Timestamp
 import java.time.Instant
 import java.time.temporal.ChronoUnit.HOURS
 
-private const val INITIAL_RELATION_LIST_SIZE = 30
 private const val HOURS_TO_REREQUEST_PARTNERSHIP: Long = 12
 
 @Service
 @Transactional
 class PartnershipService(
     private val authorizationService: SmackerAuthorizationService,
-    private val partnershipRepository: PartnershipRepository,
     private val relationService: RelationService,
-    private val smackerService: SmackerService
+    private val smackerService: SmackerService,
+    private val partnershipRepository: PartnershipRepository,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -212,7 +211,7 @@ class PartnershipService(
     }
 
     private suspend fun getPartnerships(smackerId: Long): List<Partnership> {
-        val partnership = ArrayList<Partnership>(INITIAL_RELATION_LIST_SIZE)
+        val partnership = ArrayList<Partnership>()
         initiatorPartnershipsOfSmacker(smackerId).toList(partnership)
         respondentPartnershipsOfSmacker(smackerId).toList(partnership)
         return partnership

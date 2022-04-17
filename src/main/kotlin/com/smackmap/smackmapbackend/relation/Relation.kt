@@ -1,5 +1,7 @@
 package com.smackmap.smackmapbackend.relation
 
+import com.smackmap.smackmapbackend.smacker.SmackerView
+import kotlinx.coroutines.flow.Flow
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 
@@ -21,7 +23,12 @@ data class Relation(
     }
 }
 
+data class SmackerRelation(
+    val smackerView: SmackerView,
+    val relationStatus: Relation.Status
+)
+
 data class SmackerRelations(
     val smackerId: Long,
-    val relations: List<Relation>
+    val relations: Flow<SmackerRelation>
 )

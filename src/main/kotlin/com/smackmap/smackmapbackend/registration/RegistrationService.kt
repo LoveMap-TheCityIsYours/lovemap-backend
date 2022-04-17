@@ -2,10 +2,7 @@ package com.smackmap.smackmapbackend.registration
 
 import com.smackmap.smackmapbackend.security.password.Password
 import com.smackmap.smackmapbackend.security.password.PasswordService
-import com.smackmap.smackmapbackend.smacker.CreateSmackerRequest
-import com.smackmap.smackmapbackend.smacker.LoginSmackerRequest
-import com.smackmap.smackmapbackend.smacker.Smacker
-import com.smackmap.smackmapbackend.smacker.SmackerService
+import com.smackmap.smackmapbackend.smacker.*
 import kotlinx.coroutines.reactor.awaitSingle
 import mu.KotlinLogging
 import org.springframework.security.authentication.ReactiveAuthenticationManager
@@ -17,6 +14,7 @@ import org.springframework.stereotype.Service
 @Service
 class RegistrationService(
     private val smackerService: SmackerService,
+    private val smackerRelationService: SmackerRelationService,
     private val passwordRepository: PasswordService,
     private val authenticationManager: ReactiveAuthenticationManager,
     private val passwordEncoder: PasswordEncoder,
@@ -37,15 +35,15 @@ class RegistrationService(
         return smacker
     }
 
-    suspend fun loginSmacker(request: LoginSmackerRequest): Pair<Authentication, Smacker> {
+    suspend fun loginSmacker(request: LoginSmackerRequest): Pair<Authentication, SmackerRelationsDto> {
         logger.debug { "Logging in '$request'" }
         val smacker = if (request.email != null) {
-            smackerService.getByEmail(request.email)
+            smackerService.unAuthorizedGetByEmail(request.email)
         } else {
-            smackerService.getByUserName(request.userName!!)
+            smackerService.unAuthorizedGetByUserName(request.userName!!)
         }
         val authentication  = authenticateAndGetUser(smacker.userName, request.password)
-        return Pair(authentication, smacker)
+        return Pair(authentication, smackerRelationService.getWithRelations(smacker))
     }
 
     private suspend fun authenticateAndGetUser(userName: String, password: String): Authentication {
