@@ -33,7 +33,6 @@ data class SmackerPartnershipsResponse(
 }
 
 data class PartnershipResponse(
-    val id: Long,
     val initiatorId: Long,
     val respondentId: Long,
     val partnershipStatus: PartnershipApiStatus,
@@ -45,7 +44,6 @@ data class PartnershipResponse(
     companion object {
         fun of(partnership: Partnership): PartnershipResponse {
             return PartnershipResponse(
-                id = partnership.id,
                 initiatorId = partnership.initiatorId,
                 respondentId = partnership.respondentId,
                 partnershipStatus = PartnershipApiStatus.of(partnership.status),
