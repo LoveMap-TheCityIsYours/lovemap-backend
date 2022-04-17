@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.1 (a9d05d509)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: smackmap
+  name: smackmap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: smackmap
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.1 (a9d05d509)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/smackmap-network: "true"
+        io.kompose.service: smackmap
+    spec:
+      containers:
+        - env:
+            - name: spring_profiles_active
+              value: docker-compose
+          image: docker.io/attilapalfi92/smackmap-backend:latest
+          name: smackmap
+          ports:
+            - containerPort: 8090
+          resources: {}
+      restartPolicy: Always
+status: {}

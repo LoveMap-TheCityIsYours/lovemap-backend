@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  POSTGRES_DB: smackmap
+  POSTGRES_PASSWORD: alma123
+  POSTGRES_USER: admin
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: postgres-postgres-env
+  name: postgres-env

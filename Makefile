@@ -17,3 +17,9 @@ run-docker:
 
 run-docker-compose:
 	docker-compose -f ./distribution/docker/docker-compose.yml up
+
+deploy-k8s-local:
+	kubectl apply -f distribution/k8s-local
+
+port-forward-k8s-local:
+	kubectl -n default port-forward service/smackmap 8090:8090

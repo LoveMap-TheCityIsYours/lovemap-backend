@@ -16,7 +16,6 @@ services:
     env_file:
       - postgres.env # configure postgres
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - smackmap_postgres_data:/var/lib/postgresql/data/ # persist data even if container shuts down
     networks:
       - smackmap_network
