@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  smackmap:
+#    image: docker.io/smackmap/smackmap-backend:0.0.1-SNAPSHOT
+    image: docker.io/attilapalfi92/smackmap-backend:latest
+    environment:
+      spring_profiles_active: docker-compose
+#      spring_datasource_url: jdbc:postgresql://postgres:5432/smackmap
+    ports:
+      - "127.0.0.1:8090:8090"
+    networks:
+      - smackmap_network
+
+  postgres:
+    image: postgres:alpine # use latest official postgres version
+    env_file:
+      - postgres.env # configure postgres
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - smackmap_postgres_data:/var/lib/postgresql/data/ # persist data even if container shuts down
+    networks:
+      - smackmap_network
+    ports:
+      - "5432:5432"
+
+volumes:
+  smackmap_postgres_data: # named volumes can be managed easier using docker-compose
+    name: smackmap_postgres_data
+
+networks:
+  smackmap_network:
+    name: smackmap_network
