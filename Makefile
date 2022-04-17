@@ -25,14 +25,14 @@ docker-compose:
 	docker-compose -f ./distribution/docker/docker-compose.yml up
 
 deploy-k8s-local:
-	kubectl config set-context docker-desktop
+	kubectl config use-context docker-desktop
 	kubectl apply -f distribution/k8s-local
 
 port-forward-k8s-local:
 	kubectl -n default port-forward service/smackmap 8090:8090
 
 deploy-k8s-prod:
-	kubectl config set-context gke_smackmap_europe-central2_smackmap-autopilot-cluster
+	kubectl config use-context gke_smackmap_europe-central2_smackmap-autopilot-cluster
 	kubectl apply -f distribution/k8s-prod
 
 
