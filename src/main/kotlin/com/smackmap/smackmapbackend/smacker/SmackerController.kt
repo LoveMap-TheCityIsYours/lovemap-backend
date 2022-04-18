@@ -15,7 +15,7 @@ class SmackerController(
 
     @GetMapping("/{smackerId}")
     suspend fun getSmacker(@PathVariable smackerId: Long): ResponseEntity<SmackerRelationsDto> {
-        return ResponseEntity.ok(smackerRelationService.getDtoById(smackerId))
+        return ResponseEntity.ok(smackerRelationService.getWithRelations(smackerId))
     }
 
     @GetMapping("/byLink/")

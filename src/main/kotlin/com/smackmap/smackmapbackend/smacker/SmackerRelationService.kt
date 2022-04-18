@@ -11,9 +11,13 @@ class SmackerRelationService(
     private val relationService: RelationService
 ) {
 
-    suspend fun getDtoById(id: Long): SmackerRelationsDto {
+    suspend fun getWithRelations(id: Long): SmackerRelationsDto {
         val smacker = smackerService.getById(id)
         return SmackerRelationsDto.of(smacker, relationService.getRelationsFrom(id))
+    }
+
+    suspend fun getWithRelations(smacker: Smacker): SmackerRelationsDto {
+        return SmackerRelationsDto.of(smacker, relationService.getRelationsFrom(smacker.id))
     }
 
     suspend fun getByLink(link: String): SmackerViewDto {
@@ -22,9 +26,5 @@ class SmackerRelationService(
         relationService.checkBlockingBetweenSmackers(caller.id, smacker.id)
         val relationStatusDto = relationService.getRelationStatusDto(caller.id, smacker.id)
         return SmackerViewDto.of(smacker, relationStatusDto)
-    }
-
-    suspend fun getWithRelations(smacker: Smacker): SmackerRelationsDto {
-        return SmackerRelationsDto.of(smacker, relationService.getRelationsFrom(smacker.id))
     }
 }
