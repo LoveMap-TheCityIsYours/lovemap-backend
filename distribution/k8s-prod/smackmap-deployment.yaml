@@ -28,6 +28,7 @@ spec:
             - name: spring_profiles_active
               value: prod
           image: europe-central2-docker.pkg.dev/smackmap/smackmap-docker/smackmap-backend:latest
+          imagePullPolicy: Always
           name: smackmap
           ports:
             - containerPort: 8090
