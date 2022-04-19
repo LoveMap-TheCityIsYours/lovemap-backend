@@ -5,10 +5,12 @@ import com.smackmap.smackmapbackend.smack.location.review.SmackLocationReviewSer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
-@Controller
+@RestController
 @RequestMapping("/smack/location")
 class SmackLocationController(
     private val smackLocationService: SmackLocationService,
