@@ -1,5 +1,6 @@
 package com.smackmap.smackmapbackend.registration
 
+import com.smackmap.smackmapbackend.security.JwtService
 import com.smackmap.smackmapbackend.security.password.Password
 import com.smackmap.smackmapbackend.security.password.PasswordService
 import com.smackmap.smackmapbackend.smacker.*
@@ -12,10 +13,11 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
-class RegistrationService(
+class AuthenticationService(
     private val smackerService: SmackerService,
     private val smackerRelationService: SmackerRelationService,
     private val passwordRepository: PasswordService,
+    private val jwtService: JwtService,
     private val authenticationManager: ReactiveAuthenticationManager,
     private val passwordEncoder: PasswordEncoder,
 ) {
@@ -35,15 +37,21 @@ class RegistrationService(
         return smacker
     }
 
-    suspend fun loginSmacker(request: LoginSmackerRequest): Pair<Authentication, SmackerRelationsDto> {
+    suspend fun loginSmacker(request: LoginSmackerRequest): SmackerRelationsDto {
         logger.debug { "Logging in '$request'" }
         val smacker = if (request.email != null) {
             smackerService.unAuthorizedGetByEmail(request.email)
         } else {
             smackerService.unAuthorizedGetByUserName(request.userName!!)
         }
-        val authentication  = authenticateAndGetUser(smacker.userName, request.password)
-        return Pair(authentication, smackerRelationService.getWithRelations(smacker))
+        authenticateAndGetUser(smacker.userName, request.password)
+        return smackerRelationService.getWithRelations(smacker)
+    }
+
+    suspend fun generateToken(userName: String, password: String): String {
+        logger.debug { "User login finished '$userName'. Generating token." }
+        val authentication = authenticateAndGetUser(userName, password)
+        return jwtService.generateToken(authentication)
     }
 
     private suspend fun authenticateAndGetUser(userName: String, password: String): Authentication {

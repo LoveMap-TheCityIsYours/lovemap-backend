@@ -4,12 +4,11 @@ import com.smackmap.smackmapbackend.partnership.Partnership.Status.PARTNER
 import com.smackmap.smackmapbackend.partnership.Partnership.Status.PARTNERSHIP_REQUESTED
 import com.smackmap.smackmapbackend.partnership.PartnershipReaction.ACCEPT
 import com.smackmap.smackmapbackend.partnership.PartnershipReaction.DENY
-import com.smackmap.smackmapbackend.relation.Relation
 import com.smackmap.smackmapbackend.relation.RelationService
 import com.smackmap.smackmapbackend.security.SmackerAuthorizationService
 import com.smackmap.smackmapbackend.smacker.SmackerService
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.merge
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -19,8 +18,6 @@ import java.sql.Timestamp
 import java.time.Instant
 import java.time.temporal.ChronoUnit.HOURS
 
-private const val HOURS_TO_REREQUEST_PARTNERSHIP: Long = 12
-
 @Service
 @Transactional
 class PartnershipService(
@@ -29,6 +26,7 @@ class PartnershipService(
     private val smackerService: SmackerService,
     private val partnershipRepository: PartnershipRepository,
 ) {
+    private val hoursToRerequestPartnership: Long = 12
     private val logger = KotlinLogging.logger {}
 
     suspend fun getSmackerPartnerships(smackerId: Long): SmackerPartnerships {
@@ -107,10 +105,9 @@ class PartnershipService(
                 partnership.status = PARTNER
                 partnership.respondDate = Timestamp.from(Instant.now())
                 partnershipRepository.save(partnership)
-                relationService.updateRelations(
+                relationService.setPartnershipBetween(
                     partnership.initiatorId,
-                    partnership.respondentId,
-                    Relation.Status.PARTNER
+                    partnership.respondentId
                 )
                 sendPushNotification(partnership)
                 getSmackerPartnerships(respondentId)
@@ -152,13 +149,13 @@ class PartnershipService(
         when (initiatorPartnership.status) {
             PARTNERSHIP_REQUESTED -> {
                 initiatorPartnership.initiateDate!!.let {
-                    if (hoursPassedSince(HOURS_TO_REREQUEST_PARTNERSHIP, it)) {
+                    if (hoursPassedSince(hoursToRerequestPartnership, it)) {
                         sendPushNotification(initiatorPartnership)
                         return initiatorPartnership
                     } else {
                         throw ResponseStatusException(
                             HttpStatus.CONFLICT,
-                            "Already requested in the last '$HOURS_TO_REREQUEST_PARTNERSHIP' hours."
+                            "Already requested in the last '$hoursToRerequestPartnership' hours."
                         )
                     }
                 }
@@ -210,11 +207,11 @@ class PartnershipService(
         // TODO: implement
     }
 
-    private suspend fun getPartnerships(smackerId: Long): List<Partnership> {
-        val partnership = ArrayList<Partnership>()
-        initiatorPartnershipsOfSmacker(smackerId).toList(partnership)
-        respondentPartnershipsOfSmacker(smackerId).toList(partnership)
-        return partnership
+    private suspend fun getPartnerships(smackerId: Long): Flow<Partnership> {
+        return merge(
+            initiatorPartnershipsOfSmacker(smackerId),
+            respondentPartnershipsOfSmacker(smackerId)
+        )
     }
 
     private suspend fun initiatorPartnershipsOfSmacker(smackerId: Long): Flow<Partnership> {
@@ -234,5 +231,6 @@ class PartnershipService(
         }
     }
 
-    private fun hoursPassedSince(hours: Long, it: Timestamp) = Instant.now().minus(hours, HOURS).isAfter(it.toInstant())
+    private fun hoursPassedSince(hours: Long, it: Timestamp)
+        = Instant.now().minus(hours, HOURS).isAfter(it.toInstant())
 }

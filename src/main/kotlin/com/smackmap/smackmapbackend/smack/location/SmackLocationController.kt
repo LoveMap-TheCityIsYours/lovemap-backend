@@ -3,6 +3,7 @@ package com.smackmap.smackmapbackend.smack.location
 import com.smackmap.smackmapbackend.smack.location.review.SmackLocationReviewRequest
 import com.smackmap.smackmapbackend.smack.location.review.SmackLocationReviewService
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
@@ -21,8 +22,8 @@ class SmackLocationController(
 
     @PostMapping("/search")
     suspend fun search(@RequestBody request: SmackLocationSearchRequest): ResponseEntity<Flow<SmackLocationDto>> {
-        val result: Flow<SmackLocation> = smackLocationService.search(request)
-        TODO("finish")
+        val locations = smackLocationService.search(request)
+        return ResponseEntity.ok(locations.map { SmackLocationDto.of(it) })
     }
 
     @PostMapping("/review")

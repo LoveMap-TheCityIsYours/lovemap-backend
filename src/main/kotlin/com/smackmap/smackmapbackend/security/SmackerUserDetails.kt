@@ -18,7 +18,6 @@ data class SmackerUserDetails(
     }
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-        // TODO: come up with proper authorities
         return mutableListOf(SimpleGrantedAuthority("ROLE_USER"))
     }
 

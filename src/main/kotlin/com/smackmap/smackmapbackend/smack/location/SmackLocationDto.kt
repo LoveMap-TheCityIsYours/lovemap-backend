@@ -1,13 +1,11 @@
 package com.smackmap.smackmapbackend.smack.location
 
-import org.springframework.web.bind.annotation.RequestParam
-
 data class SmackLocationDto(
     val id: Long,
     val name: String,
     val longitude: Double,
     val latitude: Double,
-    val averageRating: Double? = null
+    val averageRating: Double? = null,
 ) {
     companion object {
         fun of(smackLocation: SmackLocation): SmackLocationDto {

@@ -9,12 +9,12 @@ import org.springframework.web.server.ResponseStatusException
 @Service
 @Transactional
 class SmackLocationService(
-    private val smackLocationRepository: SmackLocationRepository
+    private val repository: SmackLocationRepository
 ) {
     private val maxLimit = 100
 
     suspend fun getById(locationId: Long): SmackLocation {
-        return smackLocationRepository.findById(locationId)
+        return repository.findById(locationId)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "SmackLocation not found by ID '$locationId'.")
     }
 
@@ -25,11 +25,11 @@ class SmackLocationService(
             latitude = request.latitude,
         )
         // TODO: validate if no locations are within few meters
-        return smackLocationRepository.save(smackLocation)
+        return repository.save(smackLocation)
     }
 
     suspend fun search(request: SmackLocationSearchRequest): Flow<SmackLocation> {
-        return smackLocationRepository.search(
+        return repository.search(
             longFrom = request.longFrom,
             longTo = request.longTo,
             latFrom = request.latFrom,
@@ -38,7 +38,7 @@ class SmackLocationService(
         )
     }
 
-    suspend fun updateRating(locationId: Long, rating: Int): SmackLocation {
+    suspend fun updateAverageRating(locationId: Long, rating: Int): SmackLocation {
         val smackLocation = getById(locationId)
         if (smackLocation.averageRating == null) {
             smackLocation.averageRating = rating.toDouble()
@@ -49,6 +49,19 @@ class SmackLocationService(
             smackLocation.numberOfRatings++
             smackLocation.averageRating = averageWeight / smackLocation.numberOfRatings
         }
-        return smackLocationRepository.save(smackLocation)
+        return repository.save(smackLocation)
+    }
+
+    suspend fun checkExistence(smackLocationId: Long) {
+        if (!repository.existsById(smackLocationId)) {
+            throw ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "SmackLocation '$smackLocationId' does not exist."
+            )
+        }
+    }
+
+    fun findAllByIds(locationIds: Flow<Long>): Flow<SmackLocation> {
+        return repository.findAllById(locationIds)
     }
 }

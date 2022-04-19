@@ -27,7 +27,7 @@ class JwtService {
     private val SECRET = "smackmap-secret-key-aaaaaaaaaaaaaa"
     private val SECRET_KEY = Keys.hmacShaKeyFor(SECRET.toByteArray(UTF_8))
 
-    fun generateToken(authentication: Authentication): String? {
+    fun generateToken(authentication: Authentication): String {
         val username = authentication.name
         val authorities = authentication.authorities
         val claims = Jwts.claims().setSubject(username)

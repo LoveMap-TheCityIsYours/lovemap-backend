@@ -1,5 +1,6 @@
 package com.smackmap.smackmapbackend.partnership
 
+import kotlinx.coroutines.flow.Flow
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import java.sql.Timestamp
@@ -33,5 +34,5 @@ data class Partnership(
 
 data class SmackerPartnerships(
     val smackerId: Long,
-    val relations: List<Partnership>
+    val relations: Flow<Partnership>
 )

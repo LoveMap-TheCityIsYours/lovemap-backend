@@ -43,7 +43,7 @@ class RelationService(
         }
     }
 
-    suspend fun updateRelations(user1: Long, user2: Long, status: Relation.Status) {
+    suspend fun setPartnershipBetween(user1: Long, user2: Long) {
         if (user1 == user2) {
             throw ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
@@ -51,12 +51,14 @@ class RelationService(
             )
         }
         val relation12: Relation = relationRepository.findBySourceIdAndTargetId(user1, user2)
-            ?: Relation(status = status, sourceId = user1, targetId = user2)
-        relation12.status = status
+            ?: Relation(status = PARTNER, sourceId = user1, targetId = user2)
+        relation12.status = PARTNER
+        relationRepository.save(relation12)
 
         val relation21: Relation = relationRepository.findBySourceIdAndTargetId(user2, user1)
-            ?: Relation(status = status, sourceId = user2, targetId = user1)
-        relation21.status = status
+            ?: Relation(status = PARTNER, sourceId = user2, targetId = user1)
+        relation21.status = PARTNER
+        relationRepository.save(relation21)
     }
 
     suspend fun getRelation(fromId: Long, toId: Long): Relation {
@@ -77,5 +79,15 @@ class RelationService(
             )
         }
         return SmackerRelations(fromId, smackerRelationFlow)
+    }
+
+    suspend fun checkPartnership(smackerId: Long, partnerId: Long) {
+        checkBlockingBetweenSmackers(smackerId, partnerId)
+        if (!relationRepository.existsBySourceIdAndTargetIdAndStatus(smackerId, partnerId, PARTNER)) {
+            throw ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "No partnership between '$smackerId' and '$partnerId'"
+            )
+        }
     }
 }
