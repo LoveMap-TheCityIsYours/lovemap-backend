@@ -7,14 +7,14 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
-private const val LINK_PREFIX = "smacker://"
-
 @Service
 @Transactional
 class SmackerService(
     private val authorizationService: SmackerAuthorizationService,
     private val smackerRepository: SmackerRepository,
 ) {
+    private val linkPrefix = "smacker://"
+
     suspend fun exists(id: Long): Boolean {
         authorizationService.checkAccessFor(id)
         return smackerRepository.existsById(id)
@@ -46,11 +46,11 @@ class SmackerService(
             smacker.link = UUID.randomUUID().toString()
             save(smacker)
         }
-        return "$LINK_PREFIX${smacker.link}"
+        return "$linkPrefix${smacker.link}"
     }
 
     suspend fun getByLink(link: String, caller: Smacker): Smacker {
-        val uuidLink = link.substringAfter(LINK_PREFIX)
+        val uuidLink = link.substringAfter(linkPrefix)
         return smackerRepository.findByLink(uuidLink)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Smacker not found by link: $link")
     }

@@ -32,5 +32,6 @@ data class SmackLocationSearchRequest(
     val latFrom: Double,
     val longFrom: Double,
     val latTo: Double,
-    val longTo: Double
+    val longTo: Double,
+    val limit: Int
 )

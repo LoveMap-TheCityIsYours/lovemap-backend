@@ -17,5 +17,8 @@ data class SmackLocation(
     var latitude: Double,
 
     @Column("average_rating")
-    var averageRating: Double? = null
+    var averageRating: Double? = null,
+
+    @Column("number_of_ratings")
+    var numberOfRatings: Int = 0
 )
