@@ -3,9 +3,8 @@ package com.smackmap.smackmapbackend.smacker
 import com.smackmap.smackmapbackend.relation.Relation
 import com.smackmap.smackmapbackend.relation.RelationStatusDto
 import com.smackmap.smackmapbackend.relation.SmackerRelations
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 
 data class SmackerDto(
     val id: Long,
@@ -27,13 +26,13 @@ data class SmackerDto(
 
 data class SmackerRelationsDto(
     val id: Long,
-    val relations: Flow<SmackerViewDto>,
+    val relations: List<SmackerViewDto>,
     val userName: String,
     val email: String,
     val shareableLink: String? = null
 ) {
     companion object {
-        fun of(smacker: Smacker, smackerRelations: SmackerRelations): SmackerRelationsDto {
+        suspend fun of(smacker: Smacker, smackerRelations: SmackerRelations): SmackerRelationsDto {
             return SmackerRelationsDto(
                 id = smacker.id,
                 userName = smacker.userName,
@@ -45,7 +44,7 @@ data class SmackerRelationsDto(
                         entry.smackerView.userName,
                         RelationStatusDto.of(entry.relationStatus)
                     )
-                }
+                }.toList()
             )
         }
     }

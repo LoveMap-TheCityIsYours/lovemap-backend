@@ -9,9 +9,8 @@ class PartnershipController(
     private val partnershipService: PartnershipService
 ) {
     @GetMapping
-    suspend fun getSmackerPartnerships(
-        @RequestParam("smackerId", required = true) smackerId: Long
-    ): ResponseEntity<SmackerPartnershipsResponse> {
+    suspend fun getSmackerPartnerships(@RequestParam("smackerId") smackerId: Long)
+            : ResponseEntity<SmackerPartnershipsResponse> {
         val smackerPartnerships: SmackerPartnerships = partnershipService.getSmackerPartnerships(smackerId)
         return ResponseEntity.ok(SmackerPartnershipsResponse.of(smackerPartnerships))
     }

@@ -5,5 +5,8 @@ import org.springframework.data.repository.kotlin.CoroutineSortingRepository
 
 interface SmackLocationReviewRepository : CoroutineSortingRepository<SmackLocationReview, Long> {
     suspend fun findByReviewerIdAndSmackLocationId(reviewerId: Long, smackLocationId: Long): SmackLocationReview?
+
     fun findAllBySmackLocationIdIn(locationIds: Collection<Long>): Flow<SmackLocationReview>
+
+    fun findAllByReviewerId(reviewerId: Long): Flow<SmackLocationReview>
 }

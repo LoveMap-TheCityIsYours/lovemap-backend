@@ -64,4 +64,8 @@ class SmackLocationService(
     fun findAllByIds(locationIds: Flow<Long>): Flow<SmackLocation> {
         return repository.findAllById(locationIds)
     }
+
+    fun findAllByIds(locationIds: List<Long>): Flow<SmackLocation> {
+        return repository.findAllById(locationIds)
+    }
 }

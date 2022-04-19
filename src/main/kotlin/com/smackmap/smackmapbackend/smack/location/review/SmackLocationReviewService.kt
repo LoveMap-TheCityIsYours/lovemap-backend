@@ -6,7 +6,6 @@ import com.smackmap.smackmapbackend.smack.SmackService
 import com.smackmap.smackmapbackend.smack.location.SmackLocation
 import com.smackmap.smackmapbackend.smack.location.SmackLocationService
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.toList
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -20,9 +19,12 @@ class SmackLocationReviewService(
     private val smackLocationService: SmackLocationService,
     private val repository: SmackLocationReviewRepository
 ) {
+    fun findAllByLocationIdIn(locationIds: List<Long>): Flow<SmackLocationReview> {
+        return repository.findAllBySmackLocationIdIn(locationIds)
+    }
 
-    suspend fun findAllByLocationIdIn(locationIds: Flow<Long>): Flow<SmackLocationReview> {
-        return repository.findAllBySmackLocationIdIn(locationIds.toList())
+    fun findAllByReviewerId(reviewerId: Long): Flow<SmackLocationReview> {
+        return repository.findAllByReviewerId(reviewerId)
     }
 
     suspend fun addReview(request: SmackLocationReviewRequest): SmackLocation {

@@ -1,8 +1,8 @@
 package com.smackmap.smackmapbackend.partnership
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import java.time.Instant
 
 data class RequestPartnershipRequest(
@@ -22,13 +22,13 @@ enum class PartnershipReaction {
 
 data class SmackerPartnershipsResponse(
     val smackerId: Long,
-    val partnerships: Flow<PartnershipResponse>
+    val partnerships: List<PartnershipResponse>
 ) {
     companion object {
-        fun of(smackerPartnerShips: SmackerPartnerships): SmackerPartnershipsResponse {
+        suspend fun of(smackerPartnerShips: SmackerPartnerships): SmackerPartnershipsResponse {
             return SmackerPartnershipsResponse(
                 smackerId = smackerPartnerShips.smackerId,
-                partnerships = smackerPartnerShips.relations.map { PartnershipResponse.of(it) }
+                partnerships = smackerPartnerShips.relations.map { PartnershipResponse.of(it) }.toList()
             )
         }
     }

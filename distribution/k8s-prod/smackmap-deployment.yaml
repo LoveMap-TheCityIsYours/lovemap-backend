@@ -32,11 +32,19 @@ spec:
           name: smackmap
           ports:
             - containerPort: 8090
+          resources:
+            limits:
+              memory: 512M
+              cpu: 0.5
+            requests:
+              cpu: 0.5
 #          No need for so many resources now
 #          resources:
 #            limits:
 #              cpu: 4
+#              memory: 2G
 #            requests:
 #              cpu: 2
+#              memory: 1G
       restartPolicy: Always
 status: {}

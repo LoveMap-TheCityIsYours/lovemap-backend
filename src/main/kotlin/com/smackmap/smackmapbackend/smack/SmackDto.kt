@@ -2,7 +2,6 @@ package com.smackmap.smackmapbackend.smack
 
 import com.smackmap.smackmapbackend.smack.location.SmackLocationDto
 import com.smackmap.smackmapbackend.smack.location.review.SmackLocationReviewDto
-import kotlinx.coroutines.flow.Flow
 
 data class SmackDto(
     val id: Long,
@@ -25,9 +24,9 @@ data class SmackDto(
 }
 
 data class SmackListDto(
-    val smacks: Flow<SmackDto>,
-    val smackLocations: Flow<SmackLocationDto>,
-    val smackLocationReviews: Flow<SmackLocationReviewDto>
+    val smacks: List<SmackDto>,
+    val smackLocations: List<SmackLocationDto>,
+    val smackLocationReviews: List<SmackLocationReviewDto>
 )
 
 data class CreateSmackRequest(
