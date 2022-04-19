@@ -1,12 +1,12 @@
 package com.smackmap.smackmapbackend.smacker
 
 import com.smackmap.smackmapbackend.relation.RelationService
-import com.smackmap.smackmapbackend.security.SmackerAuthorizationService
+import com.smackmap.smackmapbackend.security.AuthorizationService
 import org.springframework.stereotype.Service
 
 @Service
 class SmackerRelationService(
-    private val authorizationService: SmackerAuthorizationService,
+    private val authorizationService: AuthorizationService,
     private val smackerService: SmackerService,
     private val relationService: RelationService
 ) {

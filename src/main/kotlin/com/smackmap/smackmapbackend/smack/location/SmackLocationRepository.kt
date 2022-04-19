@@ -10,7 +10,7 @@ interface SmackLocationRepository : CoroutineSortingRepository<SmackLocation, Lo
         "SELECT * FROM smack_location WHERE " +
                 "longitude >= :longFrom AND longitude <= :longTo AND " +
                 "latitude >= :latFrom AND latitude <= :latTo " +
-                "ORDER BY average_rating DESC LIMIT :limit"
+                "ORDER BY average_rating DESC NULLS LAST LIMIT :limit"
     )
     fun search(
         longFrom: Double,

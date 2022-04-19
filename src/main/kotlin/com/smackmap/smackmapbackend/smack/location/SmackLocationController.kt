@@ -29,7 +29,7 @@ class SmackLocationController(
     }
 
     @PostMapping("/review")
-    suspend fun reviewLocation(request: SmackLocationReviewRequest): ResponseEntity<SmackLocationDto> {
+    suspend fun reviewLocation(@RequestBody request: SmackLocationReviewRequest): ResponseEntity<SmackLocationDto> {
         val smackLocation = smackLocationReviewService.addReview(request)
         return ResponseEntity.ok(SmackLocationDto.of(smackLocation))
     }

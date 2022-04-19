@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 
 @RestController
-@RequestMapping("/registration")
+@RequestMapping("/authentication")
 class AuthenticationController(
     private val authenticationService: AuthenticationService,
 ) {

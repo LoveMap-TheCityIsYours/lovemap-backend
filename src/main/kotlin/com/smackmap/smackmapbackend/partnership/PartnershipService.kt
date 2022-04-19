@@ -5,7 +5,7 @@ import com.smackmap.smackmapbackend.partnership.Partnership.Status.PARTNERSHIP_R
 import com.smackmap.smackmapbackend.partnership.PartnershipReaction.ACCEPT
 import com.smackmap.smackmapbackend.partnership.PartnershipReaction.DENY
 import com.smackmap.smackmapbackend.relation.RelationService
-import com.smackmap.smackmapbackend.security.SmackerAuthorizationService
+import com.smackmap.smackmapbackend.security.AuthorizationService
 import com.smackmap.smackmapbackend.smacker.SmackerService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.merge
@@ -21,7 +21,7 @@ import java.time.temporal.ChronoUnit.HOURS
 @Service
 @Transactional
 class PartnershipService(
-    private val authorizationService: SmackerAuthorizationService,
+    private val authorizationService: AuthorizationService,
     private val relationService: RelationService,
     private val smackerService: SmackerService,
     private val partnershipRepository: PartnershipRepository,

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 
 @Service
-class SmackerAuthorizationService(
+class AuthorizationService(
     private val smackerRepository: SmackerRepository
 ) {
     suspend fun checkAccessFor(smackerId: Long): Smacker {

@@ -1,8 +1,9 @@
-package com.smackmap.smackmapbackend.smack.location
+package com.smackmap.smackmapbackend.smack
 
-import com.smackmap.smackmapbackend.relation.RelationService
-import com.smackmap.smackmapbackend.security.SmackerAuthorizationService
-import com.smackmap.smackmapbackend.smack.*
+import com.smackmap.smackmapbackend.security.AuthorizationService
+import com.smackmap.smackmapbackend.smack.location.SmackLocation
+import com.smackmap.smackmapbackend.smack.location.SmackLocationDto
+import com.smackmap.smackmapbackend.smack.location.SmackLocationService
 import com.smackmap.smackmapbackend.smack.location.review.SmackLocationReview
 import com.smackmap.smackmapbackend.smack.location.review.SmackLocationReviewDto
 import com.smackmap.smackmapbackend.smack.location.review.SmackLocationReviewService
@@ -13,17 +14,15 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class SmackService(
-    private val authorizationService: SmackerAuthorizationService,
-    private val relationService: RelationService,
+class SmackListService(
+    private val smackService: SmackService,
+    private val authorizationService: AuthorizationService,
     private val locationService: SmackLocationService,
     private val reviewService: SmackLocationReviewService,
-    private val smackRepository: SmackRepository
 ) {
     suspend fun list(smackerId: Long): SmackListDto {
         authorizationService.checkAccessFor(smackerId)
-        val smacks = smackRepository
-            .findDistinctBySmackerIdOrSmackerPartnerId(smackerId, smackerId)
+        val smacks = smackService.findAllInvolvedSmacksFor(smackerId)
         val locationIds: Flow<Long> = smacks.map { it.smackLocationId }
         val locations: Flow<SmackLocation> = locationService.findAllByIds(locationIds)
         val reviews: Flow<SmackLocationReview> = reviewService.findAllByLocationIdIn(locationIds)
@@ -31,22 +30,6 @@ class SmackService(
             smacks = smacks.map { SmackDto.of(it) },
             smackLocations = locations.map { SmackLocationDto.of(it) },
             smackLocationReviews = reviews.map { SmackLocationReviewDto.of(it) }
-        )
-    }
-
-    suspend fun create(request: CreateSmackRequest): Smack {
-        authorizationService.checkAccessFor(request.smackerId)
-        locationService.checkExistence(request.smackLocationId)
-        request.smackerPartnerId?.let {
-            relationService.checkPartnership(request.smackerId, it)
-        }
-        return smackRepository.save(
-            Smack(
-                name = request.name,
-                smackLocationId = request.smackLocationId,
-                smackerId = request.smackerId,
-                smackerPartnerId = request.smackerPartnerId
-            )
         )
     }
 }

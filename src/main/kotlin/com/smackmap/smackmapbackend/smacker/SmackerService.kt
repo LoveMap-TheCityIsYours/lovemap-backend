@@ -1,6 +1,6 @@
 package com.smackmap.smackmapbackend.smacker
 
-import com.smackmap.smackmapbackend.security.SmackerAuthorizationService
+import com.smackmap.smackmapbackend.security.AuthorizationService
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -10,7 +10,7 @@ import java.util.*
 @Service
 @Transactional
 class SmackerService(
-    private val authorizationService: SmackerAuthorizationService,
+    private val authorizationService: AuthorizationService,
     private val smackerRepository: SmackerRepository,
 ) {
     private val linkPrefix = "smacker://"
