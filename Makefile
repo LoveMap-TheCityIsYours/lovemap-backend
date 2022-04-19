@@ -5,7 +5,7 @@ run-deps:
 build-jar:
 	cp gradlew gradlewUnix
 	dos2unix gradlewUnix
-	./gradlewUnix clean build && java -jar ./build/libs/smackmap-backend-0.0.1.jar
+	./gradlewUnix clean build && java -jar ./build/libs/smackmap-backend-0.0.1.jar || true
 	rm gradlewUnix
 
 docker-build:
@@ -34,6 +34,8 @@ port-forward-k8s-local:
 deploy-k8s-prod:
 	kubectl config use-context gke_smackmap_europe-central2_smackmap-autopilot-cluster
 	kubectl apply -f distribution/k8s-prod
+
+deploy-prod: build-jar docker-build docker-push deploy-k8s-prod
 
 
 
