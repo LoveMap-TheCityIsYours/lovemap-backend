@@ -37,6 +37,7 @@ spec:
               memory: 512M
               cpu: 0.5
             requests:
+              memory: 512M
               cpu: 0.5
 #          No need for so many resources now
 #          resources:
