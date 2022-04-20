@@ -5,6 +5,9 @@ import com.smackmap.smackmapbackend.relation.RelationStatusDto
 import com.smackmap.smackmapbackend.relation.SmackerRelations
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
+import javax.validation.constraints.Email
+import javax.validation.constraints.Pattern
+import javax.validation.constraints.Size
 
 data class SmackerDto(
     val id: Long,
@@ -51,14 +54,20 @@ data class SmackerRelationsDto(
 }
 
 data class CreateSmackerRequest(
+    @field:Size(min = 3, max = 25, message = "Length of username must be between 3 and 25 characters.")
     val userName: String,
+    @field:Size(min = 6, max = 100, message = "Length of password must be between 6 and 100 characters.")
     val password: String,
+    @field:Email(message = "Invalid email address")
     val email: String
 )
 
 data class LoginSmackerRequest(
+    @field:Size(min = 3, max = 25, message = "Length of username must be between 3 and 25 characters.")
     val userName: String?,
+    @field:Email(message = "Invalid email address")
     val email: String?,
+    @field:Size(min = 6, max = 100, message = "Length of password must be between 6 and 100 characters.")
     val password: String
 )
 

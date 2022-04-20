@@ -1,4 +1,4 @@
-package com.smackmap.smackmapbackend.registration
+package com.smackmap.smackmapbackend.authentication
 
 import com.smackmap.smackmapbackend.security.JwtService
 import com.smackmap.smackmapbackend.security.password.Password

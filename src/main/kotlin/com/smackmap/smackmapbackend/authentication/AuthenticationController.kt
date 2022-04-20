@@ -1,9 +1,10 @@
-package com.smackmap.smackmapbackend.registration
+package com.smackmap.smackmapbackend.authentication
 
 import com.smackmap.smackmapbackend.smacker.CreateSmackerRequest
 import com.smackmap.smackmapbackend.smacker.LoginSmackerRequest
 import com.smackmap.smackmapbackend.smacker.SmackerDto
 import com.smackmap.smackmapbackend.smacker.SmackerRelationsDto
+import com.smackmap.smackmapbackend.utils.ValidatorService
 import mu.KotlinLogging
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -19,11 +20,13 @@ import org.springframework.web.server.ResponseStatusException
 @RequestMapping("/authentication")
 class AuthenticationController(
     private val authenticationService: AuthenticationService,
+    private val validatorService: ValidatorService
 ) {
     private val logger = KotlinLogging.logger {}
 
     @PostMapping("/register")
     suspend fun register(@RequestBody request: CreateSmackerRequest): ResponseEntity<SmackerDto> {
+        validatorService.validate(request)
         logger.debug { "Registering user '${request.userName}'" }
         val smacker = authenticationService.createSmacker(request)
         val jwt = authenticationService.generateToken(smacker.userName, request.password)
@@ -50,8 +53,9 @@ class AuthenticationController(
         }
     }
 
-    private fun validateLoginRequest(loginSmackerRequest: LoginSmackerRequest) {
-        if (loginSmackerRequest.email.isNullOrEmpty() && loginSmackerRequest.userName.isNullOrEmpty()) {
+    private fun validateLoginRequest(request: LoginSmackerRequest) {
+        validatorService.validate(request)
+        if (request.email.isNullOrEmpty() && request.userName.isNullOrEmpty()) {
             throw ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
                 "Both email and username are missing from loginRequest."

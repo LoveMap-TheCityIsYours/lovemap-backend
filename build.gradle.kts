@@ -24,6 +24,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
 
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.1")

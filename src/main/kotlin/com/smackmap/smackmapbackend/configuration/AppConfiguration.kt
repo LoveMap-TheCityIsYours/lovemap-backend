@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean
+import javax.validation.Validator
 
 @Configuration
 @EnableConfigurationProperties(FlywayProperties::class)
@@ -24,5 +26,10 @@ class AppConfiguration {
                 .baselineOnMigrate(true)
                 .dataSource(flywayProperties.url, flywayProperties.user, flywayProperties.password)
         )
+    }
+
+    @Bean
+    fun validator(): Validator {
+        return LocalValidatorFactoryBean()
     }
 }
