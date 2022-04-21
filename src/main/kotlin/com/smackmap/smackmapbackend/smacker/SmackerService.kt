@@ -54,4 +54,15 @@ class SmackerService(
         return smackerRepository.findByLink(uuidLink)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Smacker not found by link: $link")
     }
+
+    suspend fun checkUserNameAndEmail(userName: String, email: String) {
+        if (smackerRepository.findByUserName(userName) != null) {
+            throw ResponseStatusException(HttpStatus.CONFLICT,
+                "There is already a user with username '$userName'.")
+        }
+        if (smackerRepository.findByEmail(email) != null) {
+            throw ResponseStatusException(HttpStatus.CONFLICT,
+                "There is already a user with email '$email'.")
+        }
+    }
 }

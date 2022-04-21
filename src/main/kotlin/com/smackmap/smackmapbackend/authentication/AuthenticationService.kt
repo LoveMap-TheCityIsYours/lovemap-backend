@@ -24,6 +24,7 @@ class AuthenticationService(
     private val logger = KotlinLogging.logger {}
 
     suspend fun createSmacker(request: CreateSmackerRequest): Smacker {
+        smackerService.checkUserNameAndEmail(request.userName, request.email)
         var smacker = Smacker(
             userName = request.userName,
             email = request.email,

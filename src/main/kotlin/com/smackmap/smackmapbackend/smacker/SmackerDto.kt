@@ -6,7 +6,6 @@ import com.smackmap.smackmapbackend.relation.SmackerRelations
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import javax.validation.constraints.Email
-import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size
 
 data class SmackerDto(
