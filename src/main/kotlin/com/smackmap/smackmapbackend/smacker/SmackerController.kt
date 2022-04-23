@@ -9,10 +9,6 @@ class SmackerController(
     private val smackerRelationService: SmackerRelationService,
     private val smackerService: SmackerService,
 ) {
-
-    @GetMapping
-    suspend fun test() = ResponseEntity.ok("banan")
-
     @GetMapping("/{smackerId}")
     suspend fun getSmacker(@PathVariable smackerId: Long): ResponseEntity<SmackerRelationsDto> {
         return ResponseEntity.ok(smackerRelationService.getWithRelations(smackerId))
@@ -25,10 +21,17 @@ class SmackerController(
         return ResponseEntity.ok(smackerViewDto)
     }
 
-    @PutMapping("/generateLink")
-    suspend fun generateSmackerLink(@RequestBody request: GenerateSmackerLinkRequest)
-            : ResponseEntity<SmackerLinkDto> {
-        val link = smackerService.generateSmackerLink(request.smackerId)
-        return ResponseEntity.ok(SmackerLinkDto(request.smackerId, link))
+    @PostMapping("/{smackerId}/shareableLink")
+    suspend fun generateSmackerLink(@PathVariable smackerId: Long)
+            : ResponseEntity<SmackerDto> {
+        val smacker = smackerService.generateSmackerLink(smackerId)
+        return ResponseEntity.ok(SmackerDto.of(smacker))
+    }
+
+    @DeleteMapping("/{smackerId}/shareableLink")
+    suspend fun deleteSmackerLink(@PathVariable smackerId: Long)
+            : ResponseEntity<SmackerDto> {
+        val smacker = smackerService.deleteSmackerLink(smackerId)
+        return ResponseEntity.ok(SmackerDto.of(smacker))
     }
 }

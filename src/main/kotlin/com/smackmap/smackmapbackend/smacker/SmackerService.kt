@@ -40,13 +40,13 @@ class SmackerService(
         return smackerRepository.save(smacker)
     }
 
-    suspend fun generateSmackerLink(smackerId: Long): String {
-        val smacker = authorizationService.checkAccessFor(smackerId)
+    suspend fun generateSmackerLink(smackerId: Long): Smacker {
+        var smacker = authorizationService.checkAccessFor(smackerId)
         if (smacker.link == null) {
             smacker.link = UUID.randomUUID().toString()
-            save(smacker)
+            smacker = save(smacker)
         }
-        return "$linkPrefix${smacker.link}"
+        return smacker
     }
 
     suspend fun getByLink(link: String, caller: Smacker): Smacker {
@@ -57,12 +57,22 @@ class SmackerService(
 
     suspend fun checkUserNameAndEmail(userName: String, email: String) {
         if (smackerRepository.findByUserName(userName) != null) {
-            throw ResponseStatusException(HttpStatus.CONFLICT,
-                "There is already a user with username '$userName'.")
+            throw ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "There is already a user with username '$userName'."
+            )
         }
         if (smackerRepository.findByEmail(email) != null) {
-            throw ResponseStatusException(HttpStatus.CONFLICT,
-                "There is already a user with email '$email'.")
+            throw ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "There is already a user with email '$email'."
+            )
         }
+    }
+
+    suspend fun deleteSmackerLink(smackerId: Long): Smacker {
+        var smacker = authorizationService.checkAccessFor(smackerId)
+        smacker.link = null
+        return save(smacker)
     }
 }
