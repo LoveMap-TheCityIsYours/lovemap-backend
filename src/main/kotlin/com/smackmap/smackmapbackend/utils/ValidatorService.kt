@@ -1,5 +1,6 @@
 package com.smackmap.smackmapbackend.utils
 
+import com.smackmap.smackmapbackend.utils.ErrorCode.ConstraintViolation
 import org.springframework.stereotype.Service
 import javax.validation.ConstraintViolationException
 import javax.validation.Validator
@@ -11,7 +12,10 @@ class ValidatorService(
     fun validate(request: Any) {
         val violations = validator.validate(request)
         if (violations.isNotEmpty()) {
-            throw ConstraintViolationException(violations)
+            val errorMessages = ErrorMessages(violations.map {
+                ErrorMessage(ConstraintViolation, it.invalidValue.toString(), it.message)
+            }.toList())
+            throw ConstraintViolationException(errorMessages.toJson(), violations)
         }
     }
 }

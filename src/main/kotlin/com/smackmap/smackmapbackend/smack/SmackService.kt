@@ -3,6 +3,9 @@ package com.smackmap.smackmapbackend.smack
 import com.smackmap.smackmapbackend.relation.RelationService
 import com.smackmap.smackmapbackend.security.AuthorizationService
 import com.smackmap.smackmapbackend.smack.location.SmackLocationService
+import com.smackmap.smackmapbackend.utils.ErrorCode
+import com.smackmap.smackmapbackend.utils.ErrorCode.NotFoundById
+import com.smackmap.smackmapbackend.utils.ErrorMessage
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -43,6 +46,13 @@ class SmackService(
 
     suspend fun getById(smackId: Long): Smack {
         return smackRepository.findById(smackId)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Smack not found by id '$smackId'.")
+            ?: throw ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                ErrorMessage(
+                    NotFoundById,
+                    smackId.toString(),
+                    "Smack not found by id '$smackId'."
+                ).toJson()
+            )
     }
 }

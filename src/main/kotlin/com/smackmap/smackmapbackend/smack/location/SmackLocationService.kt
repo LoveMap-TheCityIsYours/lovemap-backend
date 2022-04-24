@@ -1,5 +1,7 @@
 package com.smackmap.smackmapbackend.smack.location
 
+import com.smackmap.smackmapbackend.utils.ErrorCode
+import com.smackmap.smackmapbackend.utils.ErrorMessage
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -15,7 +17,14 @@ class SmackLocationService(
 
     suspend fun getById(locationId: Long): SmackLocation {
         return repository.findById(locationId)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "SmackLocation not found by ID '$locationId'.")
+            ?: throw ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                ErrorMessage(
+                    ErrorCode.NotFoundById,
+                    locationId.toString(),
+                    "SmackLocation not found by ID '$locationId'."
+                ).toJson()
+            )
     }
 
     suspend fun create(request: CreateSmackLocationRequest): SmackLocation {
@@ -56,7 +65,11 @@ class SmackLocationService(
         if (!repository.existsById(smackLocationId)) {
             throw ResponseStatusException(
                 HttpStatus.NOT_FOUND,
-                "SmackLocation '$smackLocationId' does not exist."
+                ErrorMessage(
+                    ErrorCode.NotFoundById,
+                    smackLocationId.toString(),
+                    "SmackLocation '$smackLocationId' does not exist."
+                ).toJson()
             )
         }
     }

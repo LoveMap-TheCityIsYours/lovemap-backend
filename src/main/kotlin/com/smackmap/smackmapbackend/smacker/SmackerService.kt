@@ -1,6 +1,9 @@
 package com.smackmap.smackmapbackend.smacker
 
 import com.smackmap.smackmapbackend.security.AuthorizationService
+import com.smackmap.smackmapbackend.utils.ErrorCode
+import com.smackmap.smackmapbackend.utils.ErrorCode.*
+import com.smackmap.smackmapbackend.utils.ErrorMessage
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -23,17 +26,38 @@ class SmackerService(
     suspend fun getById(id: Long): Smacker {
         return smackerRepository.findById(id)?.also {
             authorizationService.checkAccessFor(it)
-        } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Smacker not found by id: $id")
+        } ?: throw ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            ErrorMessage(
+                NotFoundById,
+                id.toString(),
+                "Smacker not found by id: '$id'."
+            ).toJson()
+        )
     }
 
     suspend fun unAuthorizedGetByUserName(userName: String): Smacker {
         return smackerRepository.findByUserName(userName)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Smacker not found by userName: $userName")
+            ?: throw ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                ErrorMessage(
+                    InvalidCredentialsUser,
+                    userName,
+                    "Invalid credentials for userName: '$userName'."
+                ).toJson()
+            )
     }
 
     suspend fun unAuthorizedGetByEmail(email: String): Smacker {
         return smackerRepository.findByEmail(email)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Smacker not found by email: $email")
+            ?: throw ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                ErrorMessage(
+                    InvalidCredentialsEmail,
+                    email,
+                    "Invalid credentials for email: '$email'."
+                ).toJson()
+            )
     }
 
     suspend fun save(smacker: Smacker): Smacker {
@@ -52,20 +76,35 @@ class SmackerService(
     suspend fun getByLink(link: String, caller: Smacker): Smacker {
         val uuidLink = link.substringAfter(linkPrefix)
         return smackerRepository.findByLink(uuidLink)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Smacker not found by link: $link")
+            ?: throw ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                ErrorMessage(
+                    NotFoundByLink,
+                    link,
+                    "Smacker not found by link: '$link'."
+                ).toJson()
+            )
     }
 
     suspend fun checkUserNameAndEmail(userName: String, email: String) {
         if (smackerRepository.findByUserName(userName) != null) {
             throw ResponseStatusException(
                 HttpStatus.CONFLICT,
-                "There is already a user with username '$userName'."
+                ErrorMessage(
+                    UserOccupied,
+                    userName,
+                    "There is already a user with username '$userName'."
+                ).toJson()
             )
         }
         if (smackerRepository.findByEmail(email) != null) {
             throw ResponseStatusException(
                 HttpStatus.CONFLICT,
-                "There is already a user with email '$email'."
+                ErrorMessage(
+                    EmailOccupied,
+                    email,
+                    "There is already a user with email '$email'."
+                ).toJson()
             )
         }
     }

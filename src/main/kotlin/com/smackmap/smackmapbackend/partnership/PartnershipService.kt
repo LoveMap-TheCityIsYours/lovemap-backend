@@ -7,6 +7,8 @@ import com.smackmap.smackmapbackend.partnership.PartnershipReaction.DENY
 import com.smackmap.smackmapbackend.relation.RelationService
 import com.smackmap.smackmapbackend.security.AuthorizationService
 import com.smackmap.smackmapbackend.smacker.SmackerService
+import com.smackmap.smackmapbackend.utils.ErrorCode
+import com.smackmap.smackmapbackend.utils.ErrorMessage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.merge
 import mu.KotlinLogging
@@ -37,7 +39,14 @@ class PartnershipService(
                 relations = getPartnerships(smackerId)
             )
         } else {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Smacker not found by ID '$smackerId'")
+            throw ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                ErrorMessage(
+                    ErrorCode.PartnershipNotFound,
+                    smackerId.toString(),
+                    "Smacker not found by ID '$smackerId'"
+                ).toJson()
+            )
         }
     }
 
@@ -69,7 +78,11 @@ class PartnershipService(
         return when (partnership.status) {
             PARTNER -> throw ResponseStatusException(
                 HttpStatus.CONFLICT,
-                "User '$initiatorId' and user '$respondentId' are already partners."
+                ErrorMessage(
+                    ErrorCode.AlreadyPartners,
+                    initiatorId.toString(),
+                    "User '$initiatorId' and user '$respondentId' are already partners."
+                ).toJson()
             )
             PARTNERSHIP_REQUESTED -> {
                 handlePartnershipResponse(request, partnership, respondentId)
@@ -91,7 +104,11 @@ class PartnershipService(
         return partnershipRepository.findByInitiatorIdAndRespondentId(initiatorId, respondentId)
             ?: throw ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
-                "Partnership was never requested from user '$initiatorId' to user '$respondentId'."
+                ErrorMessage(
+                    ErrorCode.BadRequest,
+                    initiatorId.toString(),
+                    "Partnership was never requested from user '$initiatorId' to user '$respondentId'."
+                ).toJson()
             )
     }
 
@@ -155,7 +172,11 @@ class PartnershipService(
                     } else {
                         throw ResponseStatusException(
                             HttpStatus.CONFLICT,
-                            "Already requested in the last '$hoursToRerequestPartnership' hours."
+                            ErrorMessage(
+                                ErrorCode.PartnershipRerequestTimeNotPassed,
+                                hoursToRerequestPartnership.toString(),
+                                "Already requested in the last '$hoursToRerequestPartnership' hours."
+                            ).toJson()
                         )
                     }
                 }
@@ -163,8 +184,12 @@ class PartnershipService(
             PARTNER -> {
                 throw ResponseStatusException(
                     HttpStatus.CONFLICT,
-                    "There is already an alive partnership between " +
-                            "initiator '${request.initiatorId}' and respondent '${request.respondentId}'."
+                    ErrorMessage(
+                        ErrorCode.AlreadyPartners,
+                        request.respondentId.toString(),
+                        "There is already an alive partnership between " +
+                                "initiator '${request.initiatorId}' and respondent '${request.respondentId}'."
+                    ).toJson()
                 )
             }
         }
@@ -178,15 +203,23 @@ class PartnershipService(
             PARTNERSHIP_REQUESTED -> {
                 throw ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "The other user '${request.respondentId}' already " +
-                            "requested partnership from you '${request.initiatorId}'."
+                    ErrorMessage(
+                        ErrorCode.PartnershipAlreadyRequested,
+                        request.respondentId.toString(),
+                        "The other user '${request.respondentId}' already " +
+                                "requested partnership from you '${request.initiatorId}'."
+                    ).toJson()
                 )
             }
             PARTNER -> {
                 throw ResponseStatusException(
                     HttpStatus.CONFLICT,
-                    "There is already an alive partnership between " +
-                            "initiator '${request.initiatorId}' and respondent '${request.respondentId}'."
+                    ErrorMessage(
+                        ErrorCode.AlreadyPartners,
+                        request.respondentId.toString(),
+                        "There is already an alive partnership between " +
+                                "initiator '${request.initiatorId}' and respondent '${request.respondentId}'."
+                    ).toJson()
                 )
             }
         }
@@ -226,11 +259,14 @@ class PartnershipService(
         if (initiatorId == respondentId) {
             throw ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
-                "InitiatorId and respondentId cannot be the same! '${initiatorId}'"
+                ErrorMessage(
+                    ErrorCode.BadRequest,
+                    initiatorId.toString(),
+                    "InitiatorId and respondentId cannot be the same! '${initiatorId}'"
+                ).toJson()
             )
         }
     }
 
-    private fun hoursPassedSince(hours: Long, it: Timestamp)
-        = Instant.now().minus(hours, HOURS).isAfter(it.toInstant())
+    private fun hoursPassedSince(hours: Long, it: Timestamp) = Instant.now().minus(hours, HOURS).isAfter(it.toInstant())
 }

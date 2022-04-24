@@ -5,6 +5,8 @@ import com.smackmap.smackmapbackend.smack.Smack
 import com.smackmap.smackmapbackend.smack.SmackService
 import com.smackmap.smackmapbackend.smack.location.SmackLocation
 import com.smackmap.smackmapbackend.smack.location.SmackLocationService
+import com.smackmap.smackmapbackend.utils.ErrorCode
+import com.smackmap.smackmapbackend.utils.ErrorMessage
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -51,7 +53,14 @@ class SmackLocationReviewService(
     private suspend fun getSmackAndCheckIsPartOfIt(request: SmackLocationReviewRequest): Smack {
         val smack: Smack = smackService.getById(request.smackId)
         if (!smackService.isSmackerOrPartnerInSmack(request.reviewerId, smack)) {
-            throw ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot review this smack.")
+            throw ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                ErrorMessage(
+                    ErrorCode.Forbidden,
+                    request.smackId.toString(),
+                    "You cannot review this smack."
+                ).toJson()
+            )
         }
         return smack
     }
@@ -62,7 +71,11 @@ class SmackLocationReviewService(
         if (locationReview != null) {
             throw ResponseStatusException(
                 HttpStatus.CONFLICT,
-                "User '${request.reviewerId}' already reviewed SmackLocation '${request.smackLocationId}'."
+                ErrorMessage(
+                    ErrorCode.Conflict,
+                    request.smackLocationId.toString(),
+                    "User '${request.reviewerId}' already reviewed SmackLocation '${request.smackLocationId}'."
+                ).toJson()
             )
         }
     }
@@ -74,8 +87,13 @@ class SmackLocationReviewService(
         if (request.smackLocationId != smack.smackLocationId) {
             throw ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
-                "Requested smackLocationId '${request.smackLocationId}' " +
-                        "does not match with the smack's locationId '${smack.smackLocationId}'"
+                ErrorMessage(
+                    ErrorCode.BadRequest,
+                    request.smackLocationId.toString(),
+                    "Requested smackLocationId '${request.smackLocationId}' " +
+                            "does not match with the smack's locationId '${smack.smackLocationId}'"
+                ).toJson()
+
             )
         }
     }

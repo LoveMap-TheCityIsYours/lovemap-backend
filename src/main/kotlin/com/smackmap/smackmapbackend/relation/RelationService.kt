@@ -3,6 +3,8 @@ package com.smackmap.smackmapbackend.relation
 import com.smackmap.smackmapbackend.relation.Relation.Status.FOLLOWING
 import com.smackmap.smackmapbackend.relation.Relation.Status.PARTNER
 import com.smackmap.smackmapbackend.smacker.SmackerService
+import com.smackmap.smackmapbackend.utils.ErrorCode
+import com.smackmap.smackmapbackend.utils.ErrorMessage
 import kotlinx.coroutines.flow.map
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
@@ -27,7 +29,11 @@ class RelationService(
         ) {
             throw ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
-                "User '$initiatorId' blocked '$respondentId', first need to unblock."
+                ErrorMessage(
+                    ErrorCode.YouBlockedHimUnblockFirst,
+                    respondentId.toString(),
+                    "User '$initiatorId' blocked '$respondentId', first need to unblock."
+                ).toJson()
             )
         }
         if (relationRepository.existsBySourceIdAndTargetIdAndStatus(
@@ -38,7 +44,11 @@ class RelationService(
         ) {
             throw ResponseStatusException(
                 HttpStatus.FORBIDDEN,
-                "User '$initiatorId' is blocked by '$respondentId'."
+                ErrorMessage(
+                    ErrorCode.BlockedByUser,
+                    respondentId.toString(),
+                    "User '$initiatorId' is blocked by '$respondentId'."
+                ).toJson()
             )
         }
     }
@@ -47,7 +57,11 @@ class RelationService(
         if (user1 == user2) {
             throw ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
-                "Source and Target in a relation cannot be the same. '$user1'"
+                ErrorMessage(
+                    ErrorCode.BadRequest,
+                    user1.toString(),
+                    "Source and Target in a relation cannot be the same. '$user1'"
+                ).toJson()
             )
         }
         val relation12: Relation = relationRepository.findBySourceIdAndTargetId(user1, user2)
@@ -63,7 +77,12 @@ class RelationService(
 
     suspend fun getRelation(fromId: Long, toId: Long): Relation {
         return relationRepository.findBySourceIdAndTargetId(fromId, toId)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Relation not found from '$fromId' to '$toId'.")
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND,
+                ErrorMessage(
+                    ErrorCode.RelationNotFound,
+                    toId.toString(),
+                    "Relation not found from '$fromId' to '$toId'."
+                ).toJson())
     }
 
     suspend fun getRelationStatusDto(fromId: Long, toId: Long): RelationStatusDto {
@@ -86,7 +105,11 @@ class RelationService(
         if (!relationRepository.existsBySourceIdAndTargetIdAndStatus(smackerId, partnerId, PARTNER)) {
             throw ResponseStatusException(
                 HttpStatus.NOT_FOUND,
-                "No partnership between '$smackerId' and '$partnerId'"
+                ErrorMessage(
+                    ErrorCode.PartnershipNotFound,
+                    partnerId.toString(),
+                    "No partnership between '$smackerId' and '$partnerId'"
+                ).toJson()
             )
         }
     }
