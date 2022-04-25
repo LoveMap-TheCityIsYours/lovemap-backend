@@ -16,7 +16,7 @@ class SmackerService(
     private val authorizationService: AuthorizationService,
     private val smackerRepository: SmackerRepository,
 ) {
-    private val linkPrefix = "smacker://"
+    private val linkPrefix = "smackmap://smacker/"
 
     suspend fun exists(id: Long): Boolean {
         authorizationService.checkAccessFor(id)
@@ -67,15 +67,14 @@ class SmackerService(
     suspend fun generateSmackerLink(smackerId: Long): Smacker {
         var smacker = authorizationService.checkAccessFor(smackerId)
         if (smacker.link == null) {
-            smacker.link = UUID.randomUUID().toString()
+            smacker.link = linkPrefix + UUID.randomUUID().toString()
             smacker = save(smacker)
         }
         return smacker
     }
 
     suspend fun getByLink(link: String, caller: Smacker): Smacker {
-        val uuidLink = link.substringAfter(linkPrefix)
-        return smackerRepository.findByLink(uuidLink)
+        return smackerRepository.findByLink(link)
             ?: throw ResponseStatusException(
                 HttpStatus.NOT_FOUND,
                 ErrorMessage(
