@@ -1,7 +1,6 @@
 package com.smackmap.smackmapbackend.smacker
 
 import com.smackmap.smackmapbackend.security.AuthorizationService
-import com.smackmap.smackmapbackend.utils.ErrorCode
 import com.smackmap.smackmapbackend.utils.ErrorCode.*
 import com.smackmap.smackmapbackend.utils.ErrorMessage
 import org.springframework.http.HttpStatus
@@ -18,7 +17,7 @@ class SmackerService(
 ) {
     private val linkPrefix = "smackmap://smacker/"
 
-    suspend fun exists(id: Long): Boolean {
+    suspend fun unAuthorizedExists(id: Long): Boolean {
         authorizationService.checkAccessFor(id)
         return smackerRepository.existsById(id)
     }
@@ -34,6 +33,18 @@ class SmackerService(
                 "Smacker not found by id: '$id'."
             ).toJson()
         )
+    }
+
+    suspend fun unAuthorizedGetById(id: Long): Smacker {
+        return smackerRepository.findById(id)
+            ?: throw ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                ErrorMessage(
+                    NotFoundById,
+                    id.toString(),
+                    "Smacker not found by id: '$id'."
+                ).toJson()
+            )
     }
 
     suspend fun unAuthorizedGetByUserName(userName: String): Smacker {

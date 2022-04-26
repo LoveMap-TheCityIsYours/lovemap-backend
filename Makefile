@@ -35,7 +35,7 @@ deploy-k8s-prod:
 	kubectl config use-context gke_smackmap_europe-central2_smackmap-autopilot-cluster
 	kubectl apply -f distribution/k8s-prod
 
-deploy-prod: build-jar docker-build docker-push deploy-k8s-prod
+publish-prod: build-jar docker-build docker-push deploy-k8s-prod
 
 
 

@@ -93,7 +93,7 @@ class RelationService(
         val relationFlow = relationRepository.findBySourceIdAndStatusIn(fromId, setOf(FOLLOWING, PARTNER))
         val smackerRelationFlow = relationFlow.map { value: Relation ->
             SmackerRelation(
-                smackerService.getById(value.targetId).toView(),
+                smackerService.unAuthorizedGetById(value.targetId).toView(),
                 value.status
             )
         }

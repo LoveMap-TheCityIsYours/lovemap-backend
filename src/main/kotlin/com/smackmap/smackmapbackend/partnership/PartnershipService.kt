@@ -33,7 +33,7 @@ class PartnershipService(
 
     suspend fun getSmackerPartnerships(smackerId: Long): SmackerPartnerships {
         authorizationService.checkAccessFor(smackerId)
-        if (smackerService.exists(smackerId)) {
+        if (smackerService.unAuthorizedExists(smackerId)) {
             return SmackerPartnerships(
                 smackerId = smackerId,
                 relations = getPartnerships(smackerId)
