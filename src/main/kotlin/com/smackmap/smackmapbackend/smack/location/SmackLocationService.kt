@@ -1,5 +1,6 @@
 package com.smackmap.smackmapbackend.smack.location
 
+import com.smackmap.smackmapbackend.security.AuthorizationService
 import com.smackmap.smackmapbackend.utils.ErrorCode
 import com.smackmap.smackmapbackend.utils.ErrorMessage
 import kotlinx.coroutines.flow.Flow
@@ -11,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException
 @Service
 @Transactional
 class SmackLocationService(
+    private val authorizationService: AuthorizationService,
     private val repository: SmackLocationRepository
 ) {
     private val maxLimit = 100
@@ -28,11 +30,16 @@ class SmackLocationService(
     }
 
     suspend fun create(request: CreateSmackLocationRequest): SmackLocation {
+        val caller = authorizationService.getCaller()
         val smackLocation = SmackLocation(
             name = request.name,
             longitude = request.longitude,
             latitude = request.latitude,
+            addedBy = caller.id,
+            description = request.description,
+            availability = request.availability.toModel(),
         )
+        smackLocation.setCustomAvailability(request.customAvailability)
         // TODO: validate if no locations are within few meters
         return repository.save(smackLocation)
     }
