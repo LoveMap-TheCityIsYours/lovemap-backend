@@ -77,12 +77,14 @@ class RelationService(
 
     suspend fun getRelation(fromId: Long, toId: Long): Relation {
         return relationRepository.findBySourceIdAndTargetId(fromId, toId)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND,
+            ?: throw ResponseStatusException(
+                HttpStatus.NOT_FOUND,
                 ErrorMessage(
                     ErrorCode.RelationNotFound,
                     toId.toString(),
                     "Relation not found from '$fromId' to '$toId'."
-                ).toJson())
+                ).toJson()
+            )
     }
 
     suspend fun getRelationStatusDto(fromId: Long, toId: Long): RelationStatusDto {
@@ -92,8 +94,10 @@ class RelationService(
     suspend fun getRelationsFrom(fromId: Long): SmackerRelations {
         val relationFlow = relationRepository.findBySourceIdAndStatusIn(fromId, setOf(FOLLOWING, PARTNER))
         val smackerRelationFlow = relationFlow.map { value: Relation ->
+            val inRelationWith = smackerService.unAuthorizedGetById(value.targetId)
             SmackerRelation(
-                smackerService.unAuthorizedGetById(value.targetId).toView(),
+                inRelationWith.toView(),
+                inRelationWith.rank,
                 value.status
             )
         }

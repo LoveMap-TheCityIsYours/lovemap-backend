@@ -11,6 +11,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import java.sql.Timestamp
+import java.time.Instant
 
 @Service
 class AuthenticationService(
@@ -28,11 +30,12 @@ class AuthenticationService(
         var smacker = Smacker(
             userName = request.userName,
             email = request.email,
+            createdAt = Timestamp.from(Instant.now())
         )
         smacker = smackerService.save(smacker)
         val password = Password(
             passwordHash = passwordEncoder.encode(request.password),
-            smackerId = smacker.id
+            smackerId = smacker.id,
         )
         passwordRepository.save(password)
         return smacker

@@ -3,6 +3,51 @@ server:
 #  servlet:
 #    context-path: /smackmap/api
 
+smackmap:
+  smacker:
+    ranks:
+      rankList:
+        - rank: 1
+          nameEN: Smackiner
+          nameHU: Smack Leves
+          pointsNeeded: 0
+        - rank: 2
+          nameEN: Smacurious
+          nameHU: Érdeklődő Smacker
+          pointsNeeded: 2
+        - rank: 3
+          nameEN: Smacksperienced
+          nameHU: Tapasztalt Smacker
+          pointsNeeded: 5
+        - rank: 4
+          nameEN: Smackspert
+          nameHU: Szakértő Smacker
+          pointsNeeded: 10
+        - rank: 5
+          nameEN: Smack Priest
+          nameHU: Smack Pap
+          pointsNeeded: 15
+        - rank: 6
+          nameEN: Smack Bishop
+          nameHU: Smack Püspök
+          pointsNeeded: 20
+        - rank: 7
+          nameEN: Smack Archbishop
+          nameHU: Smack Érsek
+          pointsNeeded: 30
+        - rank: 8
+          nameEN: Smack Cardinal
+          nameHU: Smack Bíboros
+          pointsNeeded: 40
+        - rank: 9
+          nameEN: Smack Pope
+          nameHU: Smack Pápa
+          pointsNeeded: 50
+        - rank: 10
+          nameEN: Smack God
+          nameHU: Smack Isten
+          pointsNeeded: 100
+
 spring:
   profiles:
     active: dev

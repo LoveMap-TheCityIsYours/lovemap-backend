@@ -25,6 +25,7 @@ data class Relation(
 
 data class SmackerRelation(
     val smackerView: SmackerView,
+    val rank: Int,
     val relationStatus: Relation.Status
 )
 

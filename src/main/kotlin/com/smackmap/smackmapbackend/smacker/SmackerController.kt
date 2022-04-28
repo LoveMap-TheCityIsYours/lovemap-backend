@@ -1,5 +1,6 @@
 package com.smackmap.smackmapbackend.smacker
 
+import com.smackmap.smackmapbackend.smacker.ranks.SmackerRanks
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*
 class SmackerController(
     private val smackerRelationService: SmackerRelationService,
     private val smackerService: SmackerService,
+    private val smackerRanks: SmackerRanks
 ) {
     @GetMapping("/{smackerId}")
     suspend fun getSmacker(@PathVariable smackerId: Long): ResponseEntity<SmackerRelationsDto> {
@@ -33,5 +35,10 @@ class SmackerController(
             : ResponseEntity<SmackerDto> {
         val smacker = smackerService.deleteSmackerLink(smackerId)
         return ResponseEntity.ok(SmackerDto.of(smacker))
+    }
+
+    @GetMapping("ranks")
+    suspend fun getRanks(): ResponseEntity<SmackerRanks> {
+        return ResponseEntity.ok(smackerRanks)
     }
 }
