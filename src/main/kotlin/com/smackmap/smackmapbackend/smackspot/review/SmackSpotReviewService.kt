@@ -1,10 +1,10 @@
-package com.smackmap.smackmapbackend.smack.location.review
+package com.smackmap.smackmapbackend.smackspot.review
 
 import com.smackmap.smackmapbackend.security.AuthorizationService
 import com.smackmap.smackmapbackend.smack.Smack
 import com.smackmap.smackmapbackend.smack.SmackService
-import com.smackmap.smackmapbackend.smack.location.SmackLocation
-import com.smackmap.smackmapbackend.smack.location.SmackLocationService
+import com.smackmap.smackmapbackend.smackspot.SmackSpot
+import com.smackmap.smackmapbackend.smackspot.SmackSpotService
 import com.smackmap.smackmapbackend.utils.ErrorCode
 import com.smackmap.smackmapbackend.utils.ErrorMessage
 import kotlinx.coroutines.flow.Flow
@@ -15,42 +15,42 @@ import org.springframework.web.server.ResponseStatusException
 
 @Service
 @Transactional
-class SmackLocationReviewService(
+class SmackSpotReviewService(
     private val authorizationService: AuthorizationService,
     private val smackService: SmackService,
-    private val smackLocationService: SmackLocationService,
-    private val repository: SmackLocationReviewRepository
+    private val smackSpotService: SmackSpotService,
+    private val repository: SmackSpotReviewRepository
 ) {
-    fun findAllByLocationIdIn(locationIds: List<Long>): Flow<SmackLocationReview> {
-        return repository.findAllBySmackLocationIdIn(locationIds)
+    fun findAllByLocationIdIn(locationIds: List<Long>): Flow<SmackSpotReview> {
+        return repository.findAllBySmackSpotIdIn(locationIds)
     }
 
-    fun findAllByReviewerId(reviewerId: Long): Flow<SmackLocationReview> {
+    fun findAllByReviewerId(reviewerId: Long): Flow<SmackSpotReview> {
         return repository.findAllByReviewerId(reviewerId)
     }
 
-    suspend fun addReview(request: SmackLocationReviewRequest): SmackLocation {
+    suspend fun addReview(request: SmackSpotReviewRequest): SmackSpot {
         authorizationService.checkAccessFor(request.reviewerId)
         validateReview(request)
         repository.save(
-            SmackLocationReview(
+            SmackSpotReview(
                 smackId = request.smackId,
                 reviewerId = request.reviewerId,
-                smackLocationId = request.smackLocationId,
+                smackSpotId = request.smackSpotId,
                 reviewStars = request.reviewStars,
                 reviewText = request.reviewText
             )
         )
-        return smackLocationService.updateAverageRating(request.smackLocationId, request.reviewStars)
+        return smackSpotService.updateAverageRating(request.smackSpotId, request.reviewStars)
     }
 
-    private suspend fun validateReview(request: SmackLocationReviewRequest) {
+    private suspend fun validateReview(request: SmackSpotReviewRequest) {
         val smack: Smack = getSmackAndCheckIsPartOfIt(request)
         checkNotReviewedYet(request)
         checkLocationsMatch(request, smack)
     }
 
-    private suspend fun getSmackAndCheckIsPartOfIt(request: SmackLocationReviewRequest): Smack {
+    private suspend fun getSmackAndCheckIsPartOfIt(request: SmackSpotReviewRequest): Smack {
         val smack: Smack = smackService.getById(request.smackId)
         if (!smackService.isSmackerOrPartnerInSmack(request.reviewerId, smack)) {
             throw ResponseStatusException(
@@ -65,33 +65,33 @@ class SmackLocationReviewService(
         return smack
     }
 
-    private suspend fun checkNotReviewedYet(request: SmackLocationReviewRequest) {
-        val locationReview = repository
-            .findByReviewerIdAndSmackLocationId(request.reviewerId, request.smackLocationId)
-        if (locationReview != null) {
+    private suspend fun checkNotReviewedYet(request: SmackSpotReviewRequest) {
+        val spotReview = repository
+            .findByReviewerIdAndSmackSpotId(request.reviewerId, request.smackSpotId)
+        if (spotReview != null) {
             throw ResponseStatusException(
                 HttpStatus.CONFLICT,
                 ErrorMessage(
                     ErrorCode.Conflict,
-                    request.smackLocationId.toString(),
-                    "User '${request.reviewerId}' already reviewed SmackLocation '${request.smackLocationId}'."
+                    request.smackSpotId.toString(),
+                    "User '${request.reviewerId}' already reviewed SmackSpot '${request.smackSpotId}'."
                 ).toJson()
             )
         }
     }
 
     private fun checkLocationsMatch(
-        request: SmackLocationReviewRequest,
+        request: SmackSpotReviewRequest,
         smack: Smack
     ) {
-        if (request.smackLocationId != smack.smackLocationId) {
+        if (request.smackSpotId != smack.smackSpotId) {
             throw ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
                 ErrorMessage(
                     ErrorCode.BadRequest,
-                    request.smackLocationId.toString(),
-                    "Requested smackLocationId '${request.smackLocationId}' " +
-                            "does not match with the smack's locationId '${smack.smackLocationId}'"
+                    request.smackSpotId.toString(),
+                    "Requested smackSpotId '${request.smackSpotId}' " +
+                            "does not match with the smack's spotId '${smack.smackSpotId}'"
                 ).toJson()
 
             )

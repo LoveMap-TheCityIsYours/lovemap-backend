@@ -1,10 +1,10 @@
-package com.smackmap.smackmapbackend.smack.location
+package com.smackmap.smackmapbackend.smackspot
 
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineSortingRepository
 
-interface SmackLocationRepository : CoroutineSortingRepository<SmackLocation, Long> {
+interface SmackSpotRepository : CoroutineSortingRepository<SmackSpot, Long> {
 
     @Query(
         "SELECT * FROM smack_location WHERE " +
@@ -18,5 +18,5 @@ interface SmackLocationRepository : CoroutineSortingRepository<SmackLocation, Lo
         latFrom: Double,
         latTo: Double,
         limit: Int
-    ): Flow<SmackLocation>
+    ): Flow<SmackSpot>
 }

@@ -1,20 +1,20 @@
-package com.smackmap.smackmapbackend.smack.location.review
+package com.smackmap.smackmapbackend.smackspot.review
 
-data class SmackLocationReviewDto(
+data class SmackSpotReviewDto(
     val id: Long,
     val smackId: Long,
     val reviewerId: Long,
-    val smackLocationId: Long,
+    val smackSpotId: Long,
     val reviewText: String,
     val reviewStars: Int,
 ) {
     companion object {
-        fun of(review: SmackLocationReview): SmackLocationReviewDto {
-            return SmackLocationReviewDto(
+        fun of(review: SmackSpotReview): SmackSpotReviewDto {
+            return SmackSpotReviewDto(
                 id = review.id,
                 smackId = review.smackId,
                 reviewerId = review.reviewerId,
-                smackLocationId = review.smackLocationId,
+                smackSpotId = review.smackSpotId,
                 reviewText = review.reviewText,
                 reviewStars = review.reviewStars
             )
@@ -22,10 +22,10 @@ data class SmackLocationReviewDto(
     }
 }
 
-data class SmackLocationReviewRequest(
+data class SmackSpotReviewRequest(
     val smackId: Long,
     val reviewerId: Long,
-    val smackLocationId: Long,
+    val smackSpotId: Long,
     val reviewText: String,
     val reviewStars: Int,
 )

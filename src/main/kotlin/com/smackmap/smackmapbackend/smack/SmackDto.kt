@@ -1,12 +1,12 @@
 package com.smackmap.smackmapbackend.smack
 
-import com.smackmap.smackmapbackend.smack.location.SmackLocationDto
-import com.smackmap.smackmapbackend.smack.location.review.SmackLocationReviewDto
+import com.smackmap.smackmapbackend.smackspot.SmackSpotDto
+import com.smackmap.smackmapbackend.smackspot.review.SmackSpotReviewDto
 
 data class SmackDto(
     val id: Long,
     val name: String,
-    val smackLocationId: Long,
+    val smackSpotId: Long,
     val smackerId: Long,
     val smackerPartnerId: Long? = null,
 ) {
@@ -15,7 +15,7 @@ data class SmackDto(
             return SmackDto(
                 id = smack.id,
                 name = smack.name,
-                smackLocationId = smack.smackLocationId,
+                smackSpotId = smack.smackSpotId,
                 smackerId = smack.smackerId,
                 smackerPartnerId = smack.smackerPartnerId
             )
@@ -25,13 +25,13 @@ data class SmackDto(
 
 data class SmackListDto(
     val smacks: List<SmackDto>,
-    val smackLocations: List<SmackLocationDto>,
-    val smackLocationReviews: List<SmackLocationReviewDto>
+    val smackSpots: List<SmackSpotDto>,
+    val smackSpotReviews: List<SmackSpotReviewDto>
 )
 
 data class CreateSmackRequest(
     val name: String,
-    val smackLocationId: Long,
+    val smackSpotId: Long,
     val smackerId: Long,
     val smackerPartnerId: Long? = null,
 )

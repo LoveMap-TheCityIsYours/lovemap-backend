@@ -2,8 +2,7 @@ package com.smackmap.smackmapbackend.smack
 
 import com.smackmap.smackmapbackend.relation.RelationService
 import com.smackmap.smackmapbackend.security.AuthorizationService
-import com.smackmap.smackmapbackend.smack.location.SmackLocationService
-import com.smackmap.smackmapbackend.utils.ErrorCode
+import com.smackmap.smackmapbackend.smackspot.SmackSpotService
 import com.smackmap.smackmapbackend.utils.ErrorCode.NotFoundById
 import com.smackmap.smackmapbackend.utils.ErrorMessage
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +16,7 @@ import org.springframework.web.server.ResponseStatusException
 class SmackService(
     private val authorizationService: AuthorizationService,
     private val relationService: RelationService,
-    private val locationService: SmackLocationService,
+    private val spotService: SmackSpotService,
     private val smackRepository: SmackRepository
 ) {
     fun findAllInvolvedSmacksFor(smackerId: Long): Flow<Smack> {
@@ -26,14 +25,14 @@ class SmackService(
 
     suspend fun create(request: CreateSmackRequest): Smack {
         authorizationService.checkAccessFor(request.smackerId)
-        locationService.checkExistence(request.smackLocationId)
+        spotService.checkExistence(request.smackSpotId)
         request.smackerPartnerId?.let {
             relationService.checkPartnership(request.smackerId, it)
         }
         return smackRepository.save(
             Smack(
                 name = request.name,
-                smackLocationId = request.smackLocationId,
+                smackSpotId = request.smackSpotId,
                 smackerId = request.smackerId,
                 smackerPartnerId = request.smackerPartnerId
             )

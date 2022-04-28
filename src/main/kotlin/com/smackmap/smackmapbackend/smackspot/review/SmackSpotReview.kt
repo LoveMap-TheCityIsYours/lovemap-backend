@@ -1,9 +1,11 @@
-package com.smackmap.smackmapbackend.smack.location.review
+package com.smackmap.smackmapbackend.smackspot.review
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 
-data class SmackLocationReview(
+@Table("smack_location_review")
+data class SmackSpotReview(
     @Id
     var id: Long = 0,
 
@@ -14,7 +16,7 @@ data class SmackLocationReview(
     var reviewerId: Long,
 
     @Column("smack_location_id")
-    var smackLocationId: Long,
+    var smackSpotId: Long,
 
     @Column("review_text")
     var reviewText: String,

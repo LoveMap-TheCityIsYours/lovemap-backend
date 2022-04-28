@@ -11,7 +11,7 @@ data class Smack(
     var name: String,
 
     @Column("smack_location_id")
-    var smackLocationId: Long,
+    var smackSpotId: Long,
 
     @Column("smacker_id")
     var smackerId: Long,

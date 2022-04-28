@@ -1,9 +1,11 @@
-package com.smackmap.smackmapbackend.smack.location.report
+package com.smackmap.smackmapbackend.smackspot.report
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 
-data class SmackLocationReport(
+@Table("smack_location_report")
+data class SmackSpotReport(
     @Id
     var id: Long = 0,
 
@@ -11,7 +13,7 @@ data class SmackLocationReport(
     var smackerId: Long,
 
     @Column("smack_location_id")
-    var smackLocationId: Long,
+    var smackSpotId: Long,
 
     @Column("report_text")
     var reportText: String,

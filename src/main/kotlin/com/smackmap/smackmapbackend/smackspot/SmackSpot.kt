@@ -1,13 +1,15 @@
-package com.smackmap.smackmapbackend.smack.location
+package com.smackmap.smackmapbackend.smackspot
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.smackmap.smackmapbackend.smack.location.SmackLocation.Availability.ALL_DAY
+import com.smackmap.smackmapbackend.smackspot.SmackSpot.Availability.ALL_DAY
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalTime
 
-data class SmackLocation(
+@Table("smack_location")
+data class SmackSpot(
     @Id
     var id: Long = 0,
 
@@ -48,8 +50,11 @@ data class SmackLocation(
         ALL_DAY, NIGHT_ONLY
     }
 
-    fun readCustomAvailability(): Pair<LocalTime, LocalTime> {
-        return objectMapper.readValue(customAvailability, object : TypeReference<Pair<LocalTime, LocalTime>>() {})
+    fun readCustomAvailability(): Pair<LocalTime, LocalTime>? {
+        customAvailability?.let {
+            return objectMapper.readValue(it, object : TypeReference<Pair<LocalTime, LocalTime>>() {})
+        }
+        return null
     }
 
     fun setCustomAvailability(fromTo: Pair<LocalTime, LocalTime>?) {
