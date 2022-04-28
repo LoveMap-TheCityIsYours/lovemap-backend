@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/smack/spot")
+@RequestMapping("/smackspot")
 class SmackSpotController(
     private val smackSpotService: SmackSpotService,
     private val smackSpotReviewService: SmackSpotReviewService
