@@ -128,12 +128,3 @@ data class SmackerViewDto(
         }
     }
 }
-
-data class GenerateSmackerLinkRequest(
-    val smackerId: Long
-)
-
-data class SmackerLinkDto(
-    val smackerId: Long,
-    val shareableLink: String
-)
