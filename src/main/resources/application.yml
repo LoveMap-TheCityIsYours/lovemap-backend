@@ -4,6 +4,20 @@ server:
 #    context-path: /smackmap/api
 
 smackmap:
+  smackspot:
+    risks:
+      levels: 3
+      riskList:
+        - level: 1
+          nameEN: Safe
+          nameHU: Biztonságos
+        - level: 2
+          nameEN: Little risky
+          nameHU: Kicsit kockázatos
+        - level: 3
+          nameEN: Very risky
+          nameHU: Nagyon kockázatos
+
   smacker:
     ranks:
       rankList:

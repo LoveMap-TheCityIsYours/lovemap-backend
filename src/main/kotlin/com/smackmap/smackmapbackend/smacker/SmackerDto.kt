@@ -5,8 +5,6 @@ import com.smackmap.smackmapbackend.relation.RelationStatusDto
 import com.smackmap.smackmapbackend.relation.SmackerRelations
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
-import org.springframework.data.relational.core.mapping.Column
-import java.sql.Timestamp
 import java.time.Instant
 import javax.validation.constraints.Email
 import javax.validation.constraints.Size

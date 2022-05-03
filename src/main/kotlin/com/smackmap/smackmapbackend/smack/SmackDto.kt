@@ -9,6 +9,7 @@ data class SmackDto(
     val smackSpotId: Long,
     val smackerId: Long,
     val smackerPartnerId: Long? = null,
+    val note: String? = null,
 ) {
     companion object {
         fun of(smack: Smack): SmackDto {
@@ -17,7 +18,8 @@ data class SmackDto(
                 name = smack.name,
                 smackSpotId = smack.smackSpotId,
                 smackerId = smack.smackerId,
-                smackerPartnerId = smack.smackerPartnerId
+                smackerPartnerId = smack.smackerPartnerId,
+                note = smack.note
             )
         }
     }
@@ -34,4 +36,5 @@ data class CreateSmackRequest(
     val smackSpotId: Long,
     val smackerId: Long,
     val smackerPartnerId: Long? = null,
+    val note: String? = null,
 )

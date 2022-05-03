@@ -2,7 +2,6 @@ package com.smackmap.smackmapbackend.security
 
 import com.smackmap.smackmapbackend.smacker.Smacker
 import com.smackmap.smackmapbackend.smacker.SmackerRepository
-import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus

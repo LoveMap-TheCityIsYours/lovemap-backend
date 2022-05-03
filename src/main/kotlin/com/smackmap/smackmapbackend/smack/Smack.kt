@@ -18,4 +18,7 @@ data class Smack(
 
     @Column("smacker_partner_id")
     var smackerPartnerId: Long? = null,
+
+    @Column("note")
+    var note: String? = null,
 )

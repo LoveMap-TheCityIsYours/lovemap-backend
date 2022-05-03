@@ -2,19 +2,18 @@ package com.smackmap.smackmapbackend.smackspot
 
 import com.smackmap.smackmapbackend.smackspot.review.SmackSpotReviewRequest
 import com.smackmap.smackmapbackend.smackspot.review.SmackSpotReviewService
+import com.smackmap.smackmapbackend.smackspot.risk.SmackSpotRisks
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/smackspot")
 class SmackSpotController(
     private val smackSpotService: SmackSpotService,
-    private val smackSpotReviewService: SmackSpotReviewService
+    private val smackSpotReviewService: SmackSpotReviewService,
+    private val smackSpotRisks: SmackSpotRisks
 ) {
     @PostMapping
     suspend fun create(@RequestBody request: CreateSmackSpotRequest): ResponseEntity<SmackSpotDto> {
@@ -32,5 +31,10 @@ class SmackSpotController(
     suspend fun reviewLocation(@RequestBody request: SmackSpotReviewRequest): ResponseEntity<SmackSpotDto> {
         val smackSpot = smackSpotReviewService.addReview(request)
         return ResponseEntity.ok(SmackSpotDto.of(smackSpot))
+    }
+
+    @GetMapping("risks")
+    suspend fun getRisks(): ResponseEntity<SmackSpotRisks> {
+        return ResponseEntity.ok(smackSpotRisks)
     }
 }

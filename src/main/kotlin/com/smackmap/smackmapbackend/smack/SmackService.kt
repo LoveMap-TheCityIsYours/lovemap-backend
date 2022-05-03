@@ -34,7 +34,8 @@ class SmackService(
                 name = request.name,
                 smackSpotId = request.smackSpotId,
                 smackerId = request.smackerId,
-                smackerPartnerId = request.smackerPartnerId
+                smackerPartnerId = request.smackerPartnerId,
+                note = request.note,
             )
         )
     }
