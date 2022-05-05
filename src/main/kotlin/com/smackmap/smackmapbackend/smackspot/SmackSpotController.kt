@@ -21,6 +21,12 @@ class SmackSpotController(
         return ResponseEntity.ok(SmackSpotDto.of(smackSpot))
     }
 
+    @GetMapping("/{id}")
+    suspend fun find(@PathVariable id: Long): ResponseEntity<SmackSpotDto> {
+        val smackSpot = smackSpotService.getById(id)
+        return ResponseEntity.ok(SmackSpotDto.of(smackSpot))
+    }
+
     @PostMapping("/search")
     suspend fun search(@RequestBody request: SmackSpotSearchRequest): ResponseEntity<Flow<SmackSpotDto>> {
         val locations = smackSpotService.search(request)
