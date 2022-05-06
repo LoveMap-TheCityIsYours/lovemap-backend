@@ -7,6 +7,7 @@ data class SmackSpotReviewDto(
     val smackSpotId: Long,
     val reviewText: String,
     val reviewStars: Int,
+    val riskLevel: Int,
 ) {
     companion object {
         fun of(review: SmackSpotReview): SmackSpotReviewDto {
@@ -16,7 +17,8 @@ data class SmackSpotReviewDto(
                 reviewerId = review.reviewerId,
                 smackSpotId = review.smackSpotId,
                 reviewText = review.reviewText,
-                reviewStars = review.reviewStars
+                reviewStars = review.reviewStars,
+                riskLevel = review.riskLevel
             )
         }
     }
@@ -28,4 +30,5 @@ data class SmackSpotReviewRequest(
     val smackSpotId: Long,
     val reviewText: String,
     val reviewStars: Int,
+    val riskLevel: Int,
 )

@@ -23,4 +23,7 @@ data class SmackSpotReview(
 
     @Column("review_stars")
     var reviewStars: Int,
+
+    @Column("danger_level")
+    var riskLevel: Int,
 )

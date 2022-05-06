@@ -39,7 +39,8 @@ class SmackSpotReviewService(
                 reviewerId = request.reviewerId,
                 smackSpotId = request.smackSpotId,
                 reviewStars = request.reviewStars,
-                reviewText = request.reviewText
+                reviewText = request.reviewText,
+                riskLevel = request.riskLevel,
             )
         )
         return smackSpotService.updateAverageRating(request.smackSpotId, request.reviewStars)
