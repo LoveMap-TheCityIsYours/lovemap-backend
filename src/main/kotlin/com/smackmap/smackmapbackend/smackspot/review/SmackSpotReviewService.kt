@@ -21,8 +21,9 @@ class SmackSpotReviewService(
     private val smackSpotService: SmackSpotService,
     private val repository: SmackSpotReviewRepository
 ) {
-    fun findAllByLocationIdIn(locationIds: List<Long>): Flow<SmackSpotReview> {
-        return repository.findAllBySmackSpotIdIn(locationIds)
+
+    fun findAllBySmackSpotIdIn(smackSpotIds: List<Long>): Flow<SmackSpotReview> {
+        return repository.findAllBySmackSpotIdIn(smackSpotIds)
     }
 
     fun findAllByReviewerId(reviewerId: Long): Flow<SmackSpotReview> {
