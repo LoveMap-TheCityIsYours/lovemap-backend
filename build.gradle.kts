@@ -8,7 +8,7 @@ plugins {
     kotlin("plugin.jpa") version "1.6.10"
 }
 
-group = "com.smackmap"
+group = "com.lovemap"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 

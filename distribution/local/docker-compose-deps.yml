@@ -6,16 +6,16 @@ services:
       - postgres.env # configure postgres
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - smackmap_postgres_data:/var/lib/postgresql/data/ # persist data even if container shuts down
+      - lovemap_postgres_data:/var/lib/postgresql/data/ # persist data even if container shuts down
     networks:
-      - smackmap_network
+      - lovemap_network
     ports:
       - 5432:5432
 
 volumes:
-  smackmap_postgres_data: # named volumes can be managed easier using docker-compose
-    name: smackmap_postgres_data
+  lovemap_postgres_data: # named volumes can be managed easier using docker-compose
+    name: lovemap_postgres_data
 
 networks:
-  smackmap_network:
-    name: smackmap_network
+  lovemap_network:
+    name: lovemap_network

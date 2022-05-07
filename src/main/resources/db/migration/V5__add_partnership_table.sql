@@ -2,8 +2,8 @@ CREATE TABLE partnership
 (
     id            BIGSERIAL PRIMARY KEY,
     status        VARCHAR(255)                   NOT NULL,
-    initiator_id  BIGINT REFERENCES smacker (id) NOT NULL,
-    respondent_id BIGINT REFERENCES smacker (id) NOT NULL,
+    initiator_id  BIGINT REFERENCES lover (id) NOT NULL,
+    respondent_id BIGINT REFERENCES lover (id) NOT NULL,
     initiate_date TIMESTAMP                      NULL,
     respond_date  TIMESTAMP                      NULL,
     end_date      TIMESTAMP                      NULL

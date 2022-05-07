@@ -1,3 +1,3 @@
-ALTER TABLE smacker
+ALTER TABLE lover
     ADD COLUMN link VARCHAR(255) NULL;
-CREATE INDEX idx_smacker_link ON smacker (link);
+CREATE INDEX idx_lover_link ON lover (link);

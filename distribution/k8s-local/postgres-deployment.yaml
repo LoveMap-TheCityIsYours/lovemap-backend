@@ -22,7 +22,7 @@ spec:
         kompose.version: 1.26.1 (a9d05d509)
       creationTimestamp: null
       labels:
-        io.kompose.network/smackmap-network: "true"
+        io.kompose.network/lovemap-network: "true"
         io.kompose.service: postgres
     spec:
       containers:
@@ -49,10 +49,10 @@ spec:
           resources: {}
           volumeMounts:
             - mountPath: /var/lib/postgresql/data/
-              name: smackmap-postgres-data
+              name: lovemap-postgres-data
       restartPolicy: Always
       volumes:
-        - name: smackmap-postgres-data
+        - name: lovemap-postgres-data
           persistentVolumeClaim:
-            claimName: smackmap-postgres-data
+            claimName: lovemap-postgres-data
 status: {}

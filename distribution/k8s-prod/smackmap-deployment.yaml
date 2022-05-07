@@ -6,13 +6,13 @@ metadata:
     kompose.version: 1.26.1 (a9d05d509)
   creationTimestamp: null
   labels:
-    io.kompose.service: smackmap
-  name: smackmap
+    io.kompose.service: lovemap
+  name: lovemap
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: smackmap
+      io.kompose.service: lovemap
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -25,15 +25,15 @@ spec:
         kompose.version: 1.26.1 (a9d05d509)
       creationTimestamp: null
       labels:
-        io.kompose.service: smackmap
+        io.kompose.service: lovemap
     spec:
       containers:
         - env:
             - name: spring_profiles_active
               value: prod
-          image: europe-central2-docker.pkg.dev/smackmap/smackmap-docker/smackmap-backend:latest
+          image: europe-central2-docker.pkg.dev/smackmap/smackmap-docker/lovemap-backend:latest
           imagePullPolicy: Always
-          name: smackmap
+          name: lovemap
           ports:
             - containerPort: 8090
           resources:

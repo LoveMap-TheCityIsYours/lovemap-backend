@@ -1,10 +1,10 @@
 server:
   port: 8090
 #  servlet:
-#    context-path: /smackmap/api
+#    context-path: /lovemap/api
 
-smackmap:
-  smackspot:
+lovemap:
+  lovespot:
     risks:
       levels: 3
       riskList:
@@ -18,48 +18,48 @@ smackmap:
           nameEN: Very risky
           nameHU: Nagyon kockázatos
 
-  smacker:
+  lover:
     ranks:
       rankList:
         - rank: 1
-          nameEN: Smackiner
-          nameHU: Smack Leves
+          nameEN: Loveiner
+          nameHU: Love Leves
           pointsNeeded: 0
         - rank: 2
           nameEN: Smacurious
-          nameHU: Érdeklődő Smacker
+          nameHU: Érdeklődő Lover
           pointsNeeded: 2
         - rank: 3
-          nameEN: Smacksperienced
-          nameHU: Tapasztalt Smacker
+          nameEN: Lovesperienced
+          nameHU: Tapasztalt Lover
           pointsNeeded: 5
         - rank: 4
-          nameEN: Smackspert
-          nameHU: Szakértő Smacker
+          nameEN: Lovespert
+          nameHU: Szakértő Lover
           pointsNeeded: 10
         - rank: 5
-          nameEN: Smack Priest
-          nameHU: Smack Pap
+          nameEN: Love Priest
+          nameHU: Love Pap
           pointsNeeded: 15
         - rank: 6
-          nameEN: Smack Bishop
-          nameHU: Smack Püspök
+          nameEN: Love Bishop
+          nameHU: Love Püspök
           pointsNeeded: 20
         - rank: 7
-          nameEN: Smack Archbishop
-          nameHU: Smack Érsek
+          nameEN: Love Archbishop
+          nameHU: Love Érsek
           pointsNeeded: 30
         - rank: 8
-          nameEN: Smack Cardinal
-          nameHU: Smack Bíboros
+          nameEN: Love Cardinal
+          nameHU: Love Bíboros
           pointsNeeded: 40
         - rank: 9
-          nameEN: Smack Pope
-          nameHU: Smack Pápa
+          nameEN: Love Pope
+          nameHU: Love Pápa
           pointsNeeded: 50
         - rank: 10
-          nameEN: Smack God
-          nameHU: Smack Isten
+          nameEN: Love God
+          nameHU: Love Isten
           pointsNeeded: 100
 
 spring:
@@ -78,13 +78,13 @@ spring:
       write-dates-as-timestamps: false
 
 springdoc:
-  packagesToScan: com.smackmap.smackmapbackend
+  packagesToScan: com.lovemap.lovemapbackend
   pathsToMatch: /**
 
 logging:
   level:
     root: INFO
-    com.smackmap: DEBUG
+    com.lovemap: DEBUG
     org.springframework.r2dbc: DEBUG
     org.springframework.security: INFO
     org.springframework.web: INFO

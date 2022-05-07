@@ -6,8 +6,8 @@ metadata:
     kompose.version: 1.26.1 (a9d05d509)
   creationTimestamp: null
   labels:
-    io.kompose.service: smackmap
-  name: smackmap
+    io.kompose.service: lovemap
+  name: lovemap
 spec:
   type: ClusterIP
   ports:
@@ -15,6 +15,6 @@ spec:
       port: 8090
       targetPort: 8090
   selector:
-    io.kompose.service: smackmap
+    io.kompose.service: lovemap
 status:
   loadBalancer: {}

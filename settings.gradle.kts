@@ -1,1 +1,1 @@
-rootProject.name = "smackmap-backend"
+rootProject.name = "lovemap-backend"

@@ -6,13 +6,13 @@ metadata:
     kompose.version: 1.26.1 (a9d05d509)
   creationTimestamp: null
   labels:
-    io.kompose.service: smackmap
-  name: smackmap
+    io.kompose.service: lovemap
+  name: lovemap
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: smackmap
+      io.kompose.service: lovemap
   strategy: {}
   template:
     metadata:
@@ -21,16 +21,16 @@ spec:
         kompose.version: 1.26.1 (a9d05d509)
       creationTimestamp: null
       labels:
-        io.kompose.network/smackmap-network: "true"
-        io.kompose.service: smackmap
+        io.kompose.network/lovemap-network: "true"
+        io.kompose.service: lovemap
     spec:
       containers:
         - env:
             - name: spring_profiles_active
               value: local
-          image: docker.io/attilapalfi92/smackmap-backend:latest
+          image: docker.io/attilapalfi92/lovemap-backend:latest
           imagePullPolicy: Always
-          name: smackmap
+          name: lovemap
           ports:
             - containerPort: 8090
           resources: {}
