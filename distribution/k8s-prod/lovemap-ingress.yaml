@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lovemap-https-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "lovemap-global-ip"
+    networking.gke.io/managed-certificates: "managed-certificate"
+    kubernetes.io/ingress.class: "gce"
+spec:
+  defaultBackend:
+    service:
+      name: lovemap-service
+      port:
+        number: 80
