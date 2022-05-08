@@ -30,9 +30,30 @@ class LoveSpotReviewService(
         return repository.findAllByReviewerId(reviewerId)
     }
 
-    suspend fun addReview(request: LoveSpotReviewRequest): LoveSpot {
+    suspend fun addOrUpdateReview(request: LoveSpotReviewRequest): LoveSpot {
         authorizationService.checkAccessFor(request.reviewerId)
         validateReview(request)
+        val spotReview = repository
+            .findByReviewerIdAndLoveSpotId(request.reviewerId, request.loveSpotId)
+        if (spotReview != null) {
+            return updateReview(spotReview, request)
+        }
+        return addReview(request)
+    }
+
+    private suspend fun updateReview(
+        spotReview: LoveSpotReview,
+        request: LoveSpotReviewRequest
+    ): LoveSpot {
+        spotReview.reviewText = request.reviewText
+        val loveSpot = loveSpotService.reviseReviewAverages(spotReview, request)
+        spotReview.reviewStars = request.reviewStars
+        spotReview.riskLevel = request.riskLevel
+        repository.save(spotReview)
+        return loveSpot
+    }
+
+    private suspend fun addReview(request: LoveSpotReviewRequest): LoveSpot {
         repository.save(
             LoveSpotReview(
                 loveId = request.loveId,
@@ -43,12 +64,11 @@ class LoveSpotReviewService(
                 riskLevel = request.riskLevel,
             )
         )
-        return loveSpotService.updateAverageRating(request.loveSpotId, request.reviewStars)
+        return loveSpotService.updateReviewAverages(request.loveSpotId, request)
     }
 
     private suspend fun validateReview(request: LoveSpotReviewRequest) {
         val love: Love = getLoveAndCheckIsPartOfIt(request)
-        checkNotReviewedYet(request)
         checkLocationsMatch(request, love)
     }
 
@@ -65,21 +85,6 @@ class LoveSpotReviewService(
             )
         }
         return love
-    }
-
-    private suspend fun checkNotReviewedYet(request: LoveSpotReviewRequest) {
-        val spotReview = repository
-            .findByReviewerIdAndLoveSpotId(request.reviewerId, request.loveSpotId)
-        if (spotReview != null) {
-            throw ResponseStatusException(
-                HttpStatus.CONFLICT,
-                ErrorMessage(
-                    ErrorCode.Conflict,
-                    request.loveSpotId.toString(),
-                    "User '${request.reviewerId}' already reviewed LoveSpot '${request.loveSpotId}'."
-                ).toJson()
-            )
-        }
     }
 
     private fun checkLocationsMatch(

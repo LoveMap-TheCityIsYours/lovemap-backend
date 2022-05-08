@@ -1,5 +1,7 @@
 package com.lovemap.lovemapbackend.lovespot
 
+import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
+import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewRequest
 import com.lovemap.lovemapbackend.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
@@ -54,17 +56,34 @@ class LoveSpotService(
         )
     }
 
-    suspend fun updateAverageRating(spotId: Long, rating: Int): LoveSpot {
+    suspend fun updateReviewAverages(spotId: Long, request: LoveSpotReviewRequest): LoveSpot {
         val loveSpot = getById(spotId)
         if (loveSpot.averageRating == null) {
-            loveSpot.averageRating = rating.toDouble()
+            loveSpot.averageRating = request.reviewStars.toDouble()
+            loveSpot.averageDanger = request.riskLevel.toDouble()
             loveSpot.numberOfRatings = 1
         } else {
-            var averageWeight = loveSpot.averageRating!! * loveSpot.numberOfRatings
-            averageWeight += rating
+            var averageRatingWeight = loveSpot.averageRating!! * loveSpot.numberOfRatings
+            var averageDangerWeight = loveSpot.averageDanger!! * loveSpot.numberOfRatings
             loveSpot.numberOfRatings++
-            loveSpot.averageRating = averageWeight / loveSpot.numberOfRatings
+
+            averageRatingWeight += request.reviewStars
+            loveSpot.averageRating = averageRatingWeight / loveSpot.numberOfRatings
+
+            averageDangerWeight += request.riskLevel
+            loveSpot.averageDanger = averageDangerWeight / loveSpot.numberOfRatings
         }
+        return repository.save(loveSpot)
+    }
+
+    suspend fun reviseReviewAverages(previousReview: LoveSpotReview, request: LoveSpotReviewRequest): LoveSpot {
+        val loveSpot = getById(previousReview.loveSpotId)
+        var averageRatingWeight = loveSpot.averageRating!! * loveSpot.numberOfRatings
+        var averageDangerWeight = loveSpot.averageDanger!! * loveSpot.numberOfRatings
+        averageRatingWeight = averageRatingWeight - previousReview.reviewStars + request.reviewStars
+        averageDangerWeight = averageDangerWeight - previousReview.riskLevel + request.riskLevel
+        loveSpot.averageRating = averageRatingWeight / loveSpot.numberOfRatings
+        loveSpot.averageDanger = averageDangerWeight / loveSpot.numberOfRatings
         return repository.save(loveSpot)
     }
 

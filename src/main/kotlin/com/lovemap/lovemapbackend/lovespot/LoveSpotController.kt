@@ -35,9 +35,9 @@ class LoveSpotController(
         return ResponseEntity.ok(locations.map { LoveSpotDto.of(it) })
     }
 
-    @PostMapping("/review")
+    @PutMapping("/review")
     suspend fun reviewSpot(@RequestBody request: LoveSpotReviewRequest): ResponseEntity<LoveSpotDto> {
-        val loveSpot = loveSpotReviewService.addReview(request)
+        val loveSpot = loveSpotReviewService.addOrUpdateReview(request)
         return ResponseEntity.ok(LoveSpotDto.of(loveSpot))
     }
 
