@@ -21,4 +21,3 @@ CREATE TABLE love_location_report
 );
 CREATE INDEX idx_love_location_report_lover_id ON love_location_report (lover_id);
 CREATE INDEX idx_love_location_report_love_location_id ON love_location_report (love_location_id);
-
