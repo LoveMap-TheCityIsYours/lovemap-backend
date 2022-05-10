@@ -77,7 +77,7 @@ data class LoverRelationsDto(
                 loveSpotsAdded = lover.loveSpotsAdded,
                 numberOfFollowers = lover.numberOfFollowers,
                 createdAt = lover.createdAt.toInstant(),
-                shareableLink = lover.link,
+                shareableLink = LoverService.linkPrefix + lover.link,
                 relations = loverRelations.relations.map { entry ->
                     LoverViewDto(
                         entry.loverView.id,
