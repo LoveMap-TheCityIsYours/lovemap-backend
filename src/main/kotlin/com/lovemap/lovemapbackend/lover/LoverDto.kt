@@ -23,6 +23,7 @@ data class LoverDto(
     val loveSpotsAdded: Int,
     val numberOfFollowers: Int,
     val createdAt: Instant,
+    val publicProfile: Boolean,
     val shareableLink: String? = null,
 ) {
     companion object {
@@ -38,6 +39,7 @@ data class LoverDto(
                 loveSpotsAdded = lover.loveSpotsAdded,
                 numberOfFollowers = lover.numberOfFollowers,
                 createdAt = lover.createdAt.toInstant(),
+                publicProfile = false,
                 shareableLink = LoverService.linkPrefix + lover.link,
             )
         }
@@ -62,7 +64,8 @@ data class LoverRelationsDto(
     val loveSpotsAdded: Int,
     val numberOfFollowers: Int,
     val createdAt: Instant,
-    val shareableLink: String? = null,
+    val publicProfile: Boolean,
+    val shareableLink: String? = null
 ) {
     companion object {
         suspend fun of(lover: Lover, loverRelations: LoverRelations): LoverRelationsDto {
@@ -77,13 +80,15 @@ data class LoverRelationsDto(
                 loveSpotsAdded = lover.loveSpotsAdded,
                 numberOfFollowers = lover.numberOfFollowers,
                 createdAt = lover.createdAt.toInstant(),
+                publicProfile = false,
                 shareableLink = LoverService.linkPrefix + lover.link,
                 relations = loverRelations.relations.map { entry ->
                     LoverViewDto(
                         entry.loverView.id,
                         entry.loverView.userName,
                         entry.rank,
-                        RelationStatusDto.of(entry.relationStatus)
+                        RelationStatusDto.of(entry.relationStatus),
+                        false
                     )
                 }.toList()
             )
@@ -113,7 +118,8 @@ data class LoverViewDto(
     val id: Long,
     val userName: String,
     val rank: Int,
-    val relation: RelationStatusDto
+    val relation: RelationStatusDto,
+    val publicProfile: Boolean,
 ) {
     companion object {
         fun of(lover: Lover, relationStatus: Relation.Status): LoverViewDto {
@@ -121,7 +127,8 @@ data class LoverViewDto(
                 id = lover.id,
                 userName = lover.userName,
                 rank = lover.rank,
-                relation = RelationStatusDto.of(relationStatus)
+                relation = RelationStatusDto.of(relationStatus),
+                publicProfile = false
             )
         }
 
@@ -130,7 +137,8 @@ data class LoverViewDto(
                 id = lover.id,
                 userName = lover.userName,
                 rank = lover.rank,
-                relation = relationStatus
+                relation = relationStatus,
+                publicProfile = false
             )
         }
     }
