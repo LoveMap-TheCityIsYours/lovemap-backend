@@ -38,7 +38,7 @@ data class LoverDto(
                 loveSpotsAdded = lover.loveSpotsAdded,
                 numberOfFollowers = lover.numberOfFollowers,
                 createdAt = lover.createdAt.toInstant(),
-                shareableLink = lover.link,
+                shareableLink = LoverService.linkPrefix + lover.link,
             )
         }
     }

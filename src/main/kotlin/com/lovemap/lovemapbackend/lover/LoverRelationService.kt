@@ -20,9 +20,9 @@ class LoverRelationService(
         return LoverRelationsDto.of(lover, relationService.getRelationsFrom(lover.id))
     }
 
-    suspend fun getByLink(link: String): LoverViewDto {
+    suspend fun getByUuid(uuid: String): LoverViewDto {
         val caller = authorizationService.getCaller()
-        val lover = loverService.getByLink(link, caller)
+        val lover = loverService.getByUuid(uuid, caller)
         relationService.checkBlockingBetweenLovers(caller.id, lover.id)
         val relationStatusDto = relationService.getRelationStatusDto(caller.id, lover.id)
         return LoverViewDto.of(lover, relationStatusDto)
