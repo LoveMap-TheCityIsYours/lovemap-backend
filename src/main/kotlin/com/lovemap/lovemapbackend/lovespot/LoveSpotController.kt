@@ -42,16 +42,15 @@ class LoveSpotController(
     }
 
     @GetMapping("/review/bySpot/{loveSpotId}")
-    suspend fun getReviewsForSpot(@PathVariable loveSpotId: Long): ResponseEntity<List<LoveSpotReviewDto>> {
+    suspend fun getReviewsForSpot(@PathVariable loveSpotId: Long): ResponseEntity<Flow<LoveSpotReviewDto>> {
         val loveSpots = loveSpotReviewService.findAllByLoveSpotIdIn(listOf(loveSpotId))
-        return ResponseEntity.ok(loveSpots.map { LoveSpotReviewDto.of(it) }.toList())
+        return ResponseEntity.ok(loveSpots.map { LoveSpotReviewDto.of(it) })
     }
 
-
     @GetMapping("/review/byLover/{loverId}")
-    suspend fun getReviewsByLover(@PathVariable loverId: Long): ResponseEntity<List<LoveSpotReviewDto>> {
+    suspend fun getReviewsByLover(@PathVariable loverId: Long): ResponseEntity<Flow<LoveSpotReviewDto>> {
         val loveSpots = loveSpotReviewService.findAllByReviewerId(loverId)
-        return ResponseEntity.ok(loveSpots.map { LoveSpotReviewDto.of(it) }.toList())
+        return ResponseEntity.ok(loveSpots.map { LoveSpotReviewDto.of(it) })
     }
 
     @GetMapping("risks")

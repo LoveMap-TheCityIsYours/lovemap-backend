@@ -1,5 +1,8 @@
 package com.lovemap.lovemapbackend.lover
 
+import com.lovemap.lovemapbackend.love.LoveDto
+import com.lovemap.lovemapbackend.lovespot.LoveSpotDto
+import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewDto
 import com.lovemap.lovemapbackend.relation.Relation
 import com.lovemap.lovemapbackend.relation.RelationStatusDto
 import com.lovemap.lovemapbackend.relation.LoverRelations
@@ -40,6 +43,12 @@ data class LoverDto(
         }
     }
 }
+
+data class LoverContributionsDto(
+    val loves: List<LoveDto>,
+    val loveSpots: List<LoveSpotDto>,
+    val loveSpotReviews: List<LoveSpotReviewDto>
+)
 
 data class LoverRelationsDto(
     val id: Long,

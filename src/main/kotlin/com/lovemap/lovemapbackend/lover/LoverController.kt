@@ -9,8 +9,15 @@ import org.springframework.web.bind.annotation.*
 class LoverController(
     private val loverRelationService: LoverRelationService,
     private val loverService: LoverService,
+    private val loverContributionsService: LoverContributionsService,
     private val loverRanks: LoverRanks
 ) {
+    @GetMapping("/contributions/{loverId}")
+    suspend fun contributions(@PathVariable loverId: Long): ResponseEntity<LoverContributionsDto> {
+        val loveListDto = loverContributionsService.list(loverId)
+        return ResponseEntity.ok(loveListDto)
+    }
+
     @GetMapping("/{loverId}")
     suspend fun getLover(@PathVariable loverId: Long): ResponseEntity<LoverRelationsDto> {
         return ResponseEntity.ok(loverRelationService.getWithRelations(loverId))

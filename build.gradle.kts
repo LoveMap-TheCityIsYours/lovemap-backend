@@ -33,19 +33,19 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("io.github.microutils:kotlin-logging:2.1.21")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2")
-    implementation("com.javadocmd:simplelatlng:1.3.1")
+//    implementation("com.javadocmd:simplelatlng:1.3.1")
 
     implementation("org.bouncycastle:bcprov-jdk15on:1.70")
-    implementation("io.jsonwebtoken:jjwt-api:0.11.2")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
-    implementation("io.jsonwebtoken:jjwt-jackson:0.11.2")
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+    implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
     implementation("org.flywaydb:flyway-core")
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("io.r2dbc:r2dbc-postgresql")
 
-    implementation("org.springdoc:springdoc-openapi-webflux-core:1.6.7")
-    implementation("org.springdoc:springdoc-openapi-webflux-ui:1.6.7")
+    implementation("org.springdoc:springdoc-openapi-webflux-core:1.6.8")
+    implementation("org.springdoc:springdoc-openapi-webflux-ui:1.6.8")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

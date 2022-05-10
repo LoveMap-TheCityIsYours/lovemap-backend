@@ -28,12 +28,6 @@ data class LoveDto(
     }
 }
 
-data class LoveListDto(
-    val loves: List<LoveDto>,
-    val loveSpots: List<LoveSpotDto>,
-    val loveSpotReviews: List<LoveSpotReviewDto>
-)
-
 data class CreateLoveRequest(
     val name: String,
     val loveSpotId: Long,
