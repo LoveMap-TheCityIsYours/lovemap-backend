@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/lover")
+@RequestMapping("/lovers")
 class LoverController(
     private val loverRelationService: LoverRelationService,
     private val loverService: LoverService,

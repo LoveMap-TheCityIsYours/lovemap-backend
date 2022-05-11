@@ -4,11 +4,11 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/partnership")
+@RequestMapping("/partnerships")
 class PartnershipController(
     private val partnershipService: PartnershipService
 ) {
-    @GetMapping
+    @GetMapping("/{loverId}")
     suspend fun getLoverPartnerships(@PathVariable("loverId") loverId: Long)
             : ResponseEntity<LoverPartnershipsResponse> {
         val loverPartnerships: LoverPartnerships = partnershipService.getLoverPartnerships(loverId)

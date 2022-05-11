@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/lovespot")
+@RequestMapping("/lovespots")
 class LoveSpotController(
     private val loveSpotService: LoveSpotService,
     private val loveSpotReviewService: LoveSpotReviewService,
@@ -35,19 +35,19 @@ class LoveSpotController(
         return ResponseEntity.ok(locations.map { LoveSpotDto.of(it) })
     }
 
-    @PutMapping("/review")
+    @PutMapping("/reviews")
     suspend fun reviewSpot(@RequestBody request: LoveSpotReviewRequest): ResponseEntity<LoveSpotDto> {
         val loveSpot = loveSpotReviewService.addOrUpdateReview(request)
         return ResponseEntity.ok(LoveSpotDto.of(loveSpot))
     }
 
-    @GetMapping("/review/bySpot/{loveSpotId}")
+    @GetMapping("/reviews/bySpot/{loveSpotId}")
     suspend fun getReviewsForSpot(@PathVariable loveSpotId: Long): ResponseEntity<Flow<LoveSpotReviewDto>> {
         val loveSpots = loveSpotReviewService.findAllByLoveSpotIdIn(listOf(loveSpotId))
         return ResponseEntity.ok(loveSpots.map { LoveSpotReviewDto.of(it) })
     }
 
-    @GetMapping("/review/byLover/{loverId}")
+    @GetMapping("/reviews/byLover/{loverId}")
     suspend fun getReviewsByLover(@PathVariable loverId: Long): ResponseEntity<Flow<LoveSpotReviewDto>> {
         val loveSpots = loveSpotReviewService.findAllByReviewerId(loverId)
         return ResponseEntity.ok(loveSpots.map { LoveSpotReviewDto.of(it) })
