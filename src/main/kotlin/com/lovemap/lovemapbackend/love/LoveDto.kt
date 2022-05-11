@@ -1,8 +1,6 @@
 package com.lovemap.lovemapbackend.love
 
-import com.lovemap.lovemapbackend.lovespot.LoveSpotDto
-import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewDto
-import java.time.Instant
+import com.lovemap.lovemapbackend.utils.InstantConverterUtils.toApiString
 
 data class LoveDto(
     val id: Long,
@@ -11,7 +9,7 @@ data class LoveDto(
     val loverId: Long,
     val loverPartnerId: Long? = null,
     val note: String? = null,
-    val happenedAt: Instant? = null,
+    val happenedAt: String? = null,
 ) {
     companion object {
         fun of(love: Love): LoveDto {
@@ -22,7 +20,7 @@ data class LoveDto(
                 loverId = love.loverId,
                 loverPartnerId = love.loverPartnerId,
                 note = love.note,
-                happenedAt = love.happenedAt.toInstant()
+                happenedAt = love.happenedAt.toInstant().toApiString()
             )
         }
     }

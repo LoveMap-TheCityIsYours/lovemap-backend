@@ -5,7 +5,7 @@ import com.lovemap.lovemapbackend.relation.RelationService
 import com.lovemap.lovemapbackend.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode.NotFoundById
 import com.lovemap.lovemapbackend.utils.ErrorMessage
-import com.lovemap.lovemapbackend.utils.InstantConverter
+import com.lovemap.lovemapbackend.utils.InstantConverterUtils
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -20,7 +20,6 @@ class LoveService(
     private val authorizationService: AuthorizationService,
     private val relationService: RelationService,
     private val spotService: LoveSpotService,
-    private val instantConverter: InstantConverter,
     private val loveRepository: LoveRepository
 ) {
     fun findAllInvolvedLovesFor(loverId: Long): Flow<Love> {
@@ -40,7 +39,7 @@ class LoveService(
                 loverId = request.loverId,
                 loverPartnerId = request.loverPartnerId,
                 note = request.note,
-                happenedAt = request.happenedAt?.let { Timestamp.from(instantConverter.fromString(it)) }
+                happenedAt = request.happenedAt?.let { Timestamp.from(InstantConverterUtils.fromString(it)) }
                     ?: Timestamp.from(Instant.now())
             )
         )

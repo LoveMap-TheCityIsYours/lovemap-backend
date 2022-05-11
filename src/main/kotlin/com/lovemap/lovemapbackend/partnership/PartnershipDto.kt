@@ -1,9 +1,8 @@
 package com.lovemap.lovemapbackend.partnership
 
-import com.fasterxml.jackson.annotation.JsonFormat
+import com.lovemap.lovemapbackend.utils.InstantConverterUtils.toApiString
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
-import java.time.Instant
 
 data class RequestPartnershipRequest(
     val initiatorId: Long,
@@ -35,22 +34,22 @@ data class LoverPartnershipsResponse(
 }
 
 data class PartnershipResponse(
+    val id: Long,
     val initiatorId: Long,
     val respondentId: Long,
     val partnershipStatus: PartnershipApiStatus,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "UTC")
-    val initiateDate: Instant?,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "UTC")
-    val respondDate: Instant?
+    val initiateDate: String?,
+    val respondDate: String?
 ) {
     companion object {
         fun of(partnership: Partnership): PartnershipResponse {
             return PartnershipResponse(
+                id = partnership.id,
                 initiatorId = partnership.initiatorId,
                 respondentId = partnership.respondentId,
                 partnershipStatus = PartnershipApiStatus.of(partnership.status),
-                initiateDate = partnership.initiateDate?.toInstant(),
-                respondDate = partnership.respondDate?.toInstant()
+                initiateDate = partnership.initiateDate?.toInstant()?.toApiString(),
+                respondDate = partnership.respondDate?.toInstant()?.toApiString()
             )
         }
     }

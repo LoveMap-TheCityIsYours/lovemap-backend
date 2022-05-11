@@ -3,12 +3,12 @@ package com.lovemap.lovemapbackend.lover
 import com.lovemap.lovemapbackend.love.LoveDto
 import com.lovemap.lovemapbackend.lovespot.LoveSpotDto
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewDto
+import com.lovemap.lovemapbackend.relation.LoverRelations
 import com.lovemap.lovemapbackend.relation.Relation
 import com.lovemap.lovemapbackend.relation.RelationStatusDto
-import com.lovemap.lovemapbackend.relation.LoverRelations
+import com.lovemap.lovemapbackend.utils.InstantConverterUtils.toApiString
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
-import java.time.Instant
 import javax.validation.constraints.Email
 import javax.validation.constraints.Size
 
@@ -22,7 +22,7 @@ data class LoverDto(
     val numberOfReports: Int,
     val loveSpotsAdded: Int,
     val numberOfFollowers: Int,
-    val createdAt: Instant,
+    val createdAt: String,
     val publicProfile: Boolean,
     val shareableLink: String? = null,
 ) {
@@ -38,7 +38,7 @@ data class LoverDto(
                 numberOfReports = lover.numberOfReports,
                 loveSpotsAdded = lover.loveSpotsAdded,
                 numberOfFollowers = lover.numberOfFollowers,
-                createdAt = lover.createdAt.toInstant(),
+                createdAt = lover.createdAt.toInstant().toApiString(),
                 publicProfile = false,
                 shareableLink = LoverService.linkPrefix + lover.link,
             )
@@ -63,7 +63,7 @@ data class LoverRelationsDto(
     val numberOfReports: Int,
     val loveSpotsAdded: Int,
     val numberOfFollowers: Int,
-    val createdAt: Instant,
+    val createdAt: String,
     val publicProfile: Boolean,
     val shareableLink: String? = null
 ) {
@@ -79,7 +79,7 @@ data class LoverRelationsDto(
                 numberOfReports = lover.numberOfReports,
                 loveSpotsAdded = lover.loveSpotsAdded,
                 numberOfFollowers = lover.numberOfFollowers,
-                createdAt = lover.createdAt.toInstant(),
+                createdAt = lover.createdAt.toInstant().toApiString(),
                 publicProfile = false,
                 shareableLink = LoverService.linkPrefix + lover.link,
                 relations = loverRelations.relations.map { entry ->
