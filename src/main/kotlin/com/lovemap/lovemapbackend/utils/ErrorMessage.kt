@@ -39,5 +39,6 @@ enum class ErrorCode {
     PartnershipNotFound,
     AlreadyPartners,
     PartnershipRerequestTimeNotPassed,
-    PartnershipAlreadyRequested
+    PartnershipAlreadyRequested,
+    InvalidOperationOnYourself,
 }

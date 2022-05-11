@@ -260,7 +260,7 @@ class PartnershipService(
             throw ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
                 ErrorMessage(
-                    ErrorCode.BadRequest,
+                    ErrorCode.InvalidOperationOnYourself,
                     initiatorId.toString(),
                     "InitiatorId and respondentId cannot be the same! '${initiatorId}'"
                 ).toJson()
