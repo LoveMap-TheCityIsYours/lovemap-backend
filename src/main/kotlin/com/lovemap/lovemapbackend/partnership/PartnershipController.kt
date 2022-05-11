@@ -9,7 +9,7 @@ class PartnershipController(
     private val partnershipService: PartnershipService
 ) {
     @GetMapping
-    suspend fun getLoverPartnerships(@RequestParam("loverId") loverId: Long)
+    suspend fun getLoverPartnerships(@PathVariable("loverId") loverId: Long)
             : ResponseEntity<LoverPartnershipsResponse> {
         val loverPartnerships: LoverPartnerships = partnershipService.getLoverPartnerships(loverId)
         return ResponseEntity.ok(LoverPartnershipsResponse.of(loverPartnerships))
