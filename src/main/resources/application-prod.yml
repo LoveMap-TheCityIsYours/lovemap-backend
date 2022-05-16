@@ -1,9 +1,9 @@
 spring:
   flyway:
-    url: jdbc:postgresql://10.41.112.3:5432/lovemap
+    url: jdbc:postgresql://10.41.113.3:5432/lovemap-test
     user: postgres
-    password: ybfyBJcMgwPhmPh4
+    password: X?oEmNic?l.r6:Dg
   r2dbc:
-    url: r2dbc:postgresql://10.41.112.3:5432/lovemap
+    url: r2dbc:postgresql://10.41.113.3:5432/lovemap-test
     username: postgres
-    password: ybfyBJcMgwPhmPh4
+    password: X?oEmNic?l.r6:Dg

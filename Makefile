@@ -32,7 +32,7 @@ port-forward-k8s-local:
 	kubectl -n default port-forward service/lovemap 8090:8090
 
 deploy-k8s-prod:
-	kubectl config use-context gke_smackmap_europe-central2_smackmap-autopilot-cluster
+	kubectl config use-context gke_smackmap_us-east1_lovemap-us-east-1
 	kubectl apply -f distribution/k8s-prod
 
 publish-prod: build-jar docker-build docker-push deploy-k8s-prod
