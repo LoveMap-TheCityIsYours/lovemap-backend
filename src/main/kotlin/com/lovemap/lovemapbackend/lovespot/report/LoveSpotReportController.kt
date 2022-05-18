@@ -12,7 +12,7 @@ class LoveSpotReportController(
     private val loveSpotReportService: LoveSpotReportService
 ) {
 
-    @PostMapping
+    @PutMapping
     suspend fun reportSpot(@RequestBody request: LoveSpotReportRequest): ResponseEntity<LoveSpotDto> {
         val loveSpot = loveSpotReportService.addOrUpdateReport(request)
         return ResponseEntity.ok(LoveSpotDto.of(loveSpot))
