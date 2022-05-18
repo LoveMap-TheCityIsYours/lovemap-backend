@@ -29,8 +29,14 @@ data class Lover(
     @Column("number_of_loves")
     var numberOfLoves: Int = 0,
 
-    @Column("number_of_reports")
-    var numberOfReports: Int = 0,
+    @Column("reviews_submitted")
+    var reviewsSubmitted: Int = 0,
+
+    @Column("reports_submitted")
+    var reportsSubmitted: Int = 0,
+
+    @Column("reports_received")
+    var reportsReceived: Int = 0,
 
     @Column("love_spots_added")
     var loveSpotsAdded: Int = 0,

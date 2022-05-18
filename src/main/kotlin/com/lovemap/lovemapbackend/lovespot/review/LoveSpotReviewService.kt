@@ -3,6 +3,7 @@ package com.lovemap.lovemapbackend.lovespot.review
 import com.lovemap.lovemapbackend.security.AuthorizationService
 import com.lovemap.lovemapbackend.love.Love
 import com.lovemap.lovemapbackend.love.LoveService
+import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.utils.ErrorCode
@@ -19,6 +20,7 @@ class LoveSpotReviewService(
     private val authorizationService: AuthorizationService,
     private val loveService: LoveService,
     private val loveSpotService: LoveSpotService,
+    private val loverPointService: LoverPointService,
     private val repository: LoveSpotReviewRepository
 ) {
 
@@ -54,7 +56,7 @@ class LoveSpotReviewService(
     }
 
     private suspend fun addReview(request: LoveSpotReviewRequest): LoveSpot {
-        repository.save(
+        val review = repository.save(
             LoveSpotReview(
                 loveId = request.loveId,
                 reviewerId = request.reviewerId,
@@ -64,7 +66,9 @@ class LoveSpotReviewService(
                 riskLevel = request.riskLevel,
             )
         )
-        return loveSpotService.updateReviewAverages(request.loveSpotId, request)
+        val loveSpot = loveSpotService.updateReviewAverages(request.loveSpotId, request)
+        loverPointService.addPointsForReview(review, loveSpot)
+        return loveSpot
     }
 
     private suspend fun validateReview(request: LoveSpotReviewRequest) {

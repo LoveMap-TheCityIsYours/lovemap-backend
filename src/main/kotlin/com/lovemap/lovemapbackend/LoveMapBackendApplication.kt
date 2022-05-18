@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend
 
+import com.lovemap.lovemapbackend.lover.points.LoverPoints
 import com.lovemap.lovemapbackend.lover.ranks.LoverRanks
 import com.lovemap.lovemapbackend.lovespot.risk.LoveSpotRisks
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -9,8 +10,7 @@ import org.springframework.web.reactive.config.EnableWebFlux
 
 @EnableWebFlux
 @SpringBootApplication
-@EnableConfigurationProperties(value = [LoverRanks::class, LoveSpotRisks::class
-])
+@EnableConfigurationProperties(value = [LoverRanks::class, LoveSpotRisks::class, LoverPoints::class])
 class LoveMapBackendApplication
 
 fun main(args: Array<String>) {

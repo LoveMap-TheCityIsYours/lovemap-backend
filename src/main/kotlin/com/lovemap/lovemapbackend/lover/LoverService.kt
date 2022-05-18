@@ -122,7 +122,7 @@ class LoverService(
     }
 
     suspend fun deleteLoverLink(loverId: Long): Lover {
-        var lover = authorizationService.checkAccessFor(loverId)
+        val lover = authorizationService.checkAccessFor(loverId)
         lover.link = null
         return save(lover)
     }

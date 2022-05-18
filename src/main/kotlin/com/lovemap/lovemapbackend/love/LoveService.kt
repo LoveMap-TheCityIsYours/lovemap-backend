@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend.love
 
+import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.relation.RelationService
 import com.lovemap.lovemapbackend.security.AuthorizationService
@@ -20,6 +21,7 @@ class LoveService(
     private val authorizationService: AuthorizationService,
     private val relationService: RelationService,
     private val spotService: LoveSpotService,
+    private val loverPointService: LoverPointService,
     private val loveRepository: LoveRepository
 ) {
     fun findAllInvolvedLovesFor(loverId: Long): Flow<Love> {
@@ -32,7 +34,7 @@ class LoveService(
         request.loverPartnerId?.let {
             relationService.checkPartnership(request.loverId, it)
         }
-        return loveRepository.save(
+        val love = loveRepository.save(
             Love(
                 name = request.name,
                 loveSpotId = request.loveSpotId,
@@ -43,6 +45,8 @@ class LoveService(
                     ?: Timestamp.from(Instant.now())
             )
         )
+        loverPointService.addPointsForLovemaking(love)
+        return love
     }
 
     suspend fun isLoverOrPartnerInLove(loverId: Long, love: Love): Boolean {

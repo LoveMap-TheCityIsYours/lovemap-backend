@@ -1,5 +1,7 @@
 package com.lovemap.lovemapbackend.lovespot
 
+import com.lovemap.lovemapbackend.lover.LoverPointService
+import com.lovemap.lovemapbackend.lovespot.report.LoveSpotReportRequest
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewRequest
 import com.lovemap.lovemapbackend.security.AuthorizationService
@@ -15,9 +17,10 @@ import org.springframework.web.server.ResponseStatusException
 @Transactional
 class LoveSpotService(
     private val authorizationService: AuthorizationService,
+    private val loverPointService: LoverPointService,
     private val repository: LoveSpotRepository
 ) {
-    private val maxLimit = 100
+    private val maxSearchLimit = 100
 
     suspend fun getById(spotId: Long): LoveSpot {
         return repository.findById(spotId)
@@ -43,7 +46,9 @@ class LoveSpotService(
         )
         loveSpot.setCustomAvailability(request.customAvailability)
         // TODO: validate if no locations are within few meters
-        return repository.save(loveSpot)
+        val savedSpot = repository.save(loveSpot)
+        loverPointService.addPointsForSpotAdded(savedSpot)
+        return savedSpot
     }
 
     suspend fun search(request: LoveSpotSearchRequest): Flow<LoveSpot> {
@@ -52,7 +57,7 @@ class LoveSpotService(
             longTo = request.longTo,
             latFrom = request.latFrom,
             latTo = request.latTo,
-            limit = if (request.limit <= maxLimit) request.limit else maxLimit
+            limit = if (request.limit <= maxSearchLimit) request.limit else maxSearchLimit
         )
     }
 
@@ -106,5 +111,11 @@ class LoveSpotService(
 
     fun findAllByIds(locationIds: List<Long>): Flow<LoveSpot> {
         return repository.findAllById(locationIds)
+    }
+
+    suspend fun updateNumberOfReports(loveSpotId: Long, request: LoveSpotReportRequest): LoveSpot {
+        val loveSpot = getById(loveSpotId)
+        loveSpot.numberOfReports += 1
+        return repository.save(loveSpot)
     }
 }
