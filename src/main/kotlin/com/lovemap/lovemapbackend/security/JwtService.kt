@@ -17,12 +17,13 @@ import java.time.ZoneOffset.UTC
 import java.util.*
 import java.util.stream.Collectors
 
+private const val HEADER_PREFIX = "Bearer "
+private const val AUTHORITIES_KEY = "roles"
+
 @Service
 class JwtService {
     val logger = KotlinLogging.logger {}
 
-    private val HEADER_PREFIX = "Bearer "
-    private val AUTHORITIES_KEY = "roles"
     // TODO: extract properly
     private val SECRET = "lovemap-secret-key-aaaaaaaaaaaaaa"
     private val SECRET_KEY = Keys.hmacShaKeyFor(SECRET.toByteArray(UTF_8))

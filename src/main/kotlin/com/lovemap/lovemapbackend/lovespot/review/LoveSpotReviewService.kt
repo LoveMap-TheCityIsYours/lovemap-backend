@@ -47,8 +47,9 @@ class LoveSpotReviewService(
         spotReview: LoveSpotReview,
         request: LoveSpotReviewRequest
     ): LoveSpot {
-        spotReview.reviewText = request.reviewText
         val loveSpot = loveSpotService.reviseReviewAverages(spotReview, request)
+        loverPointService.updatePointsForReview(spotReview, request, loveSpot)
+        spotReview.reviewText = request.reviewText
         spotReview.reviewStars = request.reviewStars
         spotReview.riskLevel = request.riskLevel
         repository.save(spotReview)
