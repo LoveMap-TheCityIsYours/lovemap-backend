@@ -92,11 +92,13 @@ data class LoverRelationsDto(
                 shareableLink = lover.link?.let { LoverService.linkPrefix + lover.link },
                 relations = loverRelations.relations.map { entry ->
                     LoverViewDto(
-                        entry.loverView.id,
-                        entry.loverView.userName,
-                        entry.rank,
-                        RelationStatusDto.of(entry.relationStatus),
-                        false
+                        id = entry.loverView.id,
+                        userName = entry.loverView.userName,
+                        points = lover.points,
+                        rank = entry.rank,
+                        createdAt = entry.loverView.createdAt.toInstant().toApiString(),
+                        relation = RelationStatusDto.of(entry.relationStatus),
+                        publicProfile = false
                     )
                 }.toList()
             )
@@ -125,7 +127,9 @@ data class LoginLoverRequest(
 data class LoverViewDto(
     val id: Long,
     val userName: String,
+    val points: Int,
     val rank: Int,
+    val createdAt: String,
     val relation: RelationStatusDto,
     val publicProfile: Boolean,
 ) {
@@ -134,7 +138,9 @@ data class LoverViewDto(
             return LoverViewDto(
                 id = lover.id,
                 userName = lover.userName,
+                points = lover.points,
                 rank = lover.rank,
+                createdAt = lover.createdAt.toInstant().toApiString(),
                 relation = RelationStatusDto.of(relationStatus),
                 publicProfile = false
             )
@@ -144,7 +150,9 @@ data class LoverViewDto(
             return LoverViewDto(
                 id = lover.id,
                 userName = lover.userName,
+                points = lover.points,
                 rank = lover.rank,
+                createdAt = lover.createdAt.toInstant().toApiString(),
                 relation = relationStatus,
                 publicProfile = false
             )

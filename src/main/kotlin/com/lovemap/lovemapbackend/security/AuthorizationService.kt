@@ -34,7 +34,7 @@ class AuthorizationService(
     suspend fun getCaller(): Lover {
         val securityContext = ReactiveSecurityContextHolder.getContext().awaitSingleOrNull()
         if (securityContext == null) {
-            logger.warn { "securityContext was null!" }
+            logger.warn { "SecurityContext was null!" }
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
         }
         val userName = (securityContext.authentication.principal as User).username

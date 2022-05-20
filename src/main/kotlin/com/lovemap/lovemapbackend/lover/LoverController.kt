@@ -23,6 +23,11 @@ class LoverController(
         return ResponseEntity.ok(loverRelationService.getWithRelations(loverId))
     }
 
+    @GetMapping("/view/{loverId}")
+    suspend fun getLoverView(@PathVariable loverId: Long): ResponseEntity<LoverViewDto> {
+        return ResponseEntity.ok(loverRelationService.getById(loverId))
+    }
+
     @GetMapping
     suspend fun getLoverByUuid(@RequestParam uuid: String)
             : ResponseEntity<LoverViewDto> {

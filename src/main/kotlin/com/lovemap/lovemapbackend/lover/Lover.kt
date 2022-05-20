@@ -44,11 +44,19 @@ data class Lover(
     @Column("number_of_followers")
     var numberOfFollowers: Int = 0,
 ) {
-    fun toView() = LoverView(id, userName, rank)
+    fun toView() = LoverView(
+        id = id,
+        userName = userName,
+        points = points,
+        rank = rank,
+        createdAt = createdAt,
+    )
 }
 
 data class LoverView(
     val id: Long,
     val userName: String,
+    val points: Int,
     val rank: Int,
+    val createdAt: Timestamp,
 )
