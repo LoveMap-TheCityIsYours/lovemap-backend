@@ -28,7 +28,6 @@ class JwtService(
 ) {
     val logger = KotlinLogging.logger {}
 
-    private val SECRET = "lovemap-secret-key-aaaaaaaaaaaaaa"
     private val SECRET_KEY = Keys.hmacShaKeyFor(signingKey.toByteArray(UTF_8))
 
     fun generateToken(authentication: Authentication): String {
