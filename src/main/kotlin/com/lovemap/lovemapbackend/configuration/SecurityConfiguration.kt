@@ -36,6 +36,11 @@ class SecurityConfiguration(
             .pathMatchers("/webjars/swagger-ui/**").permitAll()
             .pathMatchers("/v3/api-docs/**").permitAll()
             .pathMatchers("/authentication/**").permitAll()
+
+            .pathMatchers("/join-us/**").permitAll()
+            .pathMatchers("/join-us.**").permitAll()
+            .pathMatchers("/privacy-policy.html").permitAll()
+
             .pathMatchers("/love/**").hasRole("USER")
             .pathMatchers("/lover/**").hasRole("USER")
             .pathMatchers("/relation/**").hasRole("USER")

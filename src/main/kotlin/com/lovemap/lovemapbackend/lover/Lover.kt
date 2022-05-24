@@ -18,7 +18,7 @@ data class Lover(
     var createdAt: Timestamp,
 
     @Column("link")
-    var link: String? = null,
+    var uuid: String? = null,
 
     @Column("rank")
     var rank: Int = 1,

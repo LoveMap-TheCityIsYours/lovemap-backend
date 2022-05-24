@@ -38,7 +38,7 @@ class LoverController(
     @PostMapping("/{loverId}/shareableLink")
     suspend fun generateLoverLink(@PathVariable loverId: Long)
             : ResponseEntity<LoverDto> {
-        val lover = loverService.generateLoverLink(loverId)
+        val lover = loverService.generateLoverUuid(loverId)
         return ResponseEntity.ok(LoverDto.of(lover))
     }
 

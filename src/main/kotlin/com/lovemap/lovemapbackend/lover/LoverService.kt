@@ -16,7 +16,8 @@ class LoverService(
     private val loverRepository: LoverRepository,
 ) {
     companion object {
-        const val linkPrefix = "https://api.lovemap.app/lover?uuid="
+        const val linkPrefixApiCall = "https://api.lovemap.app/lover?uuid="
+        const val linkPrefixVisible = "https://api.lovemap.app/join-us/lover?uuid="
     }
 
     suspend fun unAuthorizedExists(id: Long): Boolean {
@@ -77,17 +78,17 @@ class LoverService(
         return loverRepository.save(lover)
     }
 
-    suspend fun generateLoverLink(loverId: Long): Lover {
+    suspend fun generateLoverUuid(loverId: Long): Lover {
         var lover = authorizationService.checkAccessFor(loverId)
-        if (lover.link == null) {
-            lover.link = UUID.randomUUID().toString()
+        if (lover.uuid == null) {
+            lover.uuid = UUID.randomUUID().toString()
             lover = save(lover)
         }
         return lover
     }
 
     suspend fun getByUuid(uuid: String, caller: Lover): Lover {
-        return loverRepository.findByLink(uuid)
+        return loverRepository.findByUuid(uuid)
             ?: throw ResponseStatusException(
                 HttpStatus.NOT_FOUND,
                 ErrorMessage(
@@ -123,7 +124,7 @@ class LoverService(
 
     suspend fun deleteLoverLink(loverId: Long): Lover {
         val lover = authorizationService.checkAccessFor(loverId)
-        lover.link = null
+        lover.uuid = null
         return save(lover)
     }
 }

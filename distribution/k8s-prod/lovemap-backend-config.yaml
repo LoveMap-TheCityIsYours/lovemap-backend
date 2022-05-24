@@ -7,4 +7,4 @@ spec:
     checkIntervalSec: 15
     port: 8090
     type: HTTP
-    requestPath: /webjars/swagger-ui/index.html
+    requestPath: /privacy-policy.html

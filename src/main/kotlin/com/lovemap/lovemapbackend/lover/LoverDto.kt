@@ -44,7 +44,7 @@ data class LoverDto(
                 numberOfFollowers = lover.numberOfFollowers,
                 createdAt = lover.createdAt.toInstant().toApiString(),
                 publicProfile = false,
-                shareableLink = lover.link?.let { LoverService.linkPrefix + lover.link },
+                shareableLink = lover.uuid?.let { LoverService.linkPrefixVisible + lover.uuid },
             )
         }
     }
@@ -89,7 +89,7 @@ data class LoverRelationsDto(
                 numberOfFollowers = lover.numberOfFollowers,
                 createdAt = lover.createdAt.toInstant().toApiString(),
                 publicProfile = false,
-                shareableLink = lover.link?.let { LoverService.linkPrefix + lover.link },
+                shareableLink = lover.uuid?.let { LoverService.linkPrefixVisible + lover.uuid },
                 relations = loverRelations.relations.map { entry ->
                     LoverViewDto(
                         id = entry.loverView.id,
