@@ -3,6 +3,7 @@ package com.lovemap.lovemapbackend.security
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -21,12 +22,14 @@ private const val HEADER_PREFIX = "Bearer "
 private const val AUTHORITIES_KEY = "roles"
 
 @Service
-class JwtService {
+class JwtService(
+    @Value("\${lovemap.signingKey}")
+    private val signingKey: String
+) {
     val logger = KotlinLogging.logger {}
 
-    // TODO: extract properly
     private val SECRET = "lovemap-secret-key-aaaaaaaaaaaaaa"
-    private val SECRET_KEY = Keys.hmacShaKeyFor(SECRET.toByteArray(UTF_8))
+    private val SECRET_KEY = Keys.hmacShaKeyFor(signingKey.toByteArray(UTF_8))
 
     fun generateToken(authentication: Authentication): String {
         val username = authentication.name

@@ -2,6 +2,8 @@ server:
   port: 8090
 
 lovemap:
+  signingKey: "overwrite this signing key in production"
+
   lovespot:
     risks:
       levels: 3
