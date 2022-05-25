@@ -46,4 +46,21 @@ class StaticContentConfiguration {
                 .bodyValue(html)
         }
     }
+
+    @Bean
+    fun assetLinksJson(): RouterFunction<ServerResponse> {
+        return route(
+            GET("/.well-known/assetlinks.json")
+        ) {
+            ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue("""
+                    [{
+                      "relation": ["delegate_permission/common.handle_all_urls"],
+                      "target" : { "namespace": "android_app", "package_name": "com.lovemap.lovemapandroid",
+                                   "sha256_cert_fingerprints": ["C4:97:10:B3:46:38:45:65:67:41:88:8C:F1:00:D0:DD:20:ED:87:82:A5:54:44:30:8A:53:15:F7:16:47:ED:54"] }
+                    }]
+                """.trimIndent())
+        }
+    }
 }

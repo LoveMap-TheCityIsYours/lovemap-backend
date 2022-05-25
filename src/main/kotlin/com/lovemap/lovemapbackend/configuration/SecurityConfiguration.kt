@@ -40,6 +40,7 @@ class SecurityConfiguration(
             .pathMatchers("/join-us/**").permitAll()
             .pathMatchers("/join-us.**").permitAll()
             .pathMatchers("/privacy-policy.html").permitAll()
+            .pathMatchers("/.well-known/assetlinks.json").permitAll()
 
             .pathMatchers("/love/**").hasRole("USER")
             .pathMatchers("/lover/**").hasRole("USER")
