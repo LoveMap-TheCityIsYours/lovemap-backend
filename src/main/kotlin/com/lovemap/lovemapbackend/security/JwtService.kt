@@ -52,12 +52,13 @@ class JwtService(
     }
 
     fun getAuthentication(token: String): Authentication {
-        val claims: Claims = Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody()
+        val claims: Claims = Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).body
         val authoritiesClaim = claims[AUTHORITIES_KEY]
-        val authorities: Collection<GrantedAuthority> =
-            if (authoritiesClaim == null) AuthorityUtils.NO_AUTHORITIES else AuthorityUtils.commaSeparatedStringToAuthorityList(
-                authoritiesClaim.toString()
-            )
+        val authorities: Collection<GrantedAuthority> = if (authoritiesClaim == null) {
+            AuthorityUtils.NO_AUTHORITIES
+        } else AuthorityUtils.commaSeparatedStringToAuthorityList(
+            authoritiesClaim.toString()
+        )
         val principal = User(claims.subject, "", authorities)
         return UsernamePasswordAuthenticationToken(principal, token, authorities)
     }

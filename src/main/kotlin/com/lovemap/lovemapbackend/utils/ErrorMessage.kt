@@ -25,8 +25,10 @@ data class ErrorMessage(
 enum class ErrorCode {
     UserOccupied,
     EmailOccupied,
+    InvalidCredentials,
     InvalidCredentialsEmail,
     InvalidCredentialsUser,
+    InvalidCredentialsPassword,
     NotFoundByLink,
     NotFoundById,
     ConstraintViolation,
