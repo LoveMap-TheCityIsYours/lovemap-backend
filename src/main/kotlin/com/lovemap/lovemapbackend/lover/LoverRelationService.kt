@@ -8,16 +8,17 @@ import org.springframework.stereotype.Service
 class LoverRelationService(
     private val authorizationService: AuthorizationService,
     private val loverService: LoverService,
-    private val relationService: RelationService
+    private val loverConverter: LoverConverter,
+    private val relationService: RelationService,
 ) {
 
     suspend fun getWithRelations(id: Long): LoverRelationsDto {
         val lover = loverService.getById(id)
-        return LoverRelationsDto.of(lover, relationService.getRelationsFrom(id))
+        return loverConverter.toRelationsDto(lover, relationService.getRelationsFrom(id))
     }
 
     suspend fun getWithRelations(lover: Lover): LoverRelationsDto {
-        return LoverRelationsDto.of(lover, relationService.getRelationsFrom(lover.id))
+        return loverConverter.toRelationsDto(lover, relationService.getRelationsFrom(lover.id))
     }
 
     suspend fun getByUuid(uuid: String): LoverViewDto {

@@ -118,4 +118,8 @@ class LoveSpotService(
         loveSpot.numberOfReports += 1
         return repository.save(loveSpot)
     }
+
+    suspend fun deleteLoveSpot(loveSpot: LoveSpot) {
+        repository.delete(loveSpot)
+    }
 }

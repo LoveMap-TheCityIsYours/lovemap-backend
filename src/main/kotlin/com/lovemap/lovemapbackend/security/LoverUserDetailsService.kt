@@ -4,6 +4,7 @@ import com.lovemap.lovemapbackend.security.password.PasswordService
 import com.lovemap.lovemapbackend.lover.LoverService
 import kotlinx.coroutines.reactor.mono
 import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.userdetails.ReactiveUserDetailsPasswordService
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService
 import org.springframework.security.core.userdetails.UserDetails
@@ -11,11 +12,16 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
+const val AUTHORITY_USER = "ROLE_USER"
+const val AUTHORITY_ADMIN = "ROLE_ADMIN"
+
 @Service
 class LoverUserDetailsService(
     private val loverService: LoverService,
     private val passwordService: PasswordService,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    @Value("\${lovemap.admins.emails}")
+    private val adminEmails: List<String>,
 ) : ReactiveUserDetailsService, ReactiveUserDetailsPasswordService {
     private val logger = KotlinLogging.logger {}
 
@@ -25,7 +31,12 @@ class LoverUserDetailsService(
         val userDetails: Mono<Mono<UserDetails>> = loverMono.map { lover ->
             val passwordMono = mono { passwordService.getPasswordOfLover(lover) }
             passwordMono.map { password ->
-                LoverUserDetails.of(lover, password)
+                val authorities = ArrayList<String>()
+                authorities.add(AUTHORITY_USER)
+                if (adminEmails.contains(lover.email)) {
+                    authorities.add(AUTHORITY_ADMIN)
+                }
+                LoverUserDetails.of(lover, password, authorities)
             }
         }
         return userDetails.flatMap { it }

@@ -56,4 +56,8 @@ class LoveSpotReportService(
         loverPointService.addPointsForReport(review, loveSpot)
         return loveSpot
     }
+
+    suspend fun deleteReportsOfSpot(loveSpotId: Long) {
+        repository.deleteByLoveSpotId(loveSpotId)
+    }
 }

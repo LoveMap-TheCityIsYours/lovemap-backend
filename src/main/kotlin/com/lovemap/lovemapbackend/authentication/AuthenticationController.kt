@@ -1,9 +1,6 @@
 package com.lovemap.lovemapbackend.authentication
 
-import com.lovemap.lovemapbackend.lover.CreateLoverRequest
-import com.lovemap.lovemapbackend.lover.LoginLoverRequest
-import com.lovemap.lovemapbackend.lover.LoverDto
-import com.lovemap.lovemapbackend.lover.LoverRelationsDto
+import com.lovemap.lovemapbackend.lover.*
 import com.lovemap.lovemapbackend.utils.ValidatorService
 import mu.KotlinLogging
 import org.springframework.http.HttpHeaders
@@ -20,7 +17,8 @@ import org.springframework.web.server.ResponseStatusException
 @RequestMapping("/authentication")
 class AuthenticationController(
     private val authenticationService: AuthenticationService,
-    private val validatorService: ValidatorService
+    private val validatorService: ValidatorService,
+    private val loverConverter: LoverConverter,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -32,7 +30,7 @@ class AuthenticationController(
         val jwt = authenticationService.generateToken(lover.userName, request.password)
         return ResponseEntity.ok()
             .header(HttpHeaders.AUTHORIZATION, jwt)
-            .body(LoverDto.of(lover))
+            .body(loverConverter.toDto(lover))
     }
 
     @PostMapping("/login")
