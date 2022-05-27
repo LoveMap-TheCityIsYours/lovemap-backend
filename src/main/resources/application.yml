@@ -2,6 +2,9 @@ server:
   port: 8090
 
 lovemap:
+  admins:
+    emails: ""
+
   signingKey: "overwrite this signing key in production"
 
   lovespot:

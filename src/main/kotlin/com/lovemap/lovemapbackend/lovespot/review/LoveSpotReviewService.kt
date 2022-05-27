@@ -109,4 +109,8 @@ class LoveSpotReviewService(
             )
         }
     }
+
+    suspend fun deleteReviewsOfSpot(loveSpotId: Long) {
+        repository.deleteByLoveSpotId(loveSpotId)
+    }
 }

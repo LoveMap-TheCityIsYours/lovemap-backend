@@ -30,9 +30,10 @@ data class LoverDto(
     val createdAt: String,
     val publicProfile: Boolean,
     val shareableLink: String? = null,
+    val isAdmin: Boolean = false,
 ) {
     companion object {
-        fun of(lover: Lover): LoverDto {
+        fun of(lover: Lover, isAdmin: Boolean = false): LoverDto {
             return LoverDto(
                 id = lover.id,
                 userName = lover.userName,
@@ -48,6 +49,7 @@ data class LoverDto(
                 createdAt = lover.createdAt.toInstant().toApiString(),
                 publicProfile = false,
                 shareableLink = lover.uuid?.let { LoverService.linkPrefixVisible + lover.uuid },
+                isAdmin = isAdmin
             )
         }
     }
@@ -74,10 +76,11 @@ data class LoverRelationsDto(
     val numberOfFollowers: Int,
     val createdAt: String,
     val publicProfile: Boolean,
-    val shareableLink: String? = null
+    val shareableLink: String? = null,
+    val isAdmin: Boolean = false,
 ) {
     companion object {
-        suspend fun of(lover: Lover, loverRelations: LoverRelations): LoverRelationsDto {
+        suspend fun of(lover: Lover, loverRelations: LoverRelations, isAdmin: Boolean = false): LoverRelationsDto {
             return LoverRelationsDto(
                 id = lover.id,
                 userName = lover.userName,
@@ -93,6 +96,7 @@ data class LoverRelationsDto(
                 createdAt = lover.createdAt.toInstant().toApiString(),
                 publicProfile = false,
                 shareableLink = lover.uuid?.let { LoverService.linkPrefixVisible + lover.uuid },
+                isAdmin = isAdmin,
                 relations = loverRelations.relations.map { entry ->
                     LoverViewDto(
                         id = entry.loverView.id,

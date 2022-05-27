@@ -44,8 +44,11 @@ class SecurityConfiguration(
 
             .pathMatchers("/love/**").hasRole("USER")
             .pathMatchers("/lover/**").hasRole("USER")
+            .pathMatchers("/lovespots/**").hasRole("USER")
             .pathMatchers("/relation/**").hasRole("USER")
             .pathMatchers("/partnership/**").hasRole("USER")
+
+            .pathMatchers("/admin/**").hasRole("ADMIN")
             .anyExchange().authenticated()
             .and()
             .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.HTTP_BASIC)

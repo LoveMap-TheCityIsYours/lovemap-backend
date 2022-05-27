@@ -64,4 +64,8 @@ class LoveService(
                 ).toJson()
             )
     }
+
+    suspend fun deleteLovesBySpot(loveSpotId: Long) {
+        loveRepository.deleteByLoveSpotId(loveSpotId)
+    }
 }

@@ -10,7 +10,8 @@ class LoverController(
     private val loverRelationService: LoverRelationService,
     private val loverService: LoverService,
     private val loverContributionsService: LoverContributionsService,
-    private val loverRanks: LoverRanks
+    private val loverConverter: LoverConverter,
+    private val loverRanks: LoverRanks,
 ) {
     @GetMapping("/contributions/{loverId}")
     suspend fun contributions(@PathVariable loverId: Long): ResponseEntity<LoverContributionsDto> {
@@ -39,14 +40,14 @@ class LoverController(
     suspend fun generateLoverLink(@PathVariable loverId: Long)
             : ResponseEntity<LoverDto> {
         val lover = loverService.generateLoverUuid(loverId)
-        return ResponseEntity.ok(LoverDto.of(lover))
+        return ResponseEntity.ok(loverConverter.toDto(lover))
     }
 
     @DeleteMapping("/{loverId}/shareableLink")
     suspend fun deleteLoverLink(@PathVariable loverId: Long)
             : ResponseEntity<LoverDto> {
         val lover = loverService.deleteLoverLink(loverId)
-        return ResponseEntity.ok(LoverDto.of(lover))
+        return ResponseEntity.ok(loverConverter.toDto(lover))
     }
 
     @GetMapping("ranks")

@@ -9,4 +9,6 @@ interface LoveSpotReportRepository : CoroutineSortingRepository<LoveSpotReport, 
     fun findAllByLoveSpotIdIn(locationIds: Collection<Long>): Flow<LoveSpotReport>
 
     fun findAllByLoverId(loverId: Long): Flow<LoveSpotReport>
+
+    suspend fun deleteByLoveSpotId(loveSpotId: Long)
 }
