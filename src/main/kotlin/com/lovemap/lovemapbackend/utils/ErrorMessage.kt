@@ -43,4 +43,5 @@ enum class ErrorCode {
     PartnershipRerequestTimeNotPassed,
     PartnershipAlreadyRequested,
     InvalidOperationOnYourself,
+    SpotTooCloseToAnother,
 }

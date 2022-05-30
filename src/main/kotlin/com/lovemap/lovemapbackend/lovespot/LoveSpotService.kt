@@ -1,5 +1,8 @@
 package com.lovemap.lovemapbackend.lovespot
 
+import com.javadocmd.simplelatlng.LatLng
+import com.javadocmd.simplelatlng.LatLngTool
+import com.javadocmd.simplelatlng.util.LengthUnit
 import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.report.LoveSpotReportRequest
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
@@ -8,10 +11,15 @@ import com.lovemap.lovemapbackend.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.toList
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
+
+private const val TWELVE_METERS_IN_COORDINATES = 0.0001
+
+private const val MINIMUM_DISTANCE_IN_METERS = 20.0
 
 @Service
 @Transactional
@@ -46,9 +54,38 @@ class LoveSpotService(
         )
         loveSpot.setCustomAvailability(request.customAvailability)
         // TODO: validate if no locations are within few meters
+        if (anySpotsTooClose(request)) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                ErrorMessage(
+                    ErrorCode.SpotTooCloseToAnother,
+                    request.name,
+                    "LoveSpot too close to another, cannot be added here. " +
+                            "Minimum distance is > ${MINIMUM_DISTANCE_IN_METERS}m."
+                ).toJson()
+            )
+        }
         val savedSpot = repository.save(loveSpot)
         loverPointService.addPointsForSpotAdded(savedSpot)
         return savedSpot
+    }
+
+    private suspend fun anySpotsTooClose(request: CreateLoveSpotRequest): Boolean {
+        val nearbySpots = repository.search(
+            longFrom = request.longitude - TWELVE_METERS_IN_COORDINATES,
+            longTo = request.longitude + TWELVE_METERS_IN_COORDINATES,
+            latFrom = request.latitude - TWELVE_METERS_IN_COORDINATES,
+            latTo = request.latitude + TWELVE_METERS_IN_COORDINATES,
+            100
+        )
+
+        return nearbySpots.toList().any { nearby ->
+            LatLngTool.distance(
+                LatLng(nearby.latitude, nearby.longitude),
+                LatLng(request.latitude, request.longitude),
+                LengthUnit.METER
+            ) <= MINIMUM_DISTANCE_IN_METERS
+        }
     }
 
     suspend fun search(request: LoveSpotSearchRequest): Flow<LoveSpot> {
