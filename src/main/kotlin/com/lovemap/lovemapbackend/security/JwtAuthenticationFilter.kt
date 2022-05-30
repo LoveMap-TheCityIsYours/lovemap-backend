@@ -11,7 +11,6 @@ import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
-import kotlin.math.log
 
 @Component
 class JwtAuthenticationFilter(
@@ -20,22 +19,39 @@ class JwtAuthenticationFilter(
 ) : WebFilter {
     private val logger = KotlinLogging.logger {}
 
+    private val exclusions = listOf("/privacy-policy.html", "/.well-known/assetlinks.json", "/join-us")
+
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
+        return if (excludedFromClientSecretFilter(exchange)) {
+            tokenFilter(exchange, chain)
+        } else {
+            if (containsValidClientSecret(exchange)) {
+                tokenFilter(exchange, chain)
+            } else {
+                logger.warn { "Denying request from '${exchange.request.remoteAddress}' to '${exchange.request.path}'" }
+                exchange.response.statusCode = HttpStatus.FORBIDDEN
+                Mono.empty()
+            }
+        }
+    }
+
+    private fun excludedFromClientSecretFilter(exchange: ServerWebExchange) =
+        exclusions.any { exclusion -> exchange.request.path.toString().startsWith(exclusion) }
+
+    private fun containsValidClientSecret(exchange: ServerWebExchange): Boolean {
         val clientId = exchange.request.headers.getFirst("x-client-id")
         val clientSecret = exchange.request.headers.getFirst("x-client-secret")
         clientId?.let { id ->
             clientSecret?.let { secret ->
                 if (lovemapClients.contains(id, secret)) {
-                    return filterToken(exchange, chain)
+                    return true
                 }
             }
         }
-        logger.warn { "Denying request from '${exchange.request.remoteAddress}'" }
-        exchange.response.statusCode = HttpStatus.FORBIDDEN
-        return Mono.empty()
+        return false
     }
 
-    private fun filterToken(
+    private fun tokenFilter(
         exchange: ServerWebExchange,
         chain: WebFilterChain
     ): Mono<Void> {
