@@ -101,7 +101,7 @@ logging:
   level:
     root: INFO
     com.lovemap: DEBUG
-    org.springframework.r2dbc: DEBUG
+    org.springframework.r2dbc: INFO
     org.springframework.security: INFO
     org.springframework.web: DEBUG
     org.flywaydb: DEBUG
