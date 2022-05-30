@@ -1,9 +1,0 @@
-spring:
-  flyway:
-    url: jdbc:postgresql://localhost:5432/lovemap
-    user: admin
-    password: alma123
-  r2dbc:
-    url: r2dbc:postgresql://localhost:5432/lovemap
-    username: admin
-    password: alma123

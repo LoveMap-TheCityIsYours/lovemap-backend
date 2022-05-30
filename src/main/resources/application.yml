@@ -7,6 +7,10 @@ lovemap:
 
   signingKey: "overwrite this signing key in production"
 
+  clients:
+    - id: dummy
+      secret: dummy
+
   lovespot:
     risks:
       levels: 3
