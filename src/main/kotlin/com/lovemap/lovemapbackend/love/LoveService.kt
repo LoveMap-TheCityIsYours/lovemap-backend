@@ -49,12 +49,22 @@ class LoveService(
         return love
     }
 
-    suspend fun isLoverOrPartnerInLove(loverId: Long, love: Love): Boolean {
-        return love.loverId == loverId || love.loverPartnerId == loverId
+    suspend fun update(id: Long, request: UpdateLoveRequest): Love {
+        val love = getById(id)
+        request.name?.let { love.name = it }
+        request.note?.let { love.note = it }
+        request.happenedAt?.let {
+            love.happenedAt = Timestamp.from(InstantConverterUtils.fromString(it))
+        }
+        request.loverPartnerId?.let {
+            relationService.checkPartnership(love.loverId, it)
+            love.loverPartnerId = request.loverPartnerId
+        }
+        return loveRepository.save(love)
     }
 
     suspend fun getById(loveId: Long): Love {
-        return loveRepository.findById(loveId)
+        val love = loveRepository.findById(loveId)
             ?: throw ResponseStatusException(
                 HttpStatus.NOT_FOUND,
                 ErrorMessage(
@@ -63,9 +73,15 @@ class LoveService(
                     "Love not found by id '$loveId'."
                 ).toJson()
             )
+        authorizationService.checkAccessFor(love)
+        return love
     }
 
     suspend fun deleteLovesBySpot(loveSpotId: Long) {
         loveRepository.deleteByLoveSpotId(loveSpotId)
+    }
+
+    suspend fun delete(love: Love) {
+        loveRepository.delete(love)
     }
 }

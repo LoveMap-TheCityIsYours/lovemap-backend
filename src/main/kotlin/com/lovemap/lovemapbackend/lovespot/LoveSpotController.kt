@@ -18,6 +18,15 @@ class LoveSpotController(
         return ResponseEntity.ok(LoveSpotDto.of(loveSpot))
     }
 
+    @PutMapping("/{id}")
+    suspend fun update(
+        @PathVariable id: Long,
+        @RequestBody request: UpdateLoveSpotRequest
+    ): ResponseEntity<LoveSpotDto> {
+        val loveSpot = loveSpotService.update(id, request)
+        return ResponseEntity.ok(LoveSpotDto.of(loveSpot))
+    }
+
     @GetMapping("/{id}")
     suspend fun find(@PathVariable id: Long): ResponseEntity<LoveSpotDto> {
         val loveSpot = loveSpotService.getById(id)

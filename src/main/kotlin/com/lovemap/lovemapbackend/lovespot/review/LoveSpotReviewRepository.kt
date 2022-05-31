@@ -11,4 +11,6 @@ interface LoveSpotReviewRepository : CoroutineSortingRepository<LoveSpotReview, 
     fun findAllByReviewerId(reviewerId: Long): Flow<LoveSpotReview>
 
     suspend fun deleteByLoveSpotId(loveSpotId: Long)
+
+    suspend fun deleteByReviewerIdAndLoveSpotId(reviewerId: Long, loveSpotId: Long)
 }

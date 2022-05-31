@@ -88,6 +88,16 @@ class LoveSpotService(
         }
     }
 
+    suspend fun update(id: Long, request: UpdateLoveSpotRequest): LoveSpot {
+        val loveSpot = getById(id)
+        authorizationService.checkAccessFor(loveSpot)
+        request.name?.let { loveSpot.name = it }
+        request.description?.let { loveSpot.description = it }
+        request.availability?.let { loveSpot.availability = it.toModel() }
+        loveSpot.setCustomAvailability(request.customAvailability)
+        return repository.save(loveSpot)
+    }
+
     suspend fun search(request: LoveSpotSearchRequest): Flow<LoveSpot> {
         return repository.search(
             longFrom = request.longFrom,

@@ -84,6 +84,13 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+    url: jdbc:postgresql://localhost:5432/lovemap
+    user: changethis
+    password: changethis
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/lovemap
+    username: changethis
+    password: changethis
   jpa:
     properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:

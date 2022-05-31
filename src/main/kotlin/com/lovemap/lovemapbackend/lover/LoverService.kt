@@ -79,7 +79,8 @@ class LoverService(
     }
 
     suspend fun generateLoverUuid(loverId: Long): Lover {
-        var lover = authorizationService.checkAccessFor(loverId)
+        authorizationService.checkAccessFor(loverId)
+        var lover = authorizationService.getCaller()
         if (lover.uuid == null) {
             lover.uuid = UUID.randomUUID().toString()
             lover = save(lover)
@@ -123,7 +124,8 @@ class LoverService(
     }
 
     suspend fun deleteLoverLink(loverId: Long): Lover {
-        val lover = authorizationService.checkAccessFor(loverId)
+        authorizationService.checkAccessFor(loverId)
+        val lover = authorizationService.getCaller()
         lover.uuid = null
         return save(lover)
     }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional
 class LoveSpotDeletionService(
     private val loveService: LoveService,
     private val loveSpotService: LoveSpotService,
@@ -14,7 +15,6 @@ class LoveSpotDeletionService(
     private val loveSpotReportService: LoveSpotReportService,
 ) {
 
-    @Transactional
     suspend fun deleteSpot(spotId: Long): LoveSpot {
         val loveSpot = loveSpotService.getById(spotId)
         loveSpotReportService.deleteReportsOfSpot(spotId)

@@ -44,4 +44,6 @@ enum class ErrorCode {
     PartnershipAlreadyRequested,
     InvalidOperationOnYourself,
     SpotTooCloseToAnother,
+    InvalidLoveSpotName,
+    InvalidLoveSpotDescription,
 }

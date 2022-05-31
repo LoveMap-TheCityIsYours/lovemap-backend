@@ -8,11 +8,15 @@ import javax.validation.Validator
 const val INVALID_EMAIL = "Invalid email address"
 const val INVALID_USERNAME = "Length of username must be between 3 and 25 characters."
 const val INVALID_PASSWORD = "Length of password must be between 6 and 100 characters."
+const val INVALID_LOVE_SPOT_NAME = "Name must be between 3 and 50 characters."
+const val INVALID_LOVE_DESCRIPTION = "Description must be between 5 and 250 characters."
 
 private val constraintMap = HashMap<String, ErrorCode>().apply {
     put(INVALID_EMAIL, ErrorCode.InvalidCredentialsEmail)
     put(INVALID_USERNAME, ErrorCode.InvalidCredentialsUser)
     put(INVALID_PASSWORD, ErrorCode.InvalidCredentialsPassword)
+    put(INVALID_LOVE_SPOT_NAME, ErrorCode.InvalidLoveSpotName)
+    put(INVALID_LOVE_DESCRIPTION, ErrorCode.InvalidLoveSpotDescription)
 }
 
 @Service

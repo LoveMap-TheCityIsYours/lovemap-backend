@@ -1,11 +1,11 @@
 package com.lovemap.lovemapbackend.lovespot.review
 
-import com.lovemap.lovemapbackend.security.AuthorizationService
 import com.lovemap.lovemapbackend.love.Love
 import com.lovemap.lovemapbackend.love.LoveService
 import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
+import com.lovemap.lovemapbackend.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import kotlinx.coroutines.flow.Flow
@@ -73,29 +73,13 @@ class LoveSpotReviewService(
     }
 
     private suspend fun validateReview(request: LoveSpotReviewRequest) {
-        val love: Love = getLoveAndCheckIsPartOfIt(request)
-        checkLocationsMatch(request, love)
+        checkLocationsMatch(request)
     }
 
-    private suspend fun getLoveAndCheckIsPartOfIt(request: LoveSpotReviewRequest): Love {
-        val love: Love = loveService.getById(request.loveId)
-        if (!loveService.isLoverOrPartnerInLove(request.reviewerId, love)) {
-            throw ResponseStatusException(
-                HttpStatus.FORBIDDEN,
-                ErrorMessage(
-                    ErrorCode.Forbidden,
-                    request.loveId.toString(),
-                    "You cannot review this love."
-                ).toJson()
-            )
-        }
-        return love
-    }
-
-    private fun checkLocationsMatch(
-        request: LoveSpotReviewRequest,
-        love: Love
+    private suspend fun checkLocationsMatch(
+        request: LoveSpotReviewRequest
     ) {
+        val love: Love = loveService.getById(request.loveId)
         if (request.loveSpotId != love.loveSpotId) {
             throw ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
@@ -105,12 +89,18 @@ class LoveSpotReviewService(
                     "Requested loveSpotId '${request.loveSpotId}' " +
                             "does not match with the love's spotId '${love.loveSpotId}'"
                 ).toJson()
-
             )
         }
     }
 
     suspend fun deleteReviewsOfSpot(loveSpotId: Long) {
         repository.deleteByLoveSpotId(loveSpotId)
+    }
+
+    suspend fun deleteReviewsByLove(love: Love) {
+        repository.deleteByReviewerIdAndLoveSpotId(love.loverId, love.loveSpotId)
+        love.loverPartnerId?.let {
+            repository.deleteByReviewerIdAndLoveSpotId(it, love.loveSpotId)
+        }
     }
 }

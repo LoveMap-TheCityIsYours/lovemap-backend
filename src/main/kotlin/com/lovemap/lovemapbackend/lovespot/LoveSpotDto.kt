@@ -1,6 +1,12 @@
 package com.lovemap.lovemapbackend.lovespot
 
+import com.lovemap.lovemapbackend.utils.INVALID_LOVE_DESCRIPTION
+import com.lovemap.lovemapbackend.utils.INVALID_LOVE_SPOT_NAME
+import com.lovemap.lovemapbackend.utils.INVALID_USERNAME
 import java.time.LocalTime
+import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.NotNull
+import javax.validation.constraints.Size
 
 data class LoveSpotDto(
     val id: Long,
@@ -55,12 +61,24 @@ enum class LoveSpotAvailabilityApiStatus {
 }
 
 data class CreateLoveSpotRequest(
+    @field:Size(min = 3, max = 50, message = INVALID_LOVE_SPOT_NAME)
     val name: String,
+    @field:NotNull
     val longitude: Double,
+    @field:NotNull
     val latitude: Double,
+    @field:Size(min = 5, max = 250, message = INVALID_LOVE_DESCRIPTION)
     val description: String,
     var customAvailability: Pair<LocalTime, LocalTime>?,
+    @field:NotEmpty
     var availability: LoveSpotAvailabilityApiStatus
+)
+
+data class UpdateLoveSpotRequest(
+    val name: String? = null,
+    val description: String? = null,
+    var customAvailability: Pair<LocalTime, LocalTime>? = null,
+    var availability: LoveSpotAvailabilityApiStatus? = null
 )
 
 data class LoveSpotSearchRequest(
