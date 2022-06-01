@@ -11,8 +11,8 @@ class LoveController(
     private val loveService: LoveService,
     private val loveDeletionService: LoveDeletionService,
 ) {
-    @GetMapping("/{loverId}")
-    suspend fun list(@PathVariable loverId: Long): ResponseEntity<Flow<LoveDto>> {
+    @GetMapping
+    suspend fun listByLover(@RequestParam loverId: Long): ResponseEntity<Flow<LoveDto>> {
         val loveFlow = loveService.findAllInvolvedLovesFor(loverId)
         return ResponseEntity.ok(loveFlow.map { LoveDto.of(it) })
     }

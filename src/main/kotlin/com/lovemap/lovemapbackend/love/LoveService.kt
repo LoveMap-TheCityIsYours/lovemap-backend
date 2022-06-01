@@ -24,7 +24,8 @@ class LoveService(
     private val loverPointService: LoverPointService,
     private val loveRepository: LoveRepository
 ) {
-    fun findAllInvolvedLovesFor(loverId: Long): Flow<Love> {
+    suspend fun findAllInvolvedLovesFor(loverId: Long): Flow<Love> {
+        authorizationService.checkAccessFor(loverId)
         return loveRepository.findDistinctByLoverIdOrLoverPartnerId(loverId, loverId)
     }
 
@@ -59,6 +60,8 @@ class LoveService(
         request.loverPartnerId?.let {
             relationService.checkPartnership(love.loverId, it)
             love.loverPartnerId = request.loverPartnerId
+        } ?: run {
+            love.loverPartnerId = null
         }
         return loveRepository.save(love)
     }
