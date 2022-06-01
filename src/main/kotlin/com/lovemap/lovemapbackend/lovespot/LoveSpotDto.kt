@@ -19,12 +19,14 @@ data class LoveSpotDto(
     var availability: LoveSpotAvailabilityApiStatus,
     var averageDanger: Double?,
     var numberOfRatings: Int,
+    var addedBy: Long,
 ) {
     companion object {
         fun of(loveSpot: LoveSpot): LoveSpotDto {
             return LoveSpotDto(
                 id = loveSpot.id,
                 name = loveSpot.name,
+                addedBy = loveSpot.addedBy,
                 longitude = loveSpot.longitude,
                 latitude = loveSpot.latitude,
                 averageRating = loveSpot.averageRating,
@@ -76,8 +78,8 @@ data class CreateLoveSpotRequest(
 data class UpdateLoveSpotRequest(
     val name: String? = null,
     val description: String? = null,
-    var customAvailability: Pair<LocalTime, LocalTime>? = null,
-    var availability: LoveSpotAvailabilityApiStatus? = null
+    var availability: LoveSpotAvailabilityApiStatus,
+    var customAvailability: Pair<LocalTime, LocalTime>? = null
 )
 
 data class LoveSpotSearchRequest(

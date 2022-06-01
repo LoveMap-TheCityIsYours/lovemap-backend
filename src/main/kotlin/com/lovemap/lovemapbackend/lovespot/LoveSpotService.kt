@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
 
 private const val TWELVE_METERS_IN_COORDINATES = 0.0001
-
 private const val MINIMUM_DISTANCE_IN_METERS = 20.0
 
 @Service
@@ -53,7 +52,6 @@ class LoveSpotService(
             availability = request.availability.toModel(),
         )
         loveSpot.setCustomAvailability(request.customAvailability)
-        // TODO: validate if no locations are within few meters
         if (anySpotsTooClose(request)) {
             throw ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
