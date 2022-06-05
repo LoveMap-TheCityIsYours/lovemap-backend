@@ -44,11 +44,11 @@ class LoveSpotService(
     suspend fun create(request: CreateLoveSpotRequest): LoveSpot {
         val caller = authorizationService.getCaller()
         val loveSpot = LoveSpot(
-            name = request.name,
+            name = request.name.trim(),
             longitude = request.longitude,
             latitude = request.latitude,
             addedBy = caller.id,
-            description = request.description,
+            description = request.description.trim(),
             availability = request.availability.toModel(),
         )
         loveSpot.setCustomAvailability(request.customAvailability)
@@ -89,9 +89,9 @@ class LoveSpotService(
     suspend fun update(id: Long, request: UpdateLoveSpotRequest): LoveSpot {
         val loveSpot = getById(id)
         authorizationService.checkAccessFor(loveSpot)
-        request.name?.let { loveSpot.name = it }
-        request.description?.let { loveSpot.description = it }
-        request.availability?.let { loveSpot.availability = it.toModel() }
+        request.name?.let { loveSpot.name = it.trim() }
+        request.description?.let { loveSpot.description = it.trim() }
+        request.availability.let { loveSpot.availability = it.toModel() }
         loveSpot.setCustomAvailability(request.customAvailability)
         return repository.save(loveSpot)
     }

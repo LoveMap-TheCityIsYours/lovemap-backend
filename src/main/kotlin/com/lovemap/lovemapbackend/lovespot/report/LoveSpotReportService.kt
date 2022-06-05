@@ -39,7 +39,7 @@ class LoveSpotReportService(
         spotReport: LoveSpotReport,
         request: LoveSpotReportRequest
     ): LoveSpot {
-        spotReport.reportText = request.reportText
+        spotReport.reportText = request.reportText.trim()
         repository.save(spotReport)
         return loveSpotService.getById(spotReport.loveSpotId)
     }
@@ -49,7 +49,7 @@ class LoveSpotReportService(
             LoveSpotReport(
                 loverId = request.loverId,
                 loveSpotId = request.loveSpotId,
-                reportText = request.reportText,
+                reportText = request.reportText.trim(),
             )
         )
         val loveSpot = loveSpotService.updateNumberOfReports(request.loveSpotId, request)

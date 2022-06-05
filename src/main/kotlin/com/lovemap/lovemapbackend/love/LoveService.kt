@@ -37,11 +37,11 @@ class LoveService(
         }
         val love = loveRepository.save(
             Love(
-                name = request.name,
+                name = request.name.trim(),
                 loveSpotId = request.loveSpotId,
                 loverId = request.loverId,
                 loverPartnerId = request.loverPartnerId,
-                note = request.note,
+                note = request.note?.trim(),
                 happenedAt = request.happenedAt?.let { Timestamp.from(InstantConverterUtils.fromString(it)) }
                     ?: Timestamp.from(Instant.now())
             )
@@ -52,8 +52,8 @@ class LoveService(
 
     suspend fun update(id: Long, request: UpdateLoveRequest): Love {
         val love = getById(id)
-        request.name?.let { love.name = it }
-        request.note?.let { love.note = it }
+        request.name?.let { love.name = it.trim() }
+        request.note?.let { love.note = it.trim() }
         request.happenedAt?.let {
             love.happenedAt = Timestamp.from(InstantConverterUtils.fromString(it))
         }
