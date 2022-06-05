@@ -19,44 +19,48 @@ class AuthorizationService(
 ) {
     private val logger = KotlinLogging.logger {}
 
-    suspend fun checkAccessFor(loverId: Long) {
-        if (isAdmin()) {
-            return
-        }
+    suspend fun checkAccessFor(loverId: Long): Lover {
         val caller = getCaller()
+        if (isAdmin()) {
+            return caller
+        }
         if (loverId != caller.id) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
         }
+        return caller
     }
 
-    suspend fun checkAccessFor(lover: Lover) {
-        if (isAdmin()) {
-            return
-        }
+    suspend fun checkAccessFor(lover: Lover): Lover {
         val caller = getCaller()
+        if (isAdmin()) {
+            return caller
+        }
         if (lover.id != caller.id) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
         }
+        return caller
     }
 
-    suspend fun checkAccessFor(loveSpot: LoveSpot) {
-        if (isAdmin()) {
-            return
-        }
+    suspend fun checkAccessFor(loveSpot: LoveSpot): Lover {
         val caller = getCaller()
+        if (isAdmin()) {
+            return caller
+        }
         if (loveSpot.addedBy != caller.id) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
         }
+        return caller
     }
 
-    suspend fun checkAccessFor(love: Love) {
-        if (isAdmin()) {
-            return
-        }
+    suspend fun checkAccessFor(love: Love): Lover {
         val caller = getCaller()
+        if (isAdmin()) {
+            return caller
+        }
         if (love.loverId != caller.id && love.loverPartnerId != caller.id) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
         }
+        return caller
     }
 
     suspend fun getCaller(): Lover {

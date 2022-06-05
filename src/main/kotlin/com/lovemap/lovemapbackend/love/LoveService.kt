@@ -8,6 +8,9 @@ import com.lovemap.lovemapbackend.utils.ErrorCode.NotFoundById
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.InstantConverterUtils
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,18 +22,20 @@ import java.time.Instant
 @Transactional
 class LoveService(
     private val authorizationService: AuthorizationService,
+    private val loveConverter: LoveConverter,
     private val relationService: RelationService,
     private val spotService: LoveSpotService,
     private val loverPointService: LoverPointService,
     private val loveRepository: LoveRepository
 ) {
-    suspend fun findAllInvolvedLovesFor(loverId: Long): Flow<Love> {
-        authorizationService.checkAccessFor(loverId)
-        return loveRepository.findDistinctByLoverIdOrLoverPartnerId(loverId, loverId)
+    suspend fun findAllInvolvedLovesFor(loverId: Long): List<LoveDto> {
+        val caller = authorizationService.checkAccessFor(loverId)
+        val loves = loveRepository.findDistinctByLoverIdOrLoverPartnerId(loverId, loverId)
+        return loves.map { love -> loveConverter.toDto(caller, love) }.toList()
     }
 
-    suspend fun create(request: CreateLoveRequest): Love {
-        authorizationService.checkAccessFor(request.loverId)
+    suspend fun create(request: CreateLoveRequest): LoveDto {
+        val caller = authorizationService.checkAccessFor(request.loverId)
         spotService.checkExistence(request.loveSpotId)
         request.loverPartnerId?.let {
             relationService.checkPartnership(request.loverId, it)
@@ -47,11 +52,12 @@ class LoveService(
             )
         )
         loverPointService.addPointsForLovemaking(love)
-        return love
+        return loveConverter.toDto(caller, love)
     }
 
-    suspend fun update(id: Long, request: UpdateLoveRequest): Love {
-        val love = getById(id)
+    suspend fun update(id: Long, request: UpdateLoveRequest): LoveDto {
+        var love = getById(id)
+        val caller = authorizationService.checkAccessFor(love)
         request.name?.let { love.name = it.trim() }
         request.note?.let { love.note = it.trim() }
         request.happenedAt?.let {
@@ -63,7 +69,8 @@ class LoveService(
         } ?: run {
             love.loverPartnerId = null
         }
-        return loveRepository.save(love)
+        love = loveRepository.save(love)
+        return loveConverter.toDto(caller, love)
     }
 
     suspend fun getById(loveId: Long): Love {

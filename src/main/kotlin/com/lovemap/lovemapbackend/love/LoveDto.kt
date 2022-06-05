@@ -8,17 +8,19 @@ data class LoveDto(
     val loveSpotId: Long,
     val loverId: Long,
     val loverPartnerId: Long? = null,
+    val partnerName: String? = null,
     val note: String? = null,
     val happenedAt: String? = null,
 ) {
     companion object {
-        fun of(love: Love): LoveDto {
+        fun of(love: Love, partnerName: String?): LoveDto {
             return LoveDto(
                 id = love.id,
                 name = love.name,
                 loveSpotId = love.loveSpotId,
                 loverId = love.loverId,
                 loverPartnerId = love.loverPartnerId,
+                partnerName = partnerName,
                 note = love.note,
                 happenedAt = love.happenedAt.toInstant().toApiString()
             )

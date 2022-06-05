@@ -1,7 +1,5 @@
 package com.lovemap.lovemapbackend.love
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -12,15 +10,15 @@ class LoveController(
     private val loveDeletionService: LoveDeletionService,
 ) {
     @GetMapping
-    suspend fun listByLover(@RequestParam loverId: Long): ResponseEntity<Flow<LoveDto>> {
-        val loveFlow = loveService.findAllInvolvedLovesFor(loverId)
-        return ResponseEntity.ok(loveFlow.map { LoveDto.of(it) })
+    suspend fun listByLover(@RequestParam loverId: Long): ResponseEntity<List<LoveDto>> {
+        val loveDtoList = loveService.findAllInvolvedLovesFor(loverId)
+        return ResponseEntity.ok(loveDtoList)
     }
 
     @PostMapping
     suspend fun create(@RequestBody request: CreateLoveRequest): ResponseEntity<LoveDto> {
-        val love = loveService.create(request)
-        return ResponseEntity.ok(LoveDto.of(love))
+        val loveDto = loveService.create(request)
+        return ResponseEntity.ok(loveDto)
     }
 
     @PutMapping("/{id}")
@@ -28,13 +26,13 @@ class LoveController(
         @PathVariable id: Long,
         @RequestBody request: UpdateLoveRequest
     ): ResponseEntity<LoveDto> {
-        val love = loveService.update(id, request)
-        return ResponseEntity.ok(LoveDto.of(love))
+        val loveDto = loveService.update(id, request)
+        return ResponseEntity.ok(loveDto)
     }
 
     @DeleteMapping("/{id}")
     suspend fun delete(@PathVariable id: Long): ResponseEntity<LoveDto> {
-        val love = loveDeletionService.delete(id)
-        return ResponseEntity.ok(LoveDto.of(love))
+        val loveDto = loveDeletionService.delete(id)
+        return ResponseEntity.ok(loveDto)
     }
 }
