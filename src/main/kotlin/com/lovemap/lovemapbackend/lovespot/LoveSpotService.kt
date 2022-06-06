@@ -199,6 +199,7 @@ class LoveSpotService(
     }
 
     suspend fun deleteLoveSpot(loveSpot: LoveSpot) {
+        loverPointService.subtractPointsForSpotDeleted(loveSpot)
         repository.delete(loveSpot)
     }
 }

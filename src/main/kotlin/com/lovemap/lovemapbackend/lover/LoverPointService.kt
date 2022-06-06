@@ -132,13 +132,6 @@ class LoverPointService(
         return lover
     }
 
-    suspend fun addPointsForSpotAdded(loveSpot: LoveSpot): Lover {
-        val lover = loverService.unAuthorizedGetById(loveSpot.addedBy)
-        lover.points += points.loveSpotAdded
-        lover.loveSpotsAdded += 1
-        return loverService.save(lover)
-    }
-
     suspend fun subtractPointsForLovemakingDeleted(love: Love) {
         val lover = loverService.unAuthorizedGetById(love.loverId)
         lover.points -= points.loveMade
@@ -150,6 +143,20 @@ class LoverPointService(
             partner.numberOfLoves -= 1
             loverService.save(partner)
         }
+    }
+
+    suspend fun addPointsForSpotAdded(loveSpot: LoveSpot): Lover {
+        val lover = loverService.unAuthorizedGetById(loveSpot.addedBy)
+        lover.points += points.loveSpotAdded
+        lover.loveSpotsAdded += 1
+        return loverService.save(lover)
+    }
+
+    suspend fun subtractPointsForSpotDeleted(loveSpot: LoveSpot): Lover {
+        val lover = loverService.unAuthorizedGetById(loveSpot.addedBy)
+        lover.points -= points.loveSpotAdded
+        lover.loveSpotsAdded -= 1
+        return loverService.save(lover)
     }
 
     private fun isReviewMeaningful(reviewText: String) =
