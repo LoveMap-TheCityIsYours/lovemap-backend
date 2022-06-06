@@ -12,9 +12,6 @@ spec:
       app: lovemap
   strategy:
     type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 50%
-      maxSurge: 50%
   template:
     metadata:
       annotations: {}
@@ -25,25 +22,17 @@ spec:
         - env:
             - name: spring_profiles_active
               value: prod
-          image: europe-central2-docker.pkg.dev/smackmap/smackmap-docker/lovemap-backend:latest
+          image: us-east1-docker.pkg.dev/smackmap/lovemap-docker/lovemap-backend:1.0.2
           imagePullPolicy: Always
           name: lovemap
           ports:
             - containerPort: 8090
           resources:
             limits:
-              memory: 512M
+              memory: 1G
               cpu: 0.5
             requests:
-              memory: 512M
+              memory: 1G
               cpu: 0.5
-#          No need for so many resources now
-#          resources:
-#            limits:
-#              cpu: 4
-#              memory: 2G
-#            requests:
-#              cpu: 2
-#              memory: 1G
       restartPolicy: Always
 status: {}
