@@ -3,6 +3,7 @@ package com.lovemap.lovemapbackend.lovespot
 import com.javadocmd.simplelatlng.LatLng
 import com.javadocmd.simplelatlng.LatLngTool
 import com.javadocmd.simplelatlng.util.LengthUnit
+import com.lovemap.lovemapbackend.geolocation.GeoLocationService
 import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.report.LoveSpotReportRequest
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
@@ -10,6 +11,8 @@ import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewRequest
 import com.lovemap.lovemapbackend.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
 import org.springframework.http.HttpStatus
@@ -25,12 +28,13 @@ private const val MINIMUM_DISTANCE_IN_METERS = 20.0
 class LoveSpotService(
     private val authorizationService: AuthorizationService,
     private val loverPointService: LoverPointService,
+    private val geoLocationService: GeoLocationService,
     private val repository: LoveSpotRepository
 ) {
     private val maxSearchLimit = 100
 
     suspend fun getById(spotId: Long): LoveSpot {
-        return repository.findById(spotId)
+        val loveSpot = (repository.findById(spotId)
             ?: throw ResponseStatusException(
                 HttpStatus.NOT_FOUND,
                 ErrorMessage(
@@ -38,7 +42,15 @@ class LoveSpotService(
                     spotId.toString(),
                     "LoveSpot not found by ID '$spotId'."
                 ).toJson()
-            )
+            ))
+
+        if (loveSpot.geoLocationId == null) {
+            GlobalScope.async {
+                setGeoLocation(loveSpot)
+            }
+        }
+
+        return loveSpot
     }
 
     suspend fun create(request: CreateLoveSpotRequest): LoveSpot {
@@ -52,6 +64,13 @@ class LoveSpotService(
             availability = request.availability.toModel(),
         )
         loveSpot.setCustomAvailability(request.customAvailability)
+        validateSpotTooClose(request)
+        val savedSpot = repository.save(loveSpot)
+        runAsyncTasks(savedSpot, loveSpot)
+        return savedSpot
+    }
+
+    private suspend fun validateSpotTooClose(request: CreateLoveSpotRequest) {
         if (anySpotsTooClose(request)) {
             throw ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
@@ -63,9 +82,24 @@ class LoveSpotService(
                 ).toJson()
             )
         }
-        val savedSpot = repository.save(loveSpot)
-        loverPointService.addPointsForSpotAdded(savedSpot)
-        return savedSpot
+    }
+
+    private fun runAsyncTasks(
+        savedSpot: LoveSpot,
+        loveSpot: LoveSpot
+    ) {
+        GlobalScope.async {
+            loverPointService.addPointsForSpotAdded(savedSpot)
+            setGeoLocation(loveSpot)
+        }
+    }
+
+    private suspend fun setGeoLocation(loveSpot: LoveSpot) {
+        val geoLocation = geoLocationService.getLocationInfo(loveSpot)
+        geoLocation?.let {
+            loveSpot.geoLocationId = geoLocation.id
+            repository.save(loveSpot)
+        }
     }
 
     private suspend fun anySpotsTooClose(request: CreateLoveSpotRequest): Boolean {

@@ -2,18 +2,19 @@ package com.lovemap.lovemapbackend.lover
 
 import com.lovemap.lovemapbackend.love.Love
 import com.lovemap.lovemapbackend.lover.points.LoverPoints
-import com.lovemap.lovemapbackend.lover.ranks.LoverRanks
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.report.LoveSpotReport
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewRequest
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 class LoverPointService(
     private val loverService: LoverService,
     private val points: LoverPoints,
-    private val loverRanks: LoverRanks
 ) {
 
     suspend fun addPointsForReview(review: LoveSpotReview, loveSpot: LoveSpot): Lover {
@@ -28,7 +29,7 @@ class LoverPointService(
             lover.points += points.reviewSubmitted
             lover.reviewsSubmitted += 1
         }
-        return updateRank(lover)
+        return loverService.save(lover)
     }
 
     private suspend fun addPointsForReviewReceived(review: LoveSpotReview, loveSpot: LoveSpot) {
@@ -39,7 +40,7 @@ class LoverPointService(
             } else {
                 points.reviewReceived5Stars
             }
-            updateRank(spotAdder)
+            loverService.save(spotAdder)
         }
     }
 
@@ -72,7 +73,7 @@ class LoverPointService(
                 // do nothing
             }
         }
-        updateRank(lover)
+        loverService.save(lover)
     }
 
     private suspend fun updatePointsForReviewReceived(
@@ -94,7 +95,7 @@ class LoverPointService(
                 // do nothing
             }
         }
-        updateRank(spotAdder)
+        loverService.save(spotAdder)
     }
 
     suspend fun addPointsForReport(report: LoveSpotReport, loveSpot: LoveSpot): Lover {
@@ -107,26 +108,26 @@ class LoverPointService(
         val lover = loverService.unAuthorizedGetById(report.loverId)
         lover.points += points.reportSubmitted
         lover.reportsSubmitted += 1
-        return updateRank(lover)
+        return loverService.save(lover)
     }
 
     private suspend fun addPointsForReportReceived(loveSpot: LoveSpot) {
         val spotAdder = loverService.unAuthorizedGetById(loveSpot.addedBy)
         spotAdder.points += points.reportReceived
         spotAdder.reportsReceived += 1
-        updateRank(spotAdder)
+        loverService.save(spotAdder)
     }
 
     suspend fun addPointsForLovemaking(love: Love): Lover {
         val lover = loverService.unAuthorizedGetById(love.loverId)
         lover.points += points.loveMade
         lover.numberOfLoves += 1
-        updateRank(lover)
+        loverService.save(lover)
         love.loverPartnerId?.let {
             val partner = loverService.unAuthorizedGetById(it)
             partner.points += points.loveMade
             partner.numberOfLoves += 1
-            updateRank(partner)
+            loverService.save(partner)
         }
         return lover
     }
@@ -135,26 +136,20 @@ class LoverPointService(
         val lover = loverService.unAuthorizedGetById(loveSpot.addedBy)
         lover.points += points.loveSpotAdded
         lover.loveSpotsAdded += 1
-        return updateRank(lover)
-    }
-
-    private suspend fun updateRank(lover: Lover): Lover {
-        lover.rank = calculateRank(lover.points)
         return loverService.save(lover)
     }
 
-    private fun calculateRank(points: Int): Int {
-        val rankList = loverRanks.rankList
-        var rankLevel = 1
-        for ((index, rank) in rankList.withIndex()) {
-            rankLevel = if (rank.pointsNeeded > points) {
-                rankLevel = index
-                break
-            } else {
-                1
-            }
+    suspend fun subtractPointsForLovemakingDeleted(love: Love) {
+        val lover = loverService.unAuthorizedGetById(love.loverId)
+        lover.points -= points.loveMade
+        lover.numberOfLoves -= 1
+        loverService.save(lover)
+        love.loverPartnerId?.let {
+            val partner = loverService.unAuthorizedGetById(it)
+            partner.points -= points.loveMade
+            partner.numberOfLoves -= 1
+            loverService.save(partner)
         }
-        return rankLevel
     }
 
     private fun isReviewMeaningful(reviewText: String) =

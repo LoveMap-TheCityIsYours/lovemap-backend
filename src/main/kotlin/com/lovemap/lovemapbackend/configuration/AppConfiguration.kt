@@ -1,6 +1,8 @@
 package com.lovemap.lovemapbackend.configuration
 
+import com.google.maps.GeoApiContext
 import org.flywaydb.core.Flyway
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.flyway.FlywayProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -12,7 +14,9 @@ import javax.validation.Validator
 
 @Configuration
 @EnableConfigurationProperties(FlywayProperties::class)
-class AppConfiguration {
+class AppConfiguration(
+    @Value("\${lovemap.google.apiKey}") private val googleApiKey: String
+) {
 
     @Bean
     fun passwordEncoder(): PasswordEncoder {
@@ -31,5 +35,12 @@ class AppConfiguration {
     @Bean
     fun validator(): Validator {
         return LocalValidatorFactoryBean()
+    }
+
+    @Bean
+    fun geoApiContext(): GeoApiContext {
+        return GeoApiContext.Builder()
+            .apiKey(googleApiKey)
+            .build()
     }
 }

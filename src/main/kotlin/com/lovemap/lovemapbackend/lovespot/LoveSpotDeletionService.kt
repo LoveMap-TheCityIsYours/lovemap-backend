@@ -19,7 +19,7 @@ class LoveSpotDeletionService(
         val loveSpot = loveSpotService.getById(spotId)
         loveSpotReportService.deleteReportsOfSpot(spotId)
         loveSpotReviewService.deleteReviewsOfSpot(spotId)
-        loveService.deleteLovesBySpot(spotId)
+        loveService.deleteLovesBySpot(loveSpot)
         loveSpotService.deleteLoveSpot(loveSpot)
         return loveSpot
     }

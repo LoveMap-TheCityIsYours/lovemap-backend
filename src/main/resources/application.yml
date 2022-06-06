@@ -6,6 +6,8 @@ lovemap:
     emails: ""
 
   signingKey: "overwrite this signing key in production"
+  google:
+    apiKey: "overwrite this apiKey key in production"
 
   clients:
     - id: dummy
@@ -44,39 +46,39 @@ lovemap:
         - rank: 2
           nameEN: Lavurious
           nameHU: Érdeklődő Lover
-          pointsNeeded: 5
+          pointsNeeded: 10
         - rank: 3
           nameEN: Lovesperienced
           nameHU: Tapasztalt Lover
-          pointsNeeded: 10
+          pointsNeeded: 20
         - rank: 4
           nameEN: Lovespert
           nameHU: Szakértő Lover
-          pointsNeeded: 20
+          pointsNeeded: 40
         - rank: 5
           nameEN: Love Priest
           nameHU: Love Pap
-          pointsNeeded: 30
+          pointsNeeded: 60
         - rank: 6
           nameEN: Love Bishop
           nameHU: Love Püspök
-          pointsNeeded: 40
+          pointsNeeded: 100
         - rank: 7
           nameEN: Love Archbishop
           nameHU: Love Érsek
-          pointsNeeded: 50
+          pointsNeeded: 200
         - rank: 8
           nameEN: Love Cardinal
           nameHU: Love Bíboros
-          pointsNeeded: 60
+          pointsNeeded: 300
         - rank: 9
           nameEN: Love Pope
           nameHU: Love Pápa
-          pointsNeeded: 70
+          pointsNeeded: 500
         - rank: 10
           nameEN: Love God
           nameHU: Love Isten
-          pointsNeeded: 100
+          pointsNeeded: 1000
 
 spring:
   profiles:

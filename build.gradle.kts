@@ -34,6 +34,8 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:2.1.21")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3")
     implementation("com.javadocmd:simplelatlng:1.3.1")
+    implementation("com.google.maps:google-maps-services:2.1.0")
+//    implementation("org.slf4j:slf4j-simple:1.7.36")
 
     implementation("org.bouncycastle:bcprov-jdk15on:1.70")
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")

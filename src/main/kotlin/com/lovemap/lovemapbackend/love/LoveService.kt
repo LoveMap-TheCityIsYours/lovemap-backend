@@ -1,6 +1,7 @@
 package com.lovemap.lovemapbackend.love
 
 import com.lovemap.lovemapbackend.lover.LoverPointService
+import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.relation.RelationService
 import com.lovemap.lovemapbackend.security.AuthorizationService
@@ -87,8 +88,12 @@ class LoveService(
         return love
     }
 
-    suspend fun deleteLovesBySpot(loveSpotId: Long) {
-        loveRepository.deleteByLoveSpotId(loveSpotId)
+    suspend fun deleteLovesBySpot(loveSpot: LoveSpot) {
+        val loves = loveRepository.findByLoveSpotId(loveSpot.id)
+        loves.collect { love ->
+            loverPointService.subtractPointsForLovemakingDeleted(love)
+        }
+        loveRepository.deleteByLoveSpotId(loveSpot.id)
     }
 
     suspend fun delete(love: Love) {
