@@ -11,10 +11,10 @@ import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewRequest
 import com.lovemap.lovemapbackend.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.withContext
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -45,7 +45,7 @@ class LoveSpotService(
             ))
 
         if (loveSpot.geoLocationId == null) {
-            GlobalScope.async {
+            withContext(Dispatchers.Default) {
                 setGeoLocation(loveSpot)
             }
         }
@@ -84,11 +84,11 @@ class LoveSpotService(
         }
     }
 
-    private fun runAsyncTasks(
+    private suspend fun runAsyncTasks(
         savedSpot: LoveSpot,
         loveSpot: LoveSpot
     ) {
-        GlobalScope.async {
+        withContext(Dispatchers.Default) {
             loverPointService.addPointsForSpotAdded(savedSpot)
             setGeoLocation(loveSpot)
         }

@@ -27,8 +27,13 @@ class GeoLocationService(
     suspend fun getLocationInfo(loveSpot: LoveSpot): GeoLocation? {
         return withContext(Dispatchers.IO) {
             logger.info { "Reverse geocoding $loveSpot" }
-            val geoLocation = decodeLocation(loveSpot)
-            saveOrGetExisting(geoLocation)
+            try {
+                val geoLocation = decodeLocation(loveSpot)
+                saveOrGetExisting(geoLocation)
+            } catch (e: Exception) {
+                logger.error("Error occurred during getLocationInfo.", e)
+                null
+            }
         }
     }
 

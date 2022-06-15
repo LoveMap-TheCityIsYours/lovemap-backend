@@ -113,24 +113,6 @@ data class LoverRelationsDto(
     }
 }
 
-data class CreateLoverRequest(
-    @field:Size(min = 3, max = 25, message = INVALID_USERNAME)
-    val userName: String,
-    @field:Size(min = 6, max = 100, message = INVALID_PASSWORD)
-    val password: String,
-    @field:Email(message = INVALID_EMAIL)
-    val email: String
-)
-
-data class LoginLoverRequest(
-    @field:Size(min = 3, max = 25, message = INVALID_USERNAME)
-    val userName: String?,
-    @field:Email(message = INVALID_EMAIL)
-    val email: String?,
-    @field:Size(min = 6, max = 100, message = INVALID_PASSWORD)
-    val password: String
-)
-
 data class LoverViewDto(
     val id: Long,
     val userName: String,

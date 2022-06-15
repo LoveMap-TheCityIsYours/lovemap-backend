@@ -1,6 +1,8 @@
 package com.lovemap.lovemapbackend.authentication
 
-import com.lovemap.lovemapbackend.lover.*
+import com.lovemap.lovemapbackend.lover.LoverConverter
+import com.lovemap.lovemapbackend.lover.LoverDto
+import com.lovemap.lovemapbackend.lover.LoverRelationsDto
 import com.lovemap.lovemapbackend.utils.ValidatorService
 import mu.KotlinLogging
 import org.springframework.http.HttpHeaders
@@ -49,6 +51,17 @@ class AuthenticationController(
             }
             throw ResponseStatusException(HttpStatus.FORBIDDEN, e.message)
         }
+    }
+
+    @PostMapping("/request-password-reset")
+    suspend fun requestPasswordReset(@RequestBody request: ResetPasswordRequest): ResponseEntity<ResetPasswordResponse> {
+        // TODO: finish
+        return ResponseEntity.ok(ResetPasswordResponse("Instructions sent in email."))
+    }
+
+    @PostMapping("/new-password")
+    suspend fun newPassword(@RequestBody request: NewPasswordRequest): ResponseEntity<LoverRelationsDto> {
+        TODO("finish")
     }
 
     private fun validateLoginRequest(request: LoginLoverRequest) {

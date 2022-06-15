@@ -19,7 +19,7 @@ class JwtAuthenticationFilter(
 ) : WebFilter {
     private val logger = KotlinLogging.logger {}
 
-    private val exclusions = listOf("/privacy-policy.html", "/.well-known/assetlinks.json", "/join-us")
+    private val exclusions = listOf("/privacy-policy.html", "/.well-known/assetlinks.json", "/join-us", "/favicon.ico")
 
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
         return if (excludedFromClientSecretFilter(exchange)) {
