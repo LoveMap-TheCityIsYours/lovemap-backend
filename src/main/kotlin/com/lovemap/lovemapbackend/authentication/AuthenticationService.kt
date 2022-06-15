@@ -1,8 +1,8 @@
 package com.lovemap.lovemapbackend.authentication
 
 import com.lovemap.lovemapbackend.security.JwtService
-import com.lovemap.lovemapbackend.security.password.Password
-import com.lovemap.lovemapbackend.security.password.PasswordService
+import com.lovemap.lovemapbackend.authentication.password.Password
+import com.lovemap.lovemapbackend.authentication.password.PasswordService
 import com.lovemap.lovemapbackend.lover.*
 import kotlinx.coroutines.reactor.awaitSingle
 import mu.KotlinLogging
@@ -18,10 +18,9 @@ import java.time.Instant
 class AuthenticationService(
     private val loverService: LoverService,
     private val loverRelationService: LoverRelationService,
-    private val passwordRepository: PasswordService,
+    private val passwordService: PasswordService,
     private val jwtService: JwtService,
     private val authenticationManager: ReactiveAuthenticationManager,
-    private val passwordEncoder: PasswordEncoder,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -33,11 +32,7 @@ class AuthenticationService(
             createdAt = Timestamp.from(Instant.now())
         )
         lover = loverService.save(lover)
-        val password = Password(
-            passwordHash = passwordEncoder.encode(request.password),
-            loverId = lover.id,
-        )
-        passwordRepository.save(password)
+        passwordService.createPassword(lover, request.password)
         return lover
     }
 

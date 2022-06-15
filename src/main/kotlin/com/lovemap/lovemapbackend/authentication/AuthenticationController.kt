@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend.authentication
 
+import com.lovemap.lovemapbackend.authentication.password.PasswordResetService
 import com.lovemap.lovemapbackend.lover.LoverConverter
 import com.lovemap.lovemapbackend.lover.LoverDto
 import com.lovemap.lovemapbackend.lover.LoverRelationsDto
@@ -19,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException
 @RequestMapping("/authentication")
 class AuthenticationController(
     private val authenticationService: AuthenticationService,
+    private val passwordResetService: PasswordResetService,
     private val validatorService: ValidatorService,
     private val loverConverter: LoverConverter,
 ) {
@@ -55,13 +57,17 @@ class AuthenticationController(
 
     @PostMapping("/request-password-reset")
     suspend fun requestPasswordReset(@RequestBody request: ResetPasswordRequest): ResponseEntity<ResetPasswordResponse> {
-        // TODO: finish
+        passwordResetService.initPasswordReset(request)
         return ResponseEntity.ok(ResetPasswordResponse("Instructions sent in email."))
     }
 
     @PostMapping("/new-password")
     suspend fun newPassword(@RequestBody request: NewPasswordRequest): ResponseEntity<LoverRelationsDto> {
-        TODO("finish")
+        val lover: LoverRelationsDto = passwordResetService.setNewPassword(request)
+        val jwt = authenticationService.generateToken(lover.userName, request.newPassword)
+        return ResponseEntity.ok()
+            .header(HttpHeaders.AUTHORIZATION, jwt)
+            .body(lover)
     }
 
     private fun validateLoginRequest(request: LoginLoverRequest) {

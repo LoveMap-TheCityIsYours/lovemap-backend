@@ -10,6 +10,7 @@ const val INVALID_USERNAME = "Length of username must be between 3 and 25 charac
 const val INVALID_PASSWORD = "Length of password must be between 6 and 100 characters."
 const val INVALID_LOVE_SPOT_NAME = "Name must be between 3 and 50 characters."
 const val INVALID_LOVE_DESCRIPTION = "Description must be between 5 and 250 characters."
+const val INVALID_PW_RESET_CODE = "Password reset code is exactly 8 characters long."
 
 private val constraintMap = HashMap<String, ErrorCode>().apply {
     put(INVALID_EMAIL, ErrorCode.InvalidCredentialsEmail)
@@ -17,6 +18,7 @@ private val constraintMap = HashMap<String, ErrorCode>().apply {
     put(INVALID_PASSWORD, ErrorCode.InvalidCredentialsPassword)
     put(INVALID_LOVE_SPOT_NAME, ErrorCode.InvalidLoveSpotName)
     put(INVALID_LOVE_DESCRIPTION, ErrorCode.InvalidLoveSpotDescription)
+    put(INVALID_PW_RESET_CODE, ErrorCode.InvalidPwResetCode)
 }
 
 @Service

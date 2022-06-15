@@ -1,7 +1,7 @@
 package com.lovemap.lovemapbackend.security
 
 import com.lovemap.lovemapbackend.lover.Lover
-import com.lovemap.lovemapbackend.security.password.Password
+import com.lovemap.lovemapbackend.authentication.password.Password
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails

@@ -1,0 +1,2 @@
+ALTER TABLE password ADD COLUMN reset_code VARCHAR(16) NULL DEFAULT NULL;
+ALTER TABLE password ADD COLUMN reset_initiated_at TIMESTAMP NULL;
