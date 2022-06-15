@@ -6,6 +6,7 @@ import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.report.LoveSpotReport
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewRequest
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -16,6 +17,7 @@ class LoverPointService(
     private val loverService: LoverService,
     private val points: LoverPoints,
 ) {
+    private val logger = KotlinLogging.logger {}
 
     suspend fun addPointsForReview(review: LoveSpotReview, loveSpot: LoveSpot): Lover {
         val lover = addPointsForReviewSubmitted(review)

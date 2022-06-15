@@ -11,10 +11,12 @@ import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewRequest
 import com.lovemap.lovemapbackend.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.withContext
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -31,6 +33,8 @@ class LoveSpotService(
     private val geoLocationService: GeoLocationService,
     private val repository: LoveSpotRepository
 ) {
+    private val logger = KotlinLogging.logger {}
+
     private val maxSearchLimit = 100
 
     suspend fun getById(spotId: Long): LoveSpot {
@@ -45,7 +49,7 @@ class LoveSpotService(
             ))
 
         if (loveSpot.geoLocationId == null) {
-            withContext(Dispatchers.Default) {
+            CoroutineScope(Dispatchers.Default).async {
                 setGeoLocation(loveSpot)
             }
         }
@@ -88,7 +92,7 @@ class LoveSpotService(
         savedSpot: LoveSpot,
         loveSpot: LoveSpot
     ) {
-        withContext(Dispatchers.Default) {
+        CoroutineScope(Dispatchers.Default).async {
             loverPointService.addPointsForSpotAdded(savedSpot)
             setGeoLocation(loveSpot)
         }

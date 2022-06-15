@@ -1,12 +1,12 @@
 package com.lovemap.lovemapbackend.partnership
 
+import com.lovemap.lovemapbackend.lover.LoverService
 import com.lovemap.lovemapbackend.partnership.Partnership.Status.PARTNER
 import com.lovemap.lovemapbackend.partnership.Partnership.Status.PARTNERSHIP_REQUESTED
 import com.lovemap.lovemapbackend.partnership.PartnershipReaction.ACCEPT
 import com.lovemap.lovemapbackend.partnership.PartnershipReaction.DENY
 import com.lovemap.lovemapbackend.relation.RelationService
 import com.lovemap.lovemapbackend.security.AuthorizationService
-import com.lovemap.lovemapbackend.lover.LoverService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import kotlinx.coroutines.flow.Flow

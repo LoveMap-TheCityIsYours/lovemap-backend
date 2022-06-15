@@ -6,6 +6,7 @@ import com.google.maps.model.AddressComponent
 import com.google.maps.model.LatLng
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
@@ -19,7 +20,7 @@ private const val UNKNOWN_GEO_LOCATION: Long = 1
 @Transactional(propagation = Propagation.REQUIRES_NEW)
 class GeoLocationService(
     private val geoApiContext: GeoApiContext,
-
+    private val blockingCoroutineDispatcher: ExecutorCoroutineDispatcher,
     private val repository: GeoLocationRepository,
 ) {
     private val logger = KotlinLogging.logger {}
@@ -50,7 +51,7 @@ class GeoLocationService(
         return savedLocation ?: repository.save(geoLocation)
     }
 
-    fun decodeLocation(loveSpot: LoveSpot): GeoLocation {
+    private fun decodeLocation(loveSpot: LoveSpot): GeoLocation {
         val geoResult = GeoLocation()
         val geocodingResults = GeocodingApi
             .reverseGeocode(geoApiContext, LatLng(loveSpot.latitude, loveSpot.longitude))

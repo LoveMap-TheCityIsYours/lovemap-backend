@@ -1,6 +1,8 @@
 package com.lovemap.lovemapbackend.staticcontent
 
 import com.lovemap.lovemapbackend.email.EmailService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -20,33 +22,44 @@ class StaticContentConfiguration(
     @Bean
     fun mainRouter() = coRouter {
         GET("/favicon.ico") {
-            ok().contentType(MediaType.IMAGE_PNG)
-                .bodyValue(favicon).block()!!
+            withContext(Dispatchers.IO) {
+                ok().contentType(MediaType.IMAGE_PNG)
+                    .bodyValue(favicon).block()!!
+            }
         }
         GET("/join-us.html") {
-            ok().contentType(MediaType.TEXT_HTML)
-                .bodyValue(joinUsHtml).block()!!
+            emailService.sendEmail()
+            withContext(Dispatchers.IO) {
+                ok().contentType(MediaType.TEXT_HTML)
+                    .bodyValue(joinUsHtml).block()!!
+            }
         }
         GET("/join-us/**") {
-            ok().contentType(MediaType.TEXT_HTML)
-                .bodyValue(joinUsHtml).block()!!
+            withContext(Dispatchers.IO) {
+                ok().contentType(MediaType.TEXT_HTML)
+                    .bodyValue(joinUsHtml).block()!!
+            }
         }
         GET("/privacy-policy.html") {
-            ok().contentType(MediaType.TEXT_HTML)
-                .bodyValue(privacyPolicyHtml).block()!!
+            withContext(Dispatchers.IO) {
+                ok().contentType(MediaType.TEXT_HTML)
+                    .bodyValue(privacyPolicyHtml).block()!!
+            }
         }
         GET("/.well-known/assetlinks.json") {
-            ServerResponse.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(
-                    """
+            withContext(Dispatchers.IO) {
+                ServerResponse.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(
+                        """
                     [{
                       "relation": ["delegate_permission/common.handle_all_urls"],
                       "target" : { "namespace": "android_app", "package_name": "com.lovemap.lovemapandroid",
                                    "sha256_cert_fingerprints": ["C4:97:10:B3:46:38:45:65:67:41:88:8C:F1:00:D0:DD:20:ED:87:82:A5:54:44:30:8A:53:15:F7:16:47:ED:54"] }
                     }]
                 """.trimIndent()
-                ).block()!!
+                    ).block()!!
+            }
         }
     }
 }

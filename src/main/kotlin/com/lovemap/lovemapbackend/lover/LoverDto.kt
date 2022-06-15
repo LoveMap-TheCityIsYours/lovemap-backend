@@ -7,13 +7,8 @@ import com.lovemap.lovemapbackend.relation.LoverRelations
 import com.lovemap.lovemapbackend.relation.Relation
 import com.lovemap.lovemapbackend.relation.RelationStatusDto
 import com.lovemap.lovemapbackend.utils.InstantConverterUtils.toApiString
-import com.lovemap.lovemapbackend.utils.INVALID_EMAIL
-import com.lovemap.lovemapbackend.utils.INVALID_PASSWORD
-import com.lovemap.lovemapbackend.utils.INVALID_USERNAME
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
-import javax.validation.constraints.Email
-import javax.validation.constraints.Size
 
 data class LoverDto(
     val id: Long,
