@@ -12,7 +12,6 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
 class EmailService(
@@ -24,12 +23,10 @@ class EmailService(
     private val logger = KotlinLogging.logger {}
 
     suspend fun sendEmail() {
-        repeat(130) {
-            sendPasswordResetEmail(
-                loverService.unAuthorizedGetById(1),
-                UUID.randomUUID().toString().substringBefore("-").uppercase()
-            )
-        }
+//            sendPasswordResetEmail(
+//                loverService.unAuthorizedGetById(1),
+//                UUID.randomUUID().toString().substringBefore("-").uppercase()
+//            )
     }
 
     suspend fun sendPasswordResetEmail(lover: Lover, resetCode: String) {

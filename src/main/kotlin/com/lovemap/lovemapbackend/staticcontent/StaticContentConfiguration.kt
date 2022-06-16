@@ -1,6 +1,5 @@
 package com.lovemap.lovemapbackend.staticcontent
 
-import com.lovemap.lovemapbackend.email.EmailService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Value
@@ -16,7 +15,6 @@ class StaticContentConfiguration(
     @Value("classpath:/public/favicon.ico") private val favicon: Resource,
     @Value("classpath:/public/join-us.html") private val joinUsHtml: Resource,
     @Value("classpath:/public/privacy-policy.html") private val privacyPolicyHtml: Resource,
-    private val emailService: EmailService
 ) {
 
     @Bean
@@ -28,7 +26,6 @@ class StaticContentConfiguration(
             }
         }
         GET("/join-us.html") {
-            emailService.sendEmail()
             withContext(Dispatchers.IO) {
                 ok().contentType(MediaType.TEXT_HTML)
                     .bodyValue(joinUsHtml).block()!!
