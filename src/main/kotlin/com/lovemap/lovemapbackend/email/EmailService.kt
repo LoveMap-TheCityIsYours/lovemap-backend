@@ -1,5 +1,7 @@
 package com.lovemap.lovemapbackend.email
 
+import com.lovemap.lovemapbackend.authentication.CreateLoverRequest
+import com.lovemap.lovemapbackend.authentication.password.PasswordService
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.LoverService
 import com.mailjet.client.MailjetResponse
@@ -12,6 +14,7 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class EmailService(
@@ -23,10 +26,10 @@ class EmailService(
     private val logger = KotlinLogging.logger {}
 
     suspend fun sendEmail() {
-//            sendPasswordResetEmail(
-//                loverService.unAuthorizedGetById(1),
-//                UUID.randomUUID().toString().substringBefore("-").uppercase()
-//            )
+//        sendPasswordResetEmail(
+//            loverService.unAuthorizedGetById(1),
+//            UUID.randomUUID().toString().substringBefore("-").uppercase()
+//        )
     }
 
     suspend fun sendPasswordResetEmail(lover: Lover, resetCode: String) {
@@ -45,7 +48,7 @@ class EmailService(
                 .html(template)
                 .customId("PasswordReset")
                 .send()
-            logger.info { "Password reset email sent for $lover. Response: [${response.data}]" }
+            logger.info { "Password reset email sent for ${lover.userName}. Response: [${response.data}]" }
         }
     }
 }
