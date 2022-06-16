@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend
 
+import com.lovemap.lovemapbackend.email.EmailProperties
 import com.lovemap.lovemapbackend.lover.points.LoverPoints
 import com.lovemap.lovemapbackend.lover.ranks.LoverRanks
 import com.lovemap.lovemapbackend.lovespot.risk.LoveSpotRisks
@@ -16,7 +17,8 @@ import org.springframework.web.reactive.config.EnableWebFlux
         LoverRanks::class,
         LoveSpotRisks::class,
         LoverPoints::class,
-        LoveMapClients::class
+        LoveMapClients::class,
+        EmailProperties::class,
     ]
 )
 class LoveMapBackendApplication

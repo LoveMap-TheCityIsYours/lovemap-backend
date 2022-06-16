@@ -1,6 +1,8 @@
 package com.lovemap.lovemapbackend.configuration
 
 import com.google.maps.GeoApiContext
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
+import kotlinx.coroutines.asCoroutineDispatcher
 import org.flywaydb.core.Flyway
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.flyway.FlywayProperties
@@ -10,6 +12,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean
+import java.util.concurrent.Executors
 import javax.validation.Validator
 
 @Configuration
@@ -42,5 +45,11 @@ class AppConfiguration(
         return GeoApiContext.Builder()
             .apiKey(googleApiKey)
             .build()
+    }
+
+    @Bean
+    fun blockingCoroutineDispatcher(): ExecutorCoroutineDispatcher {
+        val threads = Runtime.getRuntime().availableProcessors() * 4
+        return Executors.newFixedThreadPool(threads).asCoroutineDispatcher()
     }
 }

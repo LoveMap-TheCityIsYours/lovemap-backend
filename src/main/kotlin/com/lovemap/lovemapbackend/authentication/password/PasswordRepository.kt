@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.security.password
+package com.lovemap.lovemapbackend.authentication.password
 
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 

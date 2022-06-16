@@ -1,6 +1,6 @@
 package com.lovemap.lovemapbackend.security
 
-import com.lovemap.lovemapbackend.security.password.PasswordService
+import com.lovemap.lovemapbackend.authentication.password.PasswordService
 import com.lovemap.lovemapbackend.lover.LoverService
 import kotlinx.coroutines.reactor.mono
 import mu.KotlinLogging

@@ -2,7 +2,6 @@ package com.lovemap.lovemapbackend.lovespot
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.lovemap.lovemapbackend.geolocation.GeoLocation
 import com.lovemap.lovemapbackend.lovespot.LoveSpot.Availability.ALL_DAY
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column

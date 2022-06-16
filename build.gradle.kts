@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.lovemap"
-version = "1.1.0"
+version = "1.1.1"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -31,11 +31,11 @@ dependencies {
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.apache.commons:commons-lang3:3.12.0")
-    implementation("io.github.microutils:kotlin-logging:2.1.21")
+    implementation("io.github.microutils:kotlin-logging:2.1.23")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3")
     implementation("com.javadocmd:simplelatlng:1.3.1")
     implementation("com.google.maps:google-maps-services:2.1.0")
-//    implementation("org.slf4j:slf4j-simple:1.7.36")
+    implementation("com.mailjet:mailjet-client:5.2.0")
 
     implementation("org.bouncycastle:bcprov-jdk15on:1.70")
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
@@ -46,8 +46,8 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("io.r2dbc:r2dbc-postgresql")
 
-    implementation("org.springdoc:springdoc-openapi-webflux-core:1.6.8")
-    implementation("org.springdoc:springdoc-openapi-webflux-ui:1.6.8")
+    implementation("org.springdoc:springdoc-openapi-webflux-core:1.6.9")
+    implementation("org.springdoc:springdoc-openapi-webflux-ui:1.6.9")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

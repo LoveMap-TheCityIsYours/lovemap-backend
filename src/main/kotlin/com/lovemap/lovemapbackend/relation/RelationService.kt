@@ -1,8 +1,8 @@
 package com.lovemap.lovemapbackend.relation
 
+import com.lovemap.lovemapbackend.lover.LoverService
 import com.lovemap.lovemapbackend.relation.Relation.Status.FOLLOWING
 import com.lovemap.lovemapbackend.relation.Relation.Status.PARTNER
-import com.lovemap.lovemapbackend.lover.LoverService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import kotlinx.coroutines.flow.map

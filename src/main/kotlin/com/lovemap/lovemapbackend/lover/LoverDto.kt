@@ -7,13 +7,8 @@ import com.lovemap.lovemapbackend.relation.LoverRelations
 import com.lovemap.lovemapbackend.relation.Relation
 import com.lovemap.lovemapbackend.relation.RelationStatusDto
 import com.lovemap.lovemapbackend.utils.InstantConverterUtils.toApiString
-import com.lovemap.lovemapbackend.utils.INVALID_EMAIL
-import com.lovemap.lovemapbackend.utils.INVALID_PASSWORD
-import com.lovemap.lovemapbackend.utils.INVALID_USERNAME
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
-import javax.validation.constraints.Email
-import javax.validation.constraints.Size
 
 data class LoverDto(
     val id: Long,
@@ -112,24 +107,6 @@ data class LoverRelationsDto(
         }
     }
 }
-
-data class CreateLoverRequest(
-    @field:Size(min = 3, max = 25, message = INVALID_USERNAME)
-    val userName: String,
-    @field:Size(min = 6, max = 100, message = INVALID_PASSWORD)
-    val password: String,
-    @field:Email(message = INVALID_EMAIL)
-    val email: String
-)
-
-data class LoginLoverRequest(
-    @field:Size(min = 3, max = 25, message = INVALID_USERNAME)
-    val userName: String?,
-    @field:Email(message = INVALID_EMAIL)
-    val email: String?,
-    @field:Size(min = 6, max = 100, message = INVALID_PASSWORD)
-    val password: String
-)
 
 data class LoverViewDto(
     val id: Long,

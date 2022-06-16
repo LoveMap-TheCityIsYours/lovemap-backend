@@ -46,4 +46,8 @@ enum class ErrorCode {
     SpotTooCloseToAnother,
     InvalidLoveSpotName,
     InvalidLoveSpotDescription,
+    InvalidPwResetCode,
+    PwResetBackoffNotPassed,
+    WrongPwResetCode,
+    PwResetCodeTimedOut,
 }
