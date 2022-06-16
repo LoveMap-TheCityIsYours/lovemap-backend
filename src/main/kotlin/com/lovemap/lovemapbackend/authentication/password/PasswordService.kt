@@ -50,7 +50,7 @@ class PasswordService(
         val password = getPasswordOfLover(lover)
         if (resetCode != password.resetCode) {
             throw ResponseStatusException(
-                HttpStatus.FORBIDDEN, ErrorMessage(
+                HttpStatus.BAD_REQUEST, ErrorMessage(
                     ErrorCode.WrongPwResetCode,
                     resetCode,
                     "The reset code does not match with the one sent in email."
