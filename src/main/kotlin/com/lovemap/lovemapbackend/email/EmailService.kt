@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
 import java.util.*
+import kotlin.math.log
 
 @Service
 class EmailService(
@@ -34,21 +35,25 @@ class EmailService(
 
     suspend fun sendPasswordResetEmail(lover: Lover, resetCode: String) {
         CoroutineScope(Dispatchers.IO).async {
-            var template = pwResetTemplate.file.readText()
-            template = template.replace("{username}", lover.userName)
-            template = template.replace("{resetCode}", resetCode)
-            val client = MJEasyClient(
-                emailProperties.apiKey,
-                emailProperties.secretKey
-            )
-            val response: MailjetResponse = client.email()
-                .from("noreply@lovemap.app", "LoveMap")
-                .to(lover.email)
-                .subject("Password reset for LoveMap")
-                .html(template)
-                .customId("PasswordReset")
-                .send()
-            logger.info { "Password reset email sent for ${lover.userName}. Response: [${response.data}]" }
+            try {
+                var template = pwResetTemplate.inputStream.bufferedReader().use { it.readText() }
+                template = template.replace("{username}", lover.userName)
+                template = template.replace("{resetCode}", resetCode)
+                val client = MJEasyClient(
+                    emailProperties.apiKey,
+                    emailProperties.secretKey
+                )
+                val response: MailjetResponse = client.email()
+                    .from("noreply@lovemap.app", "LoveMap")
+                    .to(lover.email)
+                    .subject("Password reset for LoveMap")
+                    .html(template)
+                    .customId("PasswordReset")
+                    .send()
+                logger.info { "Password reset email sent to ${lover.userName}. Response: [${response.data}]" }
+            } catch (e: Exception) {
+                logger.error(e) { "Error occurred during email sending." }
+            }
         }
     }
 }
