@@ -39,7 +39,6 @@ class PasswordService(
     suspend fun initPasswordReset(lover: Lover): String {
         val password = getPasswordOfLover(lover)
         checkResetBackoffPassed(password, lover)
-        checkResetCodeStillValid(password, lover)
         password.resetCode = UUID.randomUUID().toString().substringBefore("-").uppercase()
         password.resetInitiatedAt = Timestamp.from(Instant.now())
         repository.save(password)
@@ -48,15 +47,7 @@ class PasswordService(
 
     suspend fun setNewPassword(lover: Lover, resetCode: String, newPassword: String) {
         val password = getPasswordOfLover(lover)
-        if (resetCode != password.resetCode) {
-            throw ResponseStatusException(
-                HttpStatus.BAD_REQUEST, ErrorMessage(
-                    ErrorCode.WrongPwResetCode,
-                    resetCode,
-                    "The reset code does not match with the one sent in email."
-                ).toJson()
-            )
-        }
+        checkResetCode(password, lover, resetCode)
         password.resetCode = null
         password.resetInitiatedAt = null
         password.passwordHash = passwordEncoder.encode(newPassword)
@@ -77,6 +68,23 @@ class PasswordService(
                     ).toJson()
                 )
             }
+        }
+    }
+
+    private fun checkResetCode(
+        password: Password,
+        lover: Lover,
+        resetCode: String
+    ) {
+        checkResetCodeStillValid(password, lover)
+        if (resetCode != password.resetCode) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST, ErrorMessage(
+                    ErrorCode.WrongPwResetCode,
+                    resetCode,
+                    "The reset code does not match with the one sent in email."
+                ).toJson()
+            )
         }
     }
 
