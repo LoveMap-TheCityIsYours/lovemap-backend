@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/lovespots")
 class LoveSpotController(
     private val loveSpotService: LoveSpotService,
-    private val loveSpotRisks: LoveSpotRisks
+    private val loveSpotSearchService: LoveSpotSearchService,
+    private val loveSpotRisks: LoveSpotRisks,
 ) {
     @PostMapping
     suspend fun create(@RequestBody request: CreateLoveSpotRequest): ResponseEntity<LoveSpotDto> {
@@ -33,10 +34,27 @@ class LoveSpotController(
         return ResponseEntity.ok(LoveSpotDto.of(loveSpot))
     }
 
+    @Deprecated("will be removed later")
     @PostMapping("/search")
-    suspend fun search(@RequestBody request: LoveSpotSearchRequest): ResponseEntity<Flow<LoveSpotDto>> {
-        val locations = loveSpotService.search(request)
-        return ResponseEntity.ok(locations.map { LoveSpotDto.of(it) })
+    suspend fun search(@RequestBody request: LoveSpotListRequest): ResponseEntity<Flow<LoveSpotDto>> {
+        val loveSpots = loveSpotService.list(request)
+        return ResponseEntity.ok(loveSpots.map { LoveSpotDto.of(it) })
+    }
+
+    @PostMapping("/list")
+    suspend fun list(@RequestBody request: LoveSpotListRequest): ResponseEntity<Flow<LoveSpotDto>> {
+        val loveSpots = loveSpotService.list(request)
+        return ResponseEntity.ok(loveSpots.map { LoveSpotDto.of(it) })
+    }
+
+    @PostMapping("/advancedSearch")
+    suspend fun advancedSearch(
+        @RequestParam(name = "searchType", required = true) searchType: SearchType,
+        @RequestParam(name = "searchLocation", required = true) searchLocation: SearchLocation,
+        @RequestBody request: LoveSpotSearchRequest
+    ): ResponseEntity<List<LoveSpotDto>> {
+        val loveSpots = loveSpotSearchService.search(searchType, searchLocation, request)
+        return ResponseEntity.ok(loveSpots)
     }
 
     @GetMapping("risks")

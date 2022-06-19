@@ -36,6 +36,7 @@ class SecurityConfiguration(
             .pathMatchers("/webjars/swagger-ui/**").permitAll()
             .pathMatchers("/v3/api-docs/**").permitAll()
             .pathMatchers("/authentication/**").permitAll()
+            .pathMatchers("/debug/**").permitAll()
 
             .pathMatchers("/join-us/**").permitAll()
             .pathMatchers("/join-us.**").permitAll()

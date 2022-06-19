@@ -16,10 +16,11 @@ data class LoveSpotDto(
     val averageRating: Double?,
     val numberOfReports: Int,
     var customAvailability: Pair<LocalTime, LocalTime>?,
-    var availability: LoveSpotAvailabilityApiStatus,
+    var availability: Availability,
     var averageDanger: Double?,
     var numberOfRatings: Int,
     var addedBy: Long,
+    var type: Type = Type.PUBLIC_SPACE,
 ) {
     companion object {
         fun of(loveSpot: LoveSpot): LoveSpotDto {
@@ -35,28 +36,51 @@ data class LoveSpotDto(
                 numberOfReports = loveSpot.numberOfReports,
                 description = loveSpot.description,
                 customAvailability = loveSpot.readCustomAvailability(),
-                availability = LoveSpotAvailabilityApiStatus.of(loveSpot.availability)
+                availability = Availability.of(loveSpot.availability),
+                type = Type.of(loveSpot.type),
             )
         }
     }
-}
 
-enum class LoveSpotAvailabilityApiStatus {
-    ALL_DAY, NIGHT_ONLY;
+    enum class Availability {
+        ALL_DAY, NIGHT_ONLY;
 
-    companion object {
-        fun of(availability: LoveSpot.Availability): LoveSpotAvailabilityApiStatus {
-            return when (availability) {
-                LoveSpot.Availability.ALL_DAY -> ALL_DAY
-                LoveSpot.Availability.NIGHT_ONLY -> NIGHT_ONLY
+        companion object {
+            fun of(availability: LoveSpot.Availability): Availability {
+                return when (availability) {
+                    LoveSpot.Availability.ALL_DAY -> ALL_DAY
+                    LoveSpot.Availability.NIGHT_ONLY -> NIGHT_ONLY
+                }
+            }
+        }
+
+        fun toModel(): LoveSpot.Availability {
+            return when (this) {
+                ALL_DAY -> LoveSpot.Availability.ALL_DAY
+                NIGHT_ONLY -> LoveSpot.Availability.NIGHT_ONLY
             }
         }
     }
 
-    fun toModel(): LoveSpot.Availability {
-        return when (this) {
-            ALL_DAY -> LoveSpot.Availability.ALL_DAY
-            NIGHT_ONLY -> LoveSpot.Availability.NIGHT_ONLY
+    enum class Type {
+        PUBLIC_SPACE,
+        SWINGER_CLUB,
+        CRUISING_SPOT,
+        SEX_BOOTH,
+        NIGHT_CLUB,
+        OTHER_VENUE;
+
+        companion object {
+            fun of(type: LoveSpot.Type): Type {
+                return when (type) {
+                    LoveSpot.Type.PUBLIC_SPACE -> PUBLIC_SPACE
+                    LoveSpot.Type.SWINGER_CLUB -> SWINGER_CLUB
+                    LoveSpot.Type.CRUISING_SPOT -> CRUISING_SPOT
+                    LoveSpot.Type.SEX_BOOTH -> SEX_BOOTH
+                    LoveSpot.Type.NIGHT_CLUB -> NIGHT_CLUB
+                    LoveSpot.Type.OTHER_VENUE -> OTHER_VENUE
+                }
+            }
         }
     }
 }
@@ -72,20 +96,43 @@ data class CreateLoveSpotRequest(
     val description: String,
     var customAvailability: Pair<LocalTime, LocalTime>?,
     @field:NotEmpty
-    var availability: LoveSpotAvailabilityApiStatus
+    var availability: LoveSpotDto.Availability,
+    var type: LoveSpotDto.Type = LoveSpotDto.Type.PUBLIC_SPACE,
 )
 
 data class UpdateLoveSpotRequest(
     val name: String? = null,
     val description: String? = null,
-    var availability: LoveSpotAvailabilityApiStatus,
+    var availability: LoveSpotDto.Availability,
     var customAvailability: Pair<LocalTime, LocalTime>? = null
 )
 
-data class LoveSpotSearchRequest(
+data class LoveSpotListRequest(
     val latFrom: Double,
     val longFrom: Double,
     val latTo: Double,
     val longTo: Double,
     val limit: Int
 )
+
+data class LoveSpotSearchRequest(
+    @field:NotNull
+    val limit: Int,
+    val lat: Double? = null,
+    val long: Double? = null,
+    val distance: Int? = null,
+    val locationName: String? = null,
+    val activityType: ActivityType? = null,
+)
+
+enum class SearchType {
+    CLOSEST, BEST, ACTIVE
+}
+
+enum class SearchLocation {
+    COORDINATE, CITY, COUNTRY
+}
+
+enum class ActivityType {
+    MADE_LOVE, COMMENTED
+}

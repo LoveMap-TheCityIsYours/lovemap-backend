@@ -107,12 +107,12 @@ class LoveSpotService(
     }
 
     private suspend fun anySpotsTooClose(request: CreateLoveSpotRequest): Boolean {
-        val nearbySpots = repository.search(
-            longFrom = request.longitude - TWELVE_METERS_IN_COORDINATES,
-            longTo = request.longitude + TWELVE_METERS_IN_COORDINATES,
+        val nearbySpots = repository.searchWithOrderByBest(
             latFrom = request.latitude - TWELVE_METERS_IN_COORDINATES,
+            longFrom = request.longitude - TWELVE_METERS_IN_COORDINATES,
             latTo = request.latitude + TWELVE_METERS_IN_COORDINATES,
-            100
+            longTo = request.longitude + TWELVE_METERS_IN_COORDINATES,
+            limit = 100
         )
 
         return nearbySpots.toList().any { nearby ->
@@ -134,8 +134,8 @@ class LoveSpotService(
         return repository.save(loveSpot)
     }
 
-    suspend fun search(request: LoveSpotSearchRequest): Flow<LoveSpot> {
-        return repository.search(
+    suspend fun list(request: LoveSpotListRequest): Flow<LoveSpot> {
+        return repository.searchWithOrderByBest(
             longFrom = request.longFrom,
             longTo = request.longTo,
             latFrom = request.latFrom,
