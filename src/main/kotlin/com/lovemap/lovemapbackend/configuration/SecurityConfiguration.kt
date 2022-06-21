@@ -17,7 +17,6 @@ import org.springframework.security.web.server.context.NoOpServerSecurityContext
 import org.springframework.web.reactive.config.CorsRegistry
 import org.springframework.web.reactive.config.WebFluxConfigurer
 
-
 @Configuration
 @EnableWebFluxSecurity
 class SecurityConfiguration(

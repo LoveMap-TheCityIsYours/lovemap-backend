@@ -3,6 +3,7 @@ package com.lovemap.lovemapbackend.security
 import mu.KotlinLogging
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
+import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
@@ -16,6 +17,7 @@ import reactor.core.publisher.Mono
 class JwtAuthenticationFilter(
     private val jwtService: JwtService,
     private val lovemapClients: LoveMapClients,
+    private val environment: Environment,
 ) : WebFilter {
     private val logger = KotlinLogging.logger {}
 
@@ -45,6 +47,7 @@ class JwtAuthenticationFilter(
 
     private fun excludedFromClientSecretFilter(exchange: ServerWebExchange) =
         exclusions.any { exclusion -> exchange.request.path.toString().startsWith(exclusion) }
+                || environment.activeProfiles.contains("dev")
 
     private fun containsValidClientSecret(exchange: ServerWebExchange): Boolean {
         val clientId = exchange.request.headers.getFirst("x-client-id")
