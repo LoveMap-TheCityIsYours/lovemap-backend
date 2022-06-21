@@ -11,6 +11,7 @@ import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewRequest
 import com.lovemap.lovemapbackend.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
+import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -39,13 +40,13 @@ class LoveSpotService(
 
     suspend fun getById(spotId: Long): LoveSpot {
         val loveSpot = (repository.findById(spotId)
-            ?: throw ResponseStatusException(
+            ?: throw LoveMapException(
                 HttpStatus.NOT_FOUND,
                 ErrorMessage(
                     ErrorCode.NotFoundById,
                     spotId.toString(),
                     "LoveSpot not found by ID '$spotId'."
-                ).toJson()
+                )
             ))
 
         if (loveSpot.geoLocationId == null) {
@@ -76,14 +77,14 @@ class LoveSpotService(
 
     private suspend fun validateSpotTooClose(request: CreateLoveSpotRequest) {
         if (anySpotsTooClose(request)) {
-            throw ResponseStatusException(
+            throw LoveMapException(
                 HttpStatus.BAD_REQUEST,
                 ErrorMessage(
                     ErrorCode.SpotTooCloseToAnother,
                     request.name,
                     "LoveSpot too close to another, cannot be added here. " +
                             "Minimum distance is > ${MINIMUM_DISTANCE_IN_METERS}m."
-                ).toJson()
+                )
             )
         }
     }
@@ -177,13 +178,13 @@ class LoveSpotService(
 
     suspend fun checkExistence(loveSpotId: Long) {
         if (!repository.existsById(loveSpotId)) {
-            throw ResponseStatusException(
+            throw LoveMapException(
                 HttpStatus.NOT_FOUND,
                 ErrorMessage(
                     ErrorCode.NotFoundById,
                     loveSpotId.toString(),
                     "LoveSpot '$loveSpotId' does not exist."
-                ).toJson()
+                )
             )
         }
     }

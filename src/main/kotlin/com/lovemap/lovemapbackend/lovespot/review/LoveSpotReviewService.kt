@@ -8,6 +8,7 @@ import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
+import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -81,14 +82,14 @@ class LoveSpotReviewService(
     ) {
         val love: Love = loveService.getById(request.loveId)
         if (request.loveSpotId != love.loveSpotId) {
-            throw ResponseStatusException(
+            throw LoveMapException(
                 HttpStatus.BAD_REQUEST,
                 ErrorMessage(
                     ErrorCode.BadRequest,
                     request.loveSpotId.toString(),
                     "Requested loveSpotId '${request.loveSpotId}' " +
                             "does not match with the love's spotId '${love.loveSpotId}'"
-                ).toJson()
+                )
             )
         }
     }

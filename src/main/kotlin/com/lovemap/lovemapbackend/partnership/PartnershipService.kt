@@ -9,6 +9,7 @@ import com.lovemap.lovemapbackend.relation.RelationService
 import com.lovemap.lovemapbackend.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
+import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.merge
 import mu.KotlinLogging
@@ -39,13 +40,13 @@ class PartnershipService(
                 relations = getPartnerships(loverId)
             )
         } else {
-            throw ResponseStatusException(
+            throw LoveMapException(
                 HttpStatus.NOT_FOUND,
                 ErrorMessage(
                     ErrorCode.PartnershipNotFound,
                     loverId.toString(),
                     "Lover not found by ID '$loverId'"
-                ).toJson()
+                )
             )
         }
     }
@@ -76,13 +77,13 @@ class PartnershipService(
         authorizationService.checkAccessFor(respondentId)
         val partnership = validatePartnershipResponse(initiatorId, respondentId)
         return when (partnership.status) {
-            PARTNER -> throw ResponseStatusException(
+            PARTNER -> throw LoveMapException(
                 HttpStatus.CONFLICT,
                 ErrorMessage(
                     ErrorCode.AlreadyPartners,
                     initiatorId.toString(),
                     "User '$initiatorId' and user '$respondentId' are already partners."
-                ).toJson()
+                )
             )
             PARTNERSHIP_REQUESTED -> {
                 handlePartnershipResponse(request, partnership, respondentId)
@@ -102,13 +103,13 @@ class PartnershipService(
             throw e
         }
         return partnershipRepository.findByInitiatorIdAndRespondentId(initiatorId, respondentId)
-            ?: throw ResponseStatusException(
+            ?: throw LoveMapException(
                 HttpStatus.BAD_REQUEST,
                 ErrorMessage(
                     ErrorCode.BadRequest,
                     initiatorId.toString(),
                     "Partnership was never requested from user '$initiatorId' to user '$respondentId'."
-                ).toJson()
+                )
             )
     }
 
@@ -170,26 +171,26 @@ class PartnershipService(
                         sendPushNotification(initiatorPartnership)
                         return initiatorPartnership
                     } else {
-                        throw ResponseStatusException(
+                        throw LoveMapException(
                             HttpStatus.CONFLICT,
                             ErrorMessage(
                                 ErrorCode.PartnershipRerequestTimeNotPassed,
                                 hoursToRerequestPartnership.toString(),
                                 "Already requested in the last '$hoursToRerequestPartnership' hours."
-                            ).toJson()
+                            )
                         )
                     }
                 }
             }
             PARTNER -> {
-                throw ResponseStatusException(
+                throw LoveMapException(
                     HttpStatus.CONFLICT,
                     ErrorMessage(
                         ErrorCode.AlreadyPartners,
                         request.respondentId.toString(),
                         "There is already an alive partnership between " +
                                 "initiator '${request.initiatorId}' and respondent '${request.respondentId}'."
-                    ).toJson()
+                    )
                 )
             }
         }
@@ -201,25 +202,25 @@ class PartnershipService(
     ): Partnership {
         when (respondentPartnership.status) {
             PARTNERSHIP_REQUESTED -> {
-                throw ResponseStatusException(
+                throw LoveMapException(
                     HttpStatus.BAD_REQUEST,
                     ErrorMessage(
                         ErrorCode.PartnershipAlreadyRequested,
                         request.respondentId.toString(),
                         "The other user '${request.respondentId}' already " +
                                 "requested partnership from you '${request.initiatorId}'."
-                    ).toJson()
+                    )
                 )
             }
             PARTNER -> {
-                throw ResponseStatusException(
+                throw LoveMapException(
                     HttpStatus.CONFLICT,
                     ErrorMessage(
                         ErrorCode.AlreadyPartners,
                         request.respondentId.toString(),
                         "There is already an alive partnership between " +
                                 "initiator '${request.initiatorId}' and respondent '${request.respondentId}'."
-                    ).toJson()
+                    )
                 )
             }
         }
@@ -257,13 +258,13 @@ class PartnershipService(
 
     private fun validateInitiatorRespondentIds(initiatorId: Long, respondentId: Long) {
         if (initiatorId == respondentId) {
-            throw ResponseStatusException(
+            throw LoveMapException(
                 HttpStatus.BAD_REQUEST,
                 ErrorMessage(
                     ErrorCode.InvalidOperationOnYourself,
                     initiatorId.toString(),
                     "InitiatorId and respondentId cannot be the same! '${initiatorId}'"
-                ).toJson()
+                )
             )
         }
     }

@@ -5,6 +5,7 @@ import com.lovemap.lovemapbackend.relation.Relation.Status.FOLLOWING
 import com.lovemap.lovemapbackend.relation.Relation.Status.PARTNER
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
+import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.flow.map
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
@@ -27,13 +28,13 @@ class RelationService(
                 Relation.Status.BLOCKED
             )
         ) {
-            throw ResponseStatusException(
+            throw LoveMapException(
                 HttpStatus.BAD_REQUEST,
                 ErrorMessage(
                     ErrorCode.YouBlockedHimUnblockFirst,
                     respondentId.toString(),
                     "User '$initiatorId' blocked '$respondentId', first need to unblock."
-                ).toJson()
+                )
             )
         }
         if (relationRepository.existsBySourceIdAndTargetIdAndStatus(
@@ -42,26 +43,26 @@ class RelationService(
                 Relation.Status.BLOCKED
             )
         ) {
-            throw ResponseStatusException(
+            throw LoveMapException(
                 HttpStatus.FORBIDDEN,
                 ErrorMessage(
                     ErrorCode.BlockedByUser,
                     respondentId.toString(),
                     "User '$initiatorId' is blocked by '$respondentId'."
-                ).toJson()
+                )
             )
         }
     }
 
     suspend fun setPartnershipBetween(user1: Long, user2: Long) {
         if (user1 == user2) {
-            throw ResponseStatusException(
+            throw LoveMapException(
                 HttpStatus.BAD_REQUEST,
                 ErrorMessage(
                     ErrorCode.BadRequest,
                     user1.toString(),
                     "Source and Target in a relation cannot be the same. '$user1'"
-                ).toJson()
+                )
             )
         }
         val relation12: Relation = relationRepository.findBySourceIdAndTargetId(user1, user2)
@@ -77,13 +78,13 @@ class RelationService(
 
     suspend fun getRelation(fromId: Long, toId: Long): Relation {
         return relationRepository.findBySourceIdAndTargetId(fromId, toId)
-            ?: throw ResponseStatusException(
+            ?: throw LoveMapException(
                 HttpStatus.NOT_FOUND,
                 ErrorMessage(
                     ErrorCode.RelationNotFound,
                     toId.toString(),
                     "Relation not found from '$fromId' to '$toId'."
-                ).toJson()
+                )
             )
     }
 
@@ -107,13 +108,13 @@ class RelationService(
     suspend fun checkPartnership(loverId: Long, partnerId: Long) {
         checkBlockingBetweenLovers(loverId, partnerId)
         if (!relationRepository.existsBySourceIdAndTargetIdAndStatus(loverId, partnerId, PARTNER)) {
-            throw ResponseStatusException(
+            throw LoveMapException(
                 HttpStatus.NOT_FOUND,
                 ErrorMessage(
                     ErrorCode.PartnershipNotFound,
                     partnerId.toString(),
                     "No partnership between '$loverId' and '$partnerId'"
-                ).toJson()
+                )
             )
         }
     }

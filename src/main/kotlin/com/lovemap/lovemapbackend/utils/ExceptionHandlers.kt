@@ -35,4 +35,9 @@ class ExceptionHandlers {
         }
         return ResponseEntity.status(ex.status).body(ex.reason)
     }
+
+    @ExceptionHandler(LoveMapException::class)
+    fun loveMapExceptionHandler(ex: LoveMapException): ResponseEntity<ErrorMessages> {
+        return ResponseEntity.status(ex.status).body(ex.errorMessages)
+    }
 }

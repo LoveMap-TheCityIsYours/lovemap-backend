@@ -10,6 +10,10 @@ data class ErrorMessages(
     fun toJson(): String {
         return objectMapper.writeValueAsString(this)
     }
+
+    override fun toString(): String {
+        return toJson()
+    }
 }
 
 data class ErrorMessage(
@@ -17,8 +21,14 @@ data class ErrorMessage(
     val subject: String,
     val message: String,
 ) {
+    constructor(errorCode: ErrorCode) : this(errorCode, "", "")
+
     fun toJson(): String {
         return objectMapper.writeValueAsString(this)
+    }
+
+    override fun toString(): String {
+        return toJson()
     }
 }
 

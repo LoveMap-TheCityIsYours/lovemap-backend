@@ -4,6 +4,9 @@ import com.lovemap.lovemapbackend.authentication.password.PasswordResetService
 import com.lovemap.lovemapbackend.lover.LoverConverter
 import com.lovemap.lovemapbackend.lover.LoverDto
 import com.lovemap.lovemapbackend.lover.LoverRelationsDto
+import com.lovemap.lovemapbackend.utils.ErrorCode
+import com.lovemap.lovemapbackend.utils.ErrorMessage
+import com.lovemap.lovemapbackend.utils.LoveMapException
 import com.lovemap.lovemapbackend.utils.ValidatorService
 import mu.KotlinLogging
 import org.springframework.http.HttpHeaders
@@ -14,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/authentication")
@@ -48,10 +50,15 @@ class AuthenticationController(
                 .body(lover)
         } catch (e: BadCredentialsException) {
             logger.debug(e) {
-                "Login failed with username '${request.userName}', " +
-                        "email ${request.email}."
+                "Login failed with username '${request.userName}', email ${request.email}."
             }
-            throw ResponseStatusException(HttpStatus.FORBIDDEN, e.message)
+            throw LoveMapException(
+                HttpStatus.FORBIDDEN, ErrorMessage(
+                    ErrorCode.InvalidCredentials,
+                    "Username: '${request.userName}', email: '${request.email}'",
+                    "Login failed."
+                )
+            )
         }
     }
 
@@ -73,9 +80,13 @@ class AuthenticationController(
     private fun validateLoginRequest(request: LoginLoverRequest) {
         validatorService.validate(request)
         if (request.email.isNullOrEmpty() && request.userName.isNullOrEmpty()) {
-            throw ResponseStatusException(
+            throw LoveMapException(
                 HttpStatus.BAD_REQUEST,
-                "Both email and username are missing from loginRequest."
+                ErrorMessage(
+                    ErrorCode.InvalidCredentials,
+                    "Username: '${request.userName}', email: '${request.email}'",
+                    "Both email and username are missing from loginRequest."
+                )
             )
         }
     }

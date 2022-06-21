@@ -65,28 +65,15 @@ class LoveSpotSearchService(
                     limit = request.limit
                 ).map { LoveSpotDto.of(it) }.toList()
             }
-            SearchType.ACTIVE -> {
-                when (request.activityType!!) {
-                    ActivityType.MADE_LOVE -> {
-                        loveSpotRepository.searchWithOrderByLastMadeLove(
-                            latFrom = upperLeft.latitude,
-                            longFrom = upperLeft.longitude,
-                            latTo = lowerRight.latitude,
-                            longTo = lowerRight.longitude,
-                            limit = request.limit
-                        ).map { LoveSpotDto.of(it) }.toList()
-                    }
-                    ActivityType.COMMENTED -> {
-                        // TODO: implement comments
-                        loveSpotRepository.searchWithOrderByLastMadeLove(
-                            latFrom = upperLeft.latitude,
-                            longFrom = upperLeft.longitude,
-                            latTo = lowerRight.latitude,
-                            longTo = lowerRight.longitude,
-                            limit = request.limit
-                        ).map { LoveSpotDto.of(it) }.toList()
-                    }
-                }
+            SearchType.HOT -> {
+                // TODO: implement comments
+                loveSpotRepository.searchWithOrderByLastMadeLove(
+                    latFrom = upperLeft.latitude,
+                    longFrom = upperLeft.longitude,
+                    latTo = lowerRight.latitude,
+                    longTo = lowerRight.longitude,
+                    limit = request.limit
+                ).map { LoveSpotDto.of(it) }.toList()
             }
         }
     }

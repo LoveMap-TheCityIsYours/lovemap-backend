@@ -3,6 +3,7 @@ package com.lovemap.lovemapbackend.authentication.password
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
+import com.lovemap.lovemapbackend.utils.LoveMapException
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -60,12 +61,12 @@ class PasswordService(
     ) {
         password.resetInitiatedAt?.let {
             if (it.toInstant().plus(15, ChronoUnit.MINUTES).isAfter(Instant.now())) {
-                throw ResponseStatusException(
+                throw LoveMapException(
                     HttpStatus.BAD_REQUEST, ErrorMessage(
                         ErrorCode.PwResetBackoffNotPassed,
                         lover.email,
                         "15 minutes should pass between password resets."
-                    ).toJson()
+                    )
                 )
             }
         }
@@ -78,12 +79,12 @@ class PasswordService(
     ) {
         checkResetCodeStillValid(password, lover)
         if (resetCode != password.resetCode) {
-            throw ResponseStatusException(
+            throw LoveMapException(
                 HttpStatus.BAD_REQUEST, ErrorMessage(
                     ErrorCode.WrongPwResetCode,
                     resetCode,
                     "The reset code does not match with the one sent in email."
-                ).toJson()
+                )
             )
         }
     }
@@ -91,24 +92,24 @@ class PasswordService(
     private fun checkResetCodeStillValid(password: Password, lover: Lover) {
         password.resetInitiatedAt?.let {
             if (it.toInstant().plus(1, ChronoUnit.DAYS).isBefore(Instant.now())) {
-                throw ResponseStatusException(
+                throw LoveMapException(
                     HttpStatus.BAD_REQUEST, ErrorMessage(
                         ErrorCode.PwResetCodeTimedOut,
                         lover.email,
                         "A password reset code is usable for 1 day."
-                    ).toJson()
+                    )
                 )
             }
         }
     }
 
     private fun <T> throwForbidden(lover: Lover): T {
-        throw ResponseStatusException(
+        throw LoveMapException(
             HttpStatus.FORBIDDEN, ErrorMessage(
                 ErrorCode.Forbidden,
                 lover.id.toString(),
                 "User not found with ID '${lover.id}"
-            ).toJson()
+            )
         )
     }
 }

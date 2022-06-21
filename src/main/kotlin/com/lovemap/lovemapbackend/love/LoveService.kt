@@ -8,6 +8,7 @@ import com.lovemap.lovemapbackend.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode.NotFoundById
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.InstantConverterUtils
+import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
@@ -75,13 +76,13 @@ class LoveService(
 
     suspend fun getById(loveId: Long): Love {
         val love = loveRepository.findById(loveId)
-            ?: throw ResponseStatusException(
+            ?: throw LoveMapException(
                 HttpStatus.NOT_FOUND,
                 ErrorMessage(
                     NotFoundById,
                     loveId.toString(),
                     "Love not found by id '$loveId'."
-                ).toJson()
+                )
             )
         authorizationService.checkAccessFor(love)
         return love

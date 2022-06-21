@@ -1,6 +1,7 @@
 package com.lovemap.lovemapbackend.utils
 
 import com.lovemap.lovemapbackend.utils.ErrorCode.ConstraintViolation
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import javax.validation.ConstraintViolationException
 import javax.validation.Validator
@@ -32,7 +33,7 @@ class ValidatorService(
                 val errorCode: ErrorCode = constraintMap[it.message] ?: ConstraintViolation
                 ErrorMessage(errorCode, it.invalidValue.toString(), it.message)
             }.toList())
-            throw ConstraintViolationException(errorMessages.toJson(), violations)
+            throw LoveMapException(HttpStatus.BAD_REQUEST, errorMessages)
         }
     }
 }

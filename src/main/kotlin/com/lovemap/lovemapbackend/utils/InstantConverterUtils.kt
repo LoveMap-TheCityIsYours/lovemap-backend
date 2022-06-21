@@ -17,12 +17,12 @@ object InstantConverterUtils {
                 instant.substringAfter(".").toLong()
             )
         } catch (e: Exception) {
-            throw ResponseStatusException(
+            throw LoveMapException(
                 HttpStatus.BAD_REQUEST, ErrorMessage(
                     ErrorCode.BadRequest,
                     instant,
                     "Invalid instant format. Valid format is: 'epochSeconds.nanoAdjustment'"
-                ).toJson()
+                )
             )
         }
     }

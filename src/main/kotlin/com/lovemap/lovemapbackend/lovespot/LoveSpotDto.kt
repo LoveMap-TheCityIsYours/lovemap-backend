@@ -15,12 +15,12 @@ data class LoveSpotDto(
     val description: String,
     val averageRating: Double?,
     val numberOfReports: Int,
-    var customAvailability: Pair<LocalTime, LocalTime>?,
-    var availability: Availability,
-    var averageDanger: Double?,
-    var numberOfRatings: Int,
-    var addedBy: Long,
-    var type: Type = Type.PUBLIC_SPACE,
+    val customAvailability: Pair<LocalTime, LocalTime>?,
+    val availability: Availability,
+    val averageDanger: Double?,
+    val numberOfRatings: Int,
+    val addedBy: Long,
+    val type: Type = Type.PUBLIC_SPACE,
 ) {
     companion object {
         fun of(loveSpot: LoveSpot): LoveSpotDto {
@@ -96,15 +96,15 @@ data class CreateLoveSpotRequest(
     val description: String,
     var customAvailability: Pair<LocalTime, LocalTime>?,
     @field:NotEmpty
-    var availability: LoveSpotDto.Availability,
-    var type: LoveSpotDto.Type = LoveSpotDto.Type.PUBLIC_SPACE,
+    val availability: LoveSpotDto.Availability,
+    val type: LoveSpotDto.Type = LoveSpotDto.Type.PUBLIC_SPACE,
 )
 
 data class UpdateLoveSpotRequest(
     val name: String? = null,
     val description: String? = null,
     var availability: LoveSpotDto.Availability,
-    var customAvailability: Pair<LocalTime, LocalTime>? = null
+    val customAvailability: Pair<LocalTime, LocalTime>? = null
 )
 
 data class LoveSpotListRequest(
@@ -122,17 +122,12 @@ data class LoveSpotSearchRequest(
     val long: Double? = null,
     val distance: Int? = null,
     val locationName: String? = null,
-    val activityType: ActivityType? = null,
 )
 
 enum class SearchType {
-    CLOSEST, BEST, ACTIVE
+    CLOSEST, BEST, HOT
 }
 
 enum class SearchLocation {
     COORDINATE, CITY, COUNTRY
-}
-
-enum class ActivityType {
-    MADE_LOVE, COMMENTED
 }
