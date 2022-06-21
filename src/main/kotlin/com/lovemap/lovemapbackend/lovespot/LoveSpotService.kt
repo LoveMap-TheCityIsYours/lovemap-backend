@@ -67,6 +67,7 @@ class LoveSpotService(
             addedBy = caller.id,
             description = request.description.trim(),
             availability = request.availability.toModel(),
+            type = request.type.toModel(),
         )
         loveSpot.setCustomAvailability(request.customAvailability)
         validateSpotTooClose(request)
@@ -130,7 +131,8 @@ class LoveSpotService(
         authorizationService.checkAccessFor(loveSpot)
         request.name?.let { loveSpot.name = it.trim() }
         request.description?.let { loveSpot.description = it.trim() }
-        request.availability.let { loveSpot.availability = it.toModel() }
+        request.availability?.let { loveSpot.availability = it.toModel() }
+        request.type?.let { loveSpot.type = it.toModel() }
         loveSpot.setCustomAvailability(request.customAvailability)
         return repository.save(loveSpot)
     }

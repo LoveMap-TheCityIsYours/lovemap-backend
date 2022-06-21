@@ -81,6 +81,18 @@ data class LoveSpotDto(
                     LoveSpot.Type.OTHER_VENUE -> OTHER_VENUE
                 }
             }
+
+        }
+
+        fun toModel(): LoveSpot.Type {
+            return when (this) {
+                PUBLIC_SPACE -> LoveSpot.Type.PUBLIC_SPACE
+                SWINGER_CLUB -> LoveSpot.Type.SWINGER_CLUB
+                CRUISING_SPOT -> LoveSpot.Type.CRUISING_SPOT
+                SEX_BOOTH -> LoveSpot.Type.SEX_BOOTH
+                NIGHT_CLUB -> LoveSpot.Type.NIGHT_CLUB
+                OTHER_VENUE -> LoveSpot.Type.OTHER_VENUE
+            }
         }
     }
 }
@@ -103,7 +115,8 @@ data class CreateLoveSpotRequest(
 data class UpdateLoveSpotRequest(
     val name: String? = null,
     val description: String? = null,
-    var availability: LoveSpotDto.Availability,
+    var availability: LoveSpotDto.Availability?,
+    val type: LoveSpotDto.Type?,
     val customAvailability: Pair<LocalTime, LocalTime>? = null
 )
 

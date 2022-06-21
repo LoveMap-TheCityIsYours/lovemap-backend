@@ -22,15 +22,7 @@ class ExceptionHandlers {
     fun responseStatusException(ex: ResponseStatusException): ResponseEntity<String> {
         if (ex.status == HttpStatus.FORBIDDEN) {
             return ResponseEntity.status(ex.status).body(
-                ErrorMessages(
-                    listOf(
-                        ErrorMessage(
-                            ErrorCode.InvalidCredentials,
-                            "Invalid credentials",
-                            ""
-                        )
-                    )
-                ).toJson()
+                ErrorMessages(listOf(ErrorMessage(ErrorCode.InvalidCredentials))).toJson()
             )
         }
         return ResponseEntity.status(ex.status).body(ex.reason)
