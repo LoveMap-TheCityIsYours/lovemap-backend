@@ -15,7 +15,6 @@ class LoveSpotSearchService(
     private val loveService: LoveService,
     private val loveSpotRepository: LoveSpotRepository,
 ) {
-
     private val upperLeftAngle = 315.0
     private val lowerRightAngle = 135.0
     private val sqrt2 = sqrt(2.0)
@@ -37,7 +36,6 @@ class LoveSpotSearchService(
             }
         }
     }
-
 
     private suspend fun findByCoordinate(searchType: SearchType, request: LoveSpotSearchRequest): List<LoveSpotDto> {
         val middlePoint = LatLng(request.lat!!, request.long!!)
