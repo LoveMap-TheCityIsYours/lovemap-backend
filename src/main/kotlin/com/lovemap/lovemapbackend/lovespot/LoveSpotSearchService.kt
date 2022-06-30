@@ -4,6 +4,7 @@ import com.javadocmd.simplelatlng.LatLng
 import com.javadocmd.simplelatlng.LatLngTool
 import com.javadocmd.simplelatlng.util.LengthUnit
 import com.lovemap.lovemapbackend.love.LoveService
+import com.lovemap.lovemapbackend.lovespot.SearchResultOrdering.*
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import org.springframework.stereotype.Service
@@ -20,30 +21,33 @@ class LoveSpotSearchService(
     private val sqrt2 = sqrt(2.0)
 
     suspend fun search(
-        searchType: SearchType,
+        searchResultOrdering: SearchResultOrdering,
         searchLocation: SearchLocation,
         request: LoveSpotSearchRequest
     ): List<LoveSpotDto> {
         return when (searchLocation) {
             SearchLocation.COORDINATE -> {
-                findByCoordinate(searchType, request)
+                findByCoordinate(searchResultOrdering, request)
             }
             SearchLocation.CITY -> {
-                findByCity(searchType, request)
+                findByCity(searchResultOrdering, request)
             }
             SearchLocation.COUNTRY -> {
-                findByCountry(searchType, request)
+                findByCountry(searchResultOrdering, request)
             }
         }
     }
 
-    private suspend fun findByCoordinate(searchType: SearchType, request: LoveSpotSearchRequest): List<LoveSpotDto> {
+    private suspend fun findByCoordinate(
+        searchResultOrdering: SearchResultOrdering,
+        request: LoveSpotSearchRequest
+    ): List<LoveSpotDto> {
         val middlePoint = LatLng(request.lat!!, request.long!!)
         val distance = request.distance!! * sqrt2
         val upperLeft = LatLngTool.travel(middlePoint, upperLeftAngle, distance, LengthUnit.METER)
         val lowerRight = LatLngTool.travel(middlePoint, lowerRightAngle, distance, LengthUnit.METER)
-        return when (searchType) {
-            SearchType.BEST -> {
+        return when (searchResultOrdering) {
+            TOP_RATED -> {
                 loveSpotRepository.searchWithOrderByBest(
                     latFrom = upperLeft.latitude,
                     longFrom = upperLeft.longitude,
@@ -52,7 +56,7 @@ class LoveSpotSearchService(
                     limit = request.limit
                 ).map { LoveSpotDto.of(it) }.toList()
             }
-            SearchType.CLOSEST -> {
+            CLOSEST -> {
                 loveSpotRepository.searchWithOrderByClosest(
                     latFrom = upperLeft.latitude,
                     longFrom = upperLeft.longitude,
@@ -63,9 +67,17 @@ class LoveSpotSearchService(
                     limit = request.limit
                 ).map { LoveSpotDto.of(it) }.toList()
             }
-            SearchType.HOT -> {
-                // TODO: implement comments
-                loveSpotRepository.searchWithOrderByLastMadeLove(
+            RECENTLY_ACTIVE -> {
+                loveSpotRepository.searchWithOrderByRecentlyActive(
+                    latFrom = upperLeft.latitude,
+                    longFrom = upperLeft.longitude,
+                    latTo = lowerRight.latitude,
+                    longTo = lowerRight.longitude,
+                    limit = request.limit
+                ).map { LoveSpotDto.of(it) }.toList()
+            }
+            POPULAR -> {
+                loveSpotRepository.searchWithOrderByPopularity(
                     latFrom = upperLeft.latitude,
                     longFrom = upperLeft.longitude,
                     latTo = lowerRight.latitude,
@@ -76,11 +88,17 @@ class LoveSpotSearchService(
         }
     }
 
-    private suspend fun findByCountry(searchType: SearchType, request: LoveSpotSearchRequest): List<LoveSpotDto> {
+    private suspend fun findByCountry(
+        searchResultOrdering: SearchResultOrdering,
+        request: LoveSpotSearchRequest
+    ): List<LoveSpotDto> {
         TODO("Not yet implemented")
     }
 
-    private suspend fun findByCity(searchType: SearchType, request: LoveSpotSearchRequest): List<LoveSpotDto> {
+    private suspend fun findByCity(
+        searchResultOrdering: SearchResultOrdering,
+        request: LoveSpotSearchRequest
+    ): List<LoveSpotDto> {
         TODO("Not yet implemented")
     }
 }

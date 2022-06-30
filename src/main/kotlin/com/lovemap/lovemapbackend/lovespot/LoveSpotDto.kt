@@ -137,8 +137,8 @@ data class LoveSpotSearchRequest(
     val locationName: String? = null,
 )
 
-enum class SearchType {
-    CLOSEST, BEST, HOT
+enum class SearchResultOrdering {
+    CLOSEST, TOP_RATED, RECENTLY_ACTIVE, POPULAR
 }
 
 enum class SearchLocation {

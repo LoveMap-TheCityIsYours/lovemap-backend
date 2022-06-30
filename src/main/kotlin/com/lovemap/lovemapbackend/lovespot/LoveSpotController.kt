@@ -49,11 +49,11 @@ class LoveSpotController(
 
     @PostMapping("/advancedSearch")
     suspend fun advancedSearch(
-        @RequestParam(name = "searchType", required = true) searchType: SearchType,
-        @RequestParam(name = "searchLocation", required = true) searchLocation: SearchLocation,
+        @RequestParam(required = true) searchResultOrdering: SearchResultOrdering,
+        @RequestParam(required = true) searchLocation: SearchLocation,
         @RequestBody request: LoveSpotSearchRequest
     ): ResponseEntity<List<LoveSpotDto>> {
-        val loveSpots = loveSpotSearchService.search(searchType, searchLocation, request)
+        val loveSpots = loveSpotSearchService.search(searchResultOrdering, searchLocation, request)
         return ResponseEntity.ok(loveSpots)
     }
 

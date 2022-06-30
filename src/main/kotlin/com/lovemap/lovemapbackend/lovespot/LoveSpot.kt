@@ -6,6 +6,7 @@ import com.lovemap.lovemapbackend.lovespot.LoveSpot.Availability.ALL_DAY
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
+import java.sql.Timestamp
 import java.time.LocalTime
 
 @Table("love_location")
@@ -51,6 +52,27 @@ data class LoveSpot(
 
     @Column("geo_location_id")
     var geoLocationId: Long? = null,
+
+    @Column("number_of_loves")
+    var numberOfLoves: Long = 0,
+
+    @Column("number_of_comments")
+    var numberOfComments: Long = 0,
+
+    @Column("occurrence_on_wishlists")
+    var occurrenceOnWishlists: Long = 0,
+
+    @Column("popularity")
+    var popularity: Long = 0,
+
+    @Column("last_comment_at")
+    var lastCommentAt: Timestamp? = null,
+
+    @Column("last_love_at")
+    var lastLoveAt: Timestamp? = null,
+
+    @Column("last_active_at")
+    var lastActiveAt: Timestamp? = null,
 ) {
     enum class Availability {
         ALL_DAY, NIGHT_ONLY
