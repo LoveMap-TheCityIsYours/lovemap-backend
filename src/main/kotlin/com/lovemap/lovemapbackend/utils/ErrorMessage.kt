@@ -60,4 +60,9 @@ enum class ErrorCode {
     PwResetBackoffNotPassed,
     WrongPwResetCode,
     PwResetCodeTimedOut,
+    MissingListCountry,
+    MissingListCity,
+    MissingListCoordinates,
+    InvalidDistanceInMeters,
+
 }

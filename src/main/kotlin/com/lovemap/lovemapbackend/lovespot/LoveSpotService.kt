@@ -21,7 +21,6 @@ import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.server.ResponseStatusException
 
 private const val TWELVE_METERS_IN_COORDINATES = 0.0001
 private const val MINIMUM_DISTANCE_IN_METERS = 20.0
@@ -35,8 +34,6 @@ class LoveSpotService(
     private val repository: LoveSpotRepository
 ) {
     private val logger = KotlinLogging.logger {}
-
-    private val maxSearchLimit = 100
 
     suspend fun getById(spotId: Long): LoveSpot {
         val loveSpot = (repository.findById(spotId)
@@ -109,7 +106,7 @@ class LoveSpotService(
     }
 
     private suspend fun anySpotsTooClose(request: CreateLoveSpotRequest): Boolean {
-        val nearbySpots = repository.searchWithOrderByBest(
+        val nearbySpots = repository.findByCoordinatesOrderByRating(
             latFrom = request.latitude - TWELVE_METERS_IN_COORDINATES,
             longFrom = request.longitude - TWELVE_METERS_IN_COORDINATES,
             latTo = request.latitude + TWELVE_METERS_IN_COORDINATES,
@@ -135,16 +132,6 @@ class LoveSpotService(
         request.type?.let { loveSpot.type = it.toModel() }
         loveSpot.setCustomAvailability(request.customAvailability)
         return repository.save(loveSpot)
-    }
-
-    suspend fun list(request: LoveSpotListRequest): Flow<LoveSpot> {
-        return repository.searchWithOrderByBest(
-            longFrom = request.longFrom,
-            longTo = request.longTo,
-            latFrom = request.latFrom,
-            latTo = request.latTo,
-            limit = if (request.limit <= maxSearchLimit) request.limit else maxSearchLimit
-        )
     }
 
     suspend fun updateReviewAverages(spotId: Long, request: LoveSpotReviewRequest): LoveSpot {

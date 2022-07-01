@@ -6,13 +6,13 @@ import com.google.maps.model.AddressComponent
 import com.google.maps.model.LatLng
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExecutorCoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
-import javax.annotation.PostConstruct
 
 private const val UNKNOWN_GEO_LOCATION: Long = 1
 
@@ -20,10 +20,17 @@ private const val UNKNOWN_GEO_LOCATION: Long = 1
 @Transactional(propagation = Propagation.REQUIRES_NEW)
 class GeoLocationService(
     private val geoApiContext: GeoApiContext,
-    private val blockingCoroutineDispatcher: ExecutorCoroutineDispatcher,
     private val repository: GeoLocationRepository,
 ) {
     private val logger = KotlinLogging.logger {}
+
+    fun listByCountry(country: String): Flow<GeoLocation> {
+        return repository.findByCountry(country)
+    }
+
+    fun listByCity(city: String): Flow<GeoLocation> {
+        return repository.findByCity(city)
+    }
 
     suspend fun getLocationInfo(loveSpot: LoveSpot): GeoLocation? {
         return withContext(Dispatchers.IO) {
@@ -90,14 +97,4 @@ class GeoLocationService(
 
     private fun isCountry(ac: AddressComponent) =
         ac.types.toList().any { type -> "COUNTRY" == type.name }
-
-    @PostConstruct
-    fun testShit() {
-//        mono {
-//            val loveSpotFlow = loveSpotService.search(LoveSpotSearchRequest(-100.0, -100.0, 100.0, 100.0, 200))
-//            loveSpotFlow.collect {
-//                getLocationInfo(it)
-//            }
-//        }.subscribe()
-    }
 }

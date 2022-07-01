@@ -1,7 +1,9 @@
 package com.lovemap.lovemapbackend.lovespot
 
+import com.lovemap.lovemapbackend.utils.INVALID_DISTANCE_IN_METERS
 import com.lovemap.lovemapbackend.utils.INVALID_LOVE_DESCRIPTION
 import com.lovemap.lovemapbackend.utils.INVALID_LOVE_SPOT_NAME
+import org.hibernate.validator.constraints.Range
 import java.time.LocalTime
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
@@ -128,19 +130,20 @@ data class LoveSpotListRequest(
     val limit: Int
 )
 
-data class LoveSpotSearchRequest(
+data class LoveSpotAdvancedListRequest(
     @field:NotNull
     val limit: Int,
     val lat: Double? = null,
     val long: Double? = null,
-    val distance: Int? = null,
+    @field:Range(min = 1, max = 1_000_000, message = INVALID_DISTANCE_IN_METERS)
+    val distanceInMeters: Int? = null,
     val locationName: String? = null,
 )
 
-enum class SearchResultOrdering {
+enum class ListOrdering {
     CLOSEST, TOP_RATED, RECENTLY_ACTIVE, POPULAR
 }
 
-enum class SearchLocation {
+enum class ListLocation {
     COORDINATE, CITY, COUNTRY
 }

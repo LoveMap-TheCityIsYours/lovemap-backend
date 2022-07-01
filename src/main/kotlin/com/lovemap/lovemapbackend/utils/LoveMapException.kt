@@ -7,4 +7,11 @@ class LoveMapException(val status: HttpStatus, val errorMessages: ErrorMessages)
 
     constructor(status: HttpStatus, errorMessage: ErrorMessage)
             : this(status, ErrorMessages(listOf(errorMessage)))
+
+    constructor(
+        status: HttpStatus,
+        errorCode: ErrorCode,
+        subject: String,
+        message: String
+    ) : this(status, ErrorMessage(errorCode, subject, message))
 }

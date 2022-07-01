@@ -9,29 +9,12 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
     @Query(
         """
             SELECT * FROM love_location WHERE 
-            longitude >= LEAST(:longFrom,:longTo) AND longitude <= GREATEST(:longFrom,:longTo)
-             AND 
-            latitude >= LEAST(:latFrom,:latTo) AND latitude <= GREATEST(:latFrom,:latTo) 
-            LIMIT :limit
-        """
-    )
-    fun searchWithoutOrder(
-        latFrom: Double,
-        longFrom: Double,
-        latTo: Double,
-        longTo: Double,
-        limit: Int
-    ): Flow<LoveSpot>
-
-    @Query(
-        """
-            SELECT * FROM love_location WHERE 
             longitude >= LEAST(:longFrom,:longTo) AND longitude <= GREATEST(:longFrom,:longTo) AND 
             latitude >= LEAST(:latFrom,:latTo) AND latitude <= GREATEST(:latFrom,:latTo) 
             ORDER BY average_rating DESC NULLS LAST LIMIT :limit
         """
     )
-    fun searchWithOrderByBest(
+    fun findByCoordinatesOrderByRating(
         latFrom: Double,
         longFrom: Double,
         latTo: Double,
@@ -44,10 +27,10 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
             SELECT * FROM love_location WHERE 
             longitude >= LEAST(:longFrom,:longTo) AND longitude <= GREATEST(:longFrom,:longTo) AND 
             latitude >= LEAST(:latFrom,:latTo) AND latitude <= GREATEST(:latFrom,:latTo) 
-            ORDER BY |/(latitude^2-:centerLat^2 + longitude^2-:centerLong^2) ASC LIMIT :limit
+            ORDER BY |/((latitude-:centerLat)^2 + (longitude-:centerLong)^2) ASC LIMIT :limit
         """
     )
-    fun searchWithOrderByClosest(
+    fun findByCoordinatesOrderByClosest(
         latFrom: Double,
         longFrom: Double,
         latTo: Double,
@@ -65,7 +48,7 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
             ORDER BY last_active_at DESC NULLS LAST :limit
         """
     )
-    fun searchWithOrderByRecentlyActive(
+    fun findByCoordinatesOrderByRecentlyActive(
         latFrom: Double,
         longFrom: Double,
         latTo: Double,
@@ -81,11 +64,61 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
             ORDER BY popularity DESC :limit
         """
     )
-    fun searchWithOrderByPopularity(
+    fun findByCoordinatesOrderByPopularity(
         latFrom: Double,
         longFrom: Double,
         latTo: Double,
         longTo: Double,
+        limit: Int
+    ): Flow<LoveSpot>
+
+    @Query(
+        """
+            SELECT * FROM love_location WHERE 
+            geo_location_id IN (:geoLocationIds)
+            ORDER BY average_rating DESC NULLS LAST LIMIT :limit
+        """
+    )
+    fun findByGeoLocOrderByRating(
+        geoLocationIds: List<Long>,
+        limit: Int
+    ): Flow<LoveSpot>
+
+    @Query(
+        """
+            SELECT * FROM love_location WHERE 
+            geo_location_id IN (:geoLocationIds)
+            ORDER BY |/((latitude-:centerLat)^2 + (longitude-:centerLong)^2) ASC LIMIT :limit
+        """
+    )
+    fun findByGeoLocOrderByClosest(
+        centerLat: Double,
+        centerLong: Double,
+        geoLocationIds: List<Long>,
+        limit: Int
+    ): Flow<LoveSpot>
+
+    @Query(
+        """
+            SELECT * FROM love_location WHERE 
+            geo_location_id IN (:geoLocationIds)
+            ORDER BY last_active_at DESC NULLS LAST :limit
+        """
+    )
+    fun findByGeoLocOrderByRecentlyActive(
+        geoLocationIds: List<Long>,
+        limit: Int
+    ): Flow<LoveSpot>
+
+    @Query(
+        """
+            SELECT * FROM love_location WHERE 
+            geo_location_id IN (:geoLocationIds)
+            ORDER BY popularity DESC :limit
+        """
+    )
+    fun findByGeoLocOrderByPopularity(
+        geoLocationIds: List<Long>,
         limit: Int
     ): Flow<LoveSpot>
 }
