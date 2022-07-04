@@ -14,6 +14,7 @@ class ClosestInLocationStrategy(
     private val center: LatLng,
     private val locationName: String,
     private val limit: Int,
+    private val typeFilter: Set<LoveSpot.Type>,
     private val geoLocationProvider: (name: String) -> Flow<GeoLocation>,
     private val repository: LoveSpotRepository,
 ) : LoveSpotListStrategy {
@@ -24,6 +25,7 @@ class ClosestInLocationStrategy(
             centerLat = center.latitude,
             centerLong = center.longitude,
             geoLocationIds = geoLocations.map { it.id }.toList(),
+            typeFilter = typeFilter,
             limit = limit
         )
     }
@@ -38,6 +40,7 @@ class ClosestInLocationStrategy(
                 center = LatLng(request.lat!!, request.long!!),
                 locationName = request.locationName!!,
                 limit = request.limit,
+                typeFilter = request.typeFilter.map { it.toModel() }.toSet(),
                 geoLocationProvider = geoLocationProvider,
                 repository = repository
             )

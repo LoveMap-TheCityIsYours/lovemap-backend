@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.toList
 class RecentlyActiveInLocationStrategy(
     private val locationName: String,
     private val limit: Int,
+    private val typeFilter: Set<LoveSpot.Type>,
     private val geoLocationProvider: (name: String) -> Flow<GeoLocation>,
     private val repository: LoveSpotRepository,
 ) : LoveSpotListStrategy {
@@ -20,6 +21,7 @@ class RecentlyActiveInLocationStrategy(
         val geoLocations = geoLocationProvider(locationName)
         return repository.findByGeoLocOrderByRecentlyActive(
             geoLocationIds = geoLocations.map { it.id }.toList(),
+            typeFilter = typeFilter,
             limit = limit
         )
     }
@@ -33,6 +35,7 @@ class RecentlyActiveInLocationStrategy(
             return RecentlyActiveInLocationStrategy(
                 locationName = request.locationName!!,
                 limit = request.limit,
+                typeFilter = request.typeFilter.map { it.toModel() }.toSet(),
                 geoLocationProvider = geoLocationProvider,
                 repository = repository
             )

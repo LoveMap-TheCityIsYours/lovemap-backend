@@ -1,11 +1,8 @@
 package com.lovemap.lovemapbackend.lovespot.list.strategy
 
 import com.lovemap.lovemapbackend.geolocation.GeoLocationService
-import com.lovemap.lovemapbackend.lovespot.ListLocation
-import com.lovemap.lovemapbackend.lovespot.ListOrdering
+import com.lovemap.lovemapbackend.lovespot.*
 import com.lovemap.lovemapbackend.lovespot.ListOrdering.*
-import com.lovemap.lovemapbackend.lovespot.LoveSpotAdvancedListRequest
-import com.lovemap.lovemapbackend.lovespot.LoveSpotRepository
 import com.lovemap.lovemapbackend.lovespot.list.LoveSpotListValidator
 import com.lovemap.lovemapbackend.lovespot.list.strategy.coordinate.ClosestByCoordinatesStrategy
 import com.lovemap.lovemapbackend.lovespot.list.strategy.coordinate.PopularByCoordinatesStrategy
@@ -29,11 +26,21 @@ class LoveSpotListStrategyFactory(
         request: LoveSpotAdvancedListRequest
     ): LoveSpotListStrategy {
         loveSpotListValidator.validateRequest(listOrdering, listLocation, request)
+        val preparedRequest = prepareRequest(request)
         return when (listLocation) {
-            ListLocation.COORDINATE -> byCoordinate(listOrdering, request)
-            ListLocation.CITY -> byCity(listOrdering, request)
-            ListLocation.COUNTRY -> byCountry(listOrdering, request)
+            ListLocation.COORDINATE -> byCoordinate(listOrdering, preparedRequest)
+            ListLocation.CITY -> byCity(listOrdering, preparedRequest)
+            ListLocation.COUNTRY -> byCountry(listOrdering, preparedRequest)
         }
+    }
+
+    private fun prepareRequest(request: LoveSpotAdvancedListRequest): LoveSpotAdvancedListRequest {
+        val actualRequest = if (request.typeFilter.isEmpty()) {
+            request.copy(typeFilter = LoveSpotDto.Type.values().toList())
+        } else {
+            request
+        }
+        return actualRequest
     }
 
     private fun byCoordinate(listOrdering: ListOrdering, request: LoveSpotAdvancedListRequest): LoveSpotListStrategy {

@@ -10,8 +10,9 @@ class PopularByCoordinatesStrategy(
     center: LatLng,
     distance: Int,
     limit: Int,
+    typeFilter: Set<LoveSpot.Type>,
     private val repository: LoveSpotRepository
-) : CoordinateBasedStrategy(center, distance, limit) {
+) : CoordinateBasedStrategy(center, distance, limit, typeFilter) {
 
     override suspend fun listSpots(): Flow<LoveSpot> {
         return repository.findByCoordinatesOrderByPopularity(
@@ -19,6 +20,7 @@ class PopularByCoordinatesStrategy(
             longFrom = from.longitude,
             latTo = to.latitude,
             longTo = to.longitude,
+            typeFilter = typeFilter,
             limit = limit
         )
     }
@@ -32,6 +34,7 @@ class PopularByCoordinatesStrategy(
                 center = LatLng(request.lat!!, request.long!!),
                 distance = request.distanceInMeters!!,
                 limit = request.limit,
+                typeFilter = request.typeFilter.map { it.toModel() }.toSet(),
                 repository = repository
             )
         }

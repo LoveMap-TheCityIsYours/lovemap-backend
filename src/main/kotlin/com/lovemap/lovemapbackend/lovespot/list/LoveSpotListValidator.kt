@@ -50,11 +50,11 @@ class LoveSpotListValidator(
             }
             COORDINATE -> {
                 if (request.lat == null || request.long == null || request.distanceInMeters == null) {
-                    request.locationName ?: throw LoveMapException(
+                    throw LoveMapException(
                         status = HttpStatus.BAD_REQUEST,
                         errorCode = ErrorCode.MissingListCoordinates,
                         subject = "null",
-                        message = "Missing lat, long or distance from LoveSpotSearchRequest"
+                        message = "Missing lat, long or distanceInMeters from LoveSpotSearchRequest"
                     )
                 }
             }

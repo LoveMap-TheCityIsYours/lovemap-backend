@@ -3,13 +3,15 @@ package com.lovemap.lovemapbackend.lovespot.list.strategy.coordinate
 import com.javadocmd.simplelatlng.LatLng
 import com.javadocmd.simplelatlng.LatLngTool
 import com.javadocmd.simplelatlng.util.LengthUnit
+import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.list.strategy.LoveSpotListStrategy
 import kotlin.math.sqrt
 
 abstract class CoordinateBasedStrategy(
     center: LatLng,
     distance: Int,
-    protected val limit: Int
+    protected val limit: Int,
+    protected val typeFilter: Set<LoveSpot.Type>
 ) : LoveSpotListStrategy {
 
     private val upperLeftAngle = 315.0

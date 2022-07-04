@@ -1,17 +1,9 @@
 package com.lovemap.lovemapbackend.lovespot.list
 
-import com.javadocmd.simplelatlng.LatLng
-import com.javadocmd.simplelatlng.LatLngTool
-import com.javadocmd.simplelatlng.util.LengthUnit
-import com.lovemap.lovemapbackend.geolocation.GeoLocationService
 import com.lovemap.lovemapbackend.lovespot.*
-import com.lovemap.lovemapbackend.lovespot.ListOrdering.*
 import com.lovemap.lovemapbackend.lovespot.list.strategy.LoveSpotListStrategyFactory
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
 import org.springframework.stereotype.Service
-import kotlin.math.sqrt
 
 @Service
 class LoveSpotListService(
@@ -26,6 +18,7 @@ class LoveSpotListService(
             longTo = request.longTo,
             latFrom = request.latFrom,
             latTo = request.latTo,
+            typeFilter = LoveSpot.Type.values().toSet(),
             limit = if (request.limit <= maxListLimit) request.limit else maxListLimit
         )
     }

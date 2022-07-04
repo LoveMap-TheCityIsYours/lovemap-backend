@@ -138,6 +138,7 @@ data class LoveSpotAdvancedListRequest(
     @field:Range(min = 1, max = 1_000_000, message = INVALID_DISTANCE_IN_METERS)
     val distanceInMeters: Int? = null,
     val locationName: String? = null,
+    val typeFilter: List<LoveSpotDto.Type> = LoveSpotDto.Type.values().toList()
 )
 
 enum class ListOrdering {

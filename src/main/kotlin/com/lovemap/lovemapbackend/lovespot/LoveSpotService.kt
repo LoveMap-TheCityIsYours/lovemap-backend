@@ -111,6 +111,7 @@ class LoveSpotService(
             longFrom = request.longitude - TWELVE_METERS_IN_COORDINATES,
             latTo = request.latitude + TWELVE_METERS_IN_COORDINATES,
             longTo = request.longitude + TWELVE_METERS_IN_COORDINATES,
+            typeFilter = LoveSpot.Type.values().toSet(),
             limit = 100
         )
 
