@@ -1,5 +1,9 @@
 package com.lovemap.lovemapbackend.debug
 
+import com.lovemap.lovemapbackend.geolocation.Cities
+import com.lovemap.lovemapbackend.geolocation.Countries
+import com.lovemap.lovemapbackend.geolocation.GeoLocationRepository
+import com.lovemap.lovemapbackend.geolocation.GeoLocationService
 import com.lovemap.lovemapbackend.lovespot.ListLocation
 import com.lovemap.lovemapbackend.lovespot.ListOrdering
 import com.lovemap.lovemapbackend.lovespot.LoveSpotAdvancedListRequest
@@ -15,7 +19,9 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/debug")
 class DebugController(
-    private val loveSpotListService: LoveSpotListService
+    private val loveSpotListService: LoveSpotListService,
+    private val geoLocationService: GeoLocationService,
+    private val geoLocationRepository: GeoLocationRepository
 ) {
     @PostMapping("/advancedSearch")
     suspend fun advancedSearch(
@@ -25,5 +31,15 @@ class DebugController(
     ): ResponseEntity<Flow<LoveSpotDto>> {
         val loveSpots = loveSpotListService.advancedList(listOrdering, listLocation, request)
         return ResponseEntity.ok(loveSpots.map { LoveSpotDto.of(it) })
+    }
+
+    @GetMapping("/countries")
+    suspend fun getCountries(): ResponseEntity<Countries> {
+        return ResponseEntity.ok(geoLocationService.findAllCountries())
+    }
+
+    @GetMapping("/cities")
+    suspend fun getCities(): ResponseEntity<Cities> {
+        return ResponseEntity.ok(geoLocationService.findAllCities())
     }
 }

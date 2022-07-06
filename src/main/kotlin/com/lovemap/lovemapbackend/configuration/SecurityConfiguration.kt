@@ -48,6 +48,7 @@ class SecurityConfiguration(
             .pathMatchers("/lovespots/**").hasRole("USER")
             .pathMatchers("/relation/**").hasRole("USER")
             .pathMatchers("/partnership/**").hasRole("USER")
+            .pathMatchers("/geolocations/**").hasRole("USER")
 
             .pathMatchers("/admin/**").hasRole("ADMIN")
             .anyExchange().authenticated()
