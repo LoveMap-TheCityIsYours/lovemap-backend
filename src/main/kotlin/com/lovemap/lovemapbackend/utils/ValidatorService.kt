@@ -10,7 +10,7 @@ const val INVALID_EMAIL = "Invalid email address"
 const val INVALID_USERNAME = "Length of username must be between 3 and 25 characters."
 const val INVALID_PASSWORD = "Length of password must be between 6 and 100 characters."
 const val INVALID_LOVE_SPOT_NAME = "Name must be between 3 and 50 characters."
-const val INVALID_LOVE_DESCRIPTION = "Description must be between 5 and 250 characters."
+const val INVALID_LOVE_DESCRIPTION = "Description must be between 5 and 1000 characters."
 const val INVALID_PW_RESET_CODE = "Password reset code is exactly 8 characters long."
 const val INVALID_DISTANCE_IN_METERS = "Allowed value is between 1 and 1 000 000"
 

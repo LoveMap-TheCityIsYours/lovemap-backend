@@ -5,7 +5,6 @@ import com.lovemap.lovemapbackend.utils.INVALID_LOVE_DESCRIPTION
 import com.lovemap.lovemapbackend.utils.INVALID_LOVE_SPOT_NAME
 import org.hibernate.validator.constraints.Range
 import java.time.LocalTime
-import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
@@ -106,10 +105,10 @@ data class CreateLoveSpotRequest(
     val longitude: Double,
     @field:NotNull
     val latitude: Double,
-    @field:Size(min = 5, max = 250, message = INVALID_LOVE_DESCRIPTION)
+    @field:Size(min = 5, max = 1000, message = INVALID_LOVE_DESCRIPTION)
     val description: String,
     var customAvailability: Pair<LocalTime, LocalTime>?,
-    @field:NotEmpty
+    @field:NotNull
     val availability: LoveSpotDto.Availability,
     val type: LoveSpotDto.Type = LoveSpotDto.Type.PUBLIC_SPACE,
 )
