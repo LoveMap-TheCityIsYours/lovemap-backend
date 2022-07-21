@@ -11,8 +11,6 @@ import com.lovemap.lovemapbackend.lovespot.list.ListOrderingDto
 import com.lovemap.lovemapbackend.lovespot.list.ListOrderingDto.RECENTLY_ACTIVE
 import com.lovemap.lovemapbackend.lovespot.list.LoveSpotAdvancedListDto
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
 import org.springframework.stereotype.Component
 
 @Component
@@ -29,11 +27,11 @@ class RecentlyActiveInLocationStrategy(
     }
 
     override suspend fun doListSpots(
-        geoLocations: Flow<GeoLocation>,
+        geoLocations: List<GeoLocation>,
         listDto: LoveSpotAdvancedListDto
     ): Flow<LoveSpot> {
         return repository.findByGeoLocOrderByRecentlyActive(
-            geoLocationIds = geoLocations.map { it.id }.toList(),
+            geoLocationIds = geoLocations.map { it.id },
             typeFilter = listDto.typeFilter,
             limit = listDto.limit
         )
