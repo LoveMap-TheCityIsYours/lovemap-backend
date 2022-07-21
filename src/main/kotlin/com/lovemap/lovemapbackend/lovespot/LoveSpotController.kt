@@ -1,7 +1,7 @@
 package com.lovemap.lovemapbackend.lovespot
 
+import com.lovemap.lovemapbackend.lovespot.list.*
 import com.lovemap.lovemapbackend.lovespot.risk.LoveSpotRisks
-import com.lovemap.lovemapbackend.lovespot.list.LoveSpotListService
 import com.lovemap.lovemapbackend.utils.ValidatorService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -53,8 +53,8 @@ class LoveSpotController(
 
     @PostMapping("/advancedList")
     suspend fun advancedSearch(
-        @RequestParam(required = true) listOrdering: ListOrdering,
-        @RequestParam(required = true) listLocation: ListLocation,
+        @RequestParam(required = true) listOrdering: ListOrderingRequest,
+        @RequestParam(required = true) listLocation: ListLocationRequest,
         @RequestBody request: LoveSpotAdvancedListRequest
     ): ResponseEntity<Flow<LoveSpotResponse>> {
         val loveSpots = loveSpotListService.advancedList(listOrdering, listLocation, request)

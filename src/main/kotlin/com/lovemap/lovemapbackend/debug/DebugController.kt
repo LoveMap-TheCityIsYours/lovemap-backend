@@ -4,10 +4,10 @@ import com.lovemap.lovemapbackend.geolocation.Cities
 import com.lovemap.lovemapbackend.geolocation.Countries
 import com.lovemap.lovemapbackend.geolocation.GeoLocationRepository
 import com.lovemap.lovemapbackend.geolocation.GeoLocationService
-import com.lovemap.lovemapbackend.lovespot.ListLocation
-import com.lovemap.lovemapbackend.lovespot.ListOrdering
-import com.lovemap.lovemapbackend.lovespot.LoveSpotAdvancedListRequest
 import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse
+import com.lovemap.lovemapbackend.lovespot.list.ListLocationRequest
+import com.lovemap.lovemapbackend.lovespot.list.ListOrderingRequest
+import com.lovemap.lovemapbackend.lovespot.list.LoveSpotAdvancedListRequest
 import com.lovemap.lovemapbackend.lovespot.list.LoveSpotListService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -25,8 +25,8 @@ class DebugController(
 ) {
     @PostMapping("/advancedSearch")
     suspend fun advancedSearch(
-        @RequestParam(name = "searchType", required = true) listOrdering: ListOrdering,
-        @RequestParam(name = "searchLocation", required = true) listLocation: ListLocation,
+        @RequestParam(name = "searchType", required = true) listOrdering: ListOrderingRequest,
+        @RequestParam(name = "searchLocation", required = true) listLocation: ListLocationRequest,
         @RequestBody request: LoveSpotAdvancedListRequest
     ): ResponseEntity<Flow<LoveSpotResponse>> {
         val loveSpots = loveSpotListService.advancedList(listOrdering, listLocation, request)
