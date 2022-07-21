@@ -1,9 +1,7 @@
 package com.lovemap.lovemapbackend.lovespot.list
 
-import com.lovemap.lovemapbackend.lovespot.LoveSpotAdvancedListRequest
-import com.lovemap.lovemapbackend.lovespot.ListLocation
-import com.lovemap.lovemapbackend.lovespot.ListLocation.*
-import com.lovemap.lovemapbackend.lovespot.ListOrdering
+import com.lovemap.lovemapbackend.lovespot.LoveSpot
+import com.lovemap.lovemapbackend.lovespot.list.ListLocationRequest.*
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import com.lovemap.lovemapbackend.utils.ValidatorService
@@ -15,13 +13,31 @@ class LoveSpotListValidator(
     private val validatorService: ValidatorService
 ) {
 
-    fun validateRequest(
-        listOrdering: ListOrdering,
-        listLocation: ListLocation,
+    fun validateAndConvertRequest(
+        listOrdering: ListOrderingRequest,
+        listLocation: ListLocationRequest,
+        request: LoveSpotAdvancedListRequest
+    ): LoveSpotAdvancedListDto {
+        validatorService.validate(request)
+        validateOrdering(listOrdering, request)
+        validateLocation(listLocation, request)
+        return LoveSpotAdvancedListDto(
+            limit = request.limit,
+            typeFilter = convertTypeFilter(request),
+            listOrdering = listOrdering.toDto(),
+            listLocation = listLocation.toDto(),
+            latitude = request.lat,
+            longitude = request.long,
+            distanceInMeters = request.distanceInMeters,
+            locationName = request.locationName
+        )
+    }
+
+    private fun validateOrdering(
+        listOrdering: ListOrderingRequest,
         request: LoveSpotAdvancedListRequest
     ) {
-        validatorService.validate(request)
-        if (listOrdering == ListOrdering.CLOSEST) {
+        if (listOrdering == ListOrderingRequest.CLOSEST) {
             if (request.lat == null || request.long == null) {
                 throw LoveMapException(
                     status = HttpStatus.BAD_REQUEST,
@@ -31,6 +47,12 @@ class LoveSpotListValidator(
                 )
             }
         }
+    }
+
+    private fun validateLocation(
+        listLocation: ListLocationRequest,
+        request: LoveSpotAdvancedListRequest
+    ) {
         when (listLocation) {
             COUNTRY -> {
                 request.locationName ?: throw LoveMapException(
@@ -59,5 +81,14 @@ class LoveSpotListValidator(
                 }
             }
         }
+    }
+
+    private fun convertTypeFilter(request: LoveSpotAdvancedListRequest): Set<LoveSpot.Type> {
+        val typeFilter = if (request.typeFilter.isEmpty()) {
+            LoveSpot.Type.values().toSet()
+        } else {
+            request.typeFilter.map { it.toEntity() }.toSet()
+        }
+        return typeFilter
     }
 }

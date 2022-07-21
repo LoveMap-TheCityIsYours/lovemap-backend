@@ -7,7 +7,7 @@ import com.lovemap.lovemapbackend.geolocation.GeoLocationService
 import com.lovemap.lovemapbackend.lovespot.ListLocation
 import com.lovemap.lovemapbackend.lovespot.ListOrdering
 import com.lovemap.lovemapbackend.lovespot.LoveSpotAdvancedListRequest
-import com.lovemap.lovemapbackend.lovespot.LoveSpotDto
+import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse
 import com.lovemap.lovemapbackend.lovespot.list.LoveSpotListService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -28,9 +28,9 @@ class DebugController(
         @RequestParam(name = "searchType", required = true) listOrdering: ListOrdering,
         @RequestParam(name = "searchLocation", required = true) listLocation: ListLocation,
         @RequestBody request: LoveSpotAdvancedListRequest
-    ): ResponseEntity<Flow<LoveSpotDto>> {
+    ): ResponseEntity<Flow<LoveSpotResponse>> {
         val loveSpots = loveSpotListService.advancedList(listOrdering, listLocation, request)
-        return ResponseEntity.ok(loveSpots.map { LoveSpotDto.of(it) })
+        return ResponseEntity.ok(loveSpots.map { LoveSpotResponse.of(it) })
     }
 
     @GetMapping("/countries")

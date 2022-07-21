@@ -2,7 +2,7 @@ package com.lovemap.lovemapbackend.love
 
 import com.lovemap.lovemapbackend.utils.InstantConverterUtils.toApiString
 
-data class LoveDto(
+data class LoveResponse(
     val id: Long,
     val name: String,
     val loveSpotId: Long,
@@ -13,8 +13,8 @@ data class LoveDto(
     val happenedAt: String? = null,
 ) {
     companion object {
-        fun of(love: Love, partnerName: String?): LoveDto {
-            return LoveDto(
+        fun of(love: Love, partnerName: String?): LoveResponse {
+            return LoveResponse(
                 id = love.id,
                 name = love.name,
                 loveSpotId = love.loveSpotId,

@@ -17,38 +17,38 @@ class LoveSpotController(
     private val validatorService: ValidatorService,
 ) {
     @PostMapping
-    suspend fun create(@RequestBody request: CreateLoveSpotRequest): ResponseEntity<LoveSpotDto> {
+    suspend fun create(@RequestBody request: CreateLoveSpotRequest): ResponseEntity<LoveSpotResponse> {
         validatorService.validate(request)
         val loveSpot = loveSpotService.create(request)
-        return ResponseEntity.ok(LoveSpotDto.of(loveSpot))
+        return ResponseEntity.ok(LoveSpotResponse.of(loveSpot))
     }
 
     @PutMapping("/{id}")
     suspend fun update(
         @PathVariable id: Long,
         @RequestBody request: UpdateLoveSpotRequest
-    ): ResponseEntity<LoveSpotDto> {
+    ): ResponseEntity<LoveSpotResponse> {
         val loveSpot = loveSpotService.update(id, request)
-        return ResponseEntity.ok(LoveSpotDto.of(loveSpot))
+        return ResponseEntity.ok(LoveSpotResponse.of(loveSpot))
     }
 
     @GetMapping("/{id}")
-    suspend fun find(@PathVariable id: Long): ResponseEntity<LoveSpotDto> {
+    suspend fun find(@PathVariable id: Long): ResponseEntity<LoveSpotResponse> {
         val loveSpot = loveSpotService.getById(id)
-        return ResponseEntity.ok(LoveSpotDto.of(loveSpot))
+        return ResponseEntity.ok(LoveSpotResponse.of(loveSpot))
     }
 
     @Deprecated("will be removed later")
     @PostMapping("/search")
-    suspend fun search(@RequestBody request: LoveSpotListRequest): ResponseEntity<Flow<LoveSpotDto>> {
+    suspend fun search(@RequestBody request: LoveSpotListRequest): ResponseEntity<Flow<LoveSpotResponse>> {
         val loveSpots = loveSpotListService.list(request)
-        return ResponseEntity.ok(loveSpots.map { LoveSpotDto.of(it) })
+        return ResponseEntity.ok(loveSpots.map { LoveSpotResponse.of(it) })
     }
 
     @PostMapping("/list")
-    suspend fun list(@RequestBody request: LoveSpotListRequest): ResponseEntity<Flow<LoveSpotDto>> {
+    suspend fun list(@RequestBody request: LoveSpotListRequest): ResponseEntity<Flow<LoveSpotResponse>> {
         val loveSpots = loveSpotListService.list(request)
-        return ResponseEntity.ok(loveSpots.map { LoveSpotDto.of(it) })
+        return ResponseEntity.ok(loveSpots.map { LoveSpotResponse.of(it) })
     }
 
     @PostMapping("/advancedList")
@@ -56,9 +56,9 @@ class LoveSpotController(
         @RequestParam(required = true) listOrdering: ListOrdering,
         @RequestParam(required = true) listLocation: ListLocation,
         @RequestBody request: LoveSpotAdvancedListRequest
-    ): ResponseEntity<Flow<LoveSpotDto>> {
+    ): ResponseEntity<Flow<LoveSpotResponse>> {
         val loveSpots = loveSpotListService.advancedList(listOrdering, listLocation, request)
-        return ResponseEntity.ok(loveSpots.map { LoveSpotDto.of(it) })
+        return ResponseEntity.ok(loveSpots.map { LoveSpotResponse.of(it) })
     }
 
     @GetMapping("risks")

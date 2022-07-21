@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.toList
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.server.ResponseStatusException
 import java.sql.Timestamp
 import java.time.Instant
 
@@ -29,13 +28,13 @@ class LoveService(
     private val loverPointService: LoverPointService,
     private val loveRepository: LoveRepository
 ) {
-    suspend fun findAllInvolvedLovesFor(loverId: Long): List<LoveDto> {
+    suspend fun findAllInvolvedLovesFor(loverId: Long): List<LoveResponse> {
         val caller = authorizationService.checkAccessFor(loverId)
         val loves = loveRepository.findDistinctByLoverIdOrLoverPartnerId(loverId, loverId)
         return loves.map { love -> loveConverter.toDto(caller, love) }.toList()
     }
 
-    suspend fun create(request: CreateLoveRequest): LoveDto {
+    suspend fun create(request: CreateLoveRequest): LoveResponse {
         val caller = authorizationService.checkAccessFor(request.loverId)
         spotService.checkExistence(request.loveSpotId)
         request.loverPartnerId?.let {
@@ -56,7 +55,7 @@ class LoveService(
         return loveConverter.toDto(caller, love)
     }
 
-    suspend fun update(id: Long, request: UpdateLoveRequest): LoveDto {
+    suspend fun update(id: Long, request: UpdateLoveRequest): LoveResponse {
         var love = getById(id)
         val caller = authorizationService.checkAccessFor(love)
         request.name?.let { love.name = it.trim() }

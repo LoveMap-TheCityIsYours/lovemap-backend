@@ -1,7 +1,7 @@
 package com.lovemap.lovemapbackend.admin
 
 import com.lovemap.lovemapbackend.lovespot.LoveSpotDeletionService
-import com.lovemap.lovemapbackend.lovespot.LoveSpotDto
+import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.lovespot.UpdateLoveSpotRequest
 import org.springframework.http.ResponseEntity
@@ -18,14 +18,14 @@ class AdminController(
     suspend fun updateLoveSpot(
         @PathVariable loveSpotId: Long,
         request: UpdateLoveSpotRequest
-    ): ResponseEntity<LoveSpotDto> {
+    ): ResponseEntity<LoveSpotResponse> {
         val loveSpot = loveSpotService.update(loveSpotId, request)
-        return ResponseEntity.ok(LoveSpotDto.of(loveSpot))
+        return ResponseEntity.ok(LoveSpotResponse.of(loveSpot))
     }
 
     @DeleteMapping("/lovespots/{loveSpotId}")
-    suspend fun deleteLoveSpot(@PathVariable loveSpotId: Long): ResponseEntity<LoveSpotDto> {
+    suspend fun deleteLoveSpot(@PathVariable loveSpotId: Long): ResponseEntity<LoveSpotResponse> {
         val deletedSpot = loveSpotDeletionService.deleteSpot(loveSpotId)
-        return ResponseEntity.ok(LoveSpotDto.of(deletedSpot))
+        return ResponseEntity.ok(LoveSpotResponse.of(deletedSpot))
     }
 }

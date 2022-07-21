@@ -14,7 +14,7 @@ class LoveDeletionService(
     private val loveSpotReviewService: LoveSpotReviewService,
 ) {
 
-    suspend fun delete(id: Long): LoveDto {
+    suspend fun delete(id: Long): LoveResponse {
         val love = loveService.getById(id)
         val caller = authorizationService.checkAccessFor(love)
         loveSpotReviewService.deleteReviewsByLove(love)

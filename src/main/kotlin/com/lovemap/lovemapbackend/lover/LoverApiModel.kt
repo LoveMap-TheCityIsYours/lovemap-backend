@@ -1,8 +1,8 @@
 package com.lovemap.lovemapbackend.lover
 
-import com.lovemap.lovemapbackend.love.LoveDto
-import com.lovemap.lovemapbackend.lovespot.LoveSpotDto
-import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewDto
+import com.lovemap.lovemapbackend.love.LoveResponse
+import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse
+import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewResponse
 import com.lovemap.lovemapbackend.relation.LoverRelations
 import com.lovemap.lovemapbackend.relation.Relation
 import com.lovemap.lovemapbackend.relation.RelationStatusDto
@@ -10,7 +10,7 @@ import com.lovemap.lovemapbackend.utils.InstantConverterUtils.toApiString
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 
-data class LoverDto(
+data class LoverResponse(
     val id: Long,
     val userName: String,
     val email: String,
@@ -28,8 +28,8 @@ data class LoverDto(
     val isAdmin: Boolean = false,
 ) {
     companion object {
-        fun of(lover: Lover, isAdmin: Boolean = false): LoverDto {
-            return LoverDto(
+        fun of(lover: Lover, isAdmin: Boolean = false): LoverResponse {
+            return LoverResponse(
                 id = lover.id,
                 userName = lover.userName,
                 email = lover.email,
@@ -50,15 +50,15 @@ data class LoverDto(
     }
 }
 
-data class LoverContributionsDto(
-    val loves: List<LoveDto>,
-    val loveSpots: List<LoveSpotDto>,
-    val loveSpotReviews: List<LoveSpotReviewDto>
+data class LoverContributionsResponse(
+    val loves: List<LoveResponse>,
+    val loveSpots: List<LoveSpotResponse>,
+    val loveSpotReviews: List<LoveSpotReviewResponse>
 )
 
-data class LoverRelationsDto(
+data class LoverRelationsResponse(
     val id: Long,
-    val relations: List<LoverViewDto>,
+    val relations: List<LoverViewResponse>,
     val userName: String,
     val email: String,
     val rank: Int,
@@ -75,8 +75,8 @@ data class LoverRelationsDto(
     val isAdmin: Boolean = false,
 ) {
     companion object {
-        suspend fun of(lover: Lover, loverRelations: LoverRelations, isAdmin: Boolean = false): LoverRelationsDto {
-            return LoverRelationsDto(
+        suspend fun of(lover: Lover, loverRelations: LoverRelations, isAdmin: Boolean = false): LoverRelationsResponse {
+            return LoverRelationsResponse(
                 id = lover.id,
                 userName = lover.userName,
                 email = lover.email,
@@ -93,7 +93,7 @@ data class LoverRelationsDto(
                 shareableLink = lover.uuid?.let { LoverService.linkPrefixVisible + lover.uuid },
                 isAdmin = isAdmin,
                 relations = loverRelations.relations.map { entry ->
-                    LoverViewDto(
+                    LoverViewResponse(
                         id = entry.loverView.id,
                         userName = entry.loverView.userName,
                         points = lover.points,
@@ -108,7 +108,7 @@ data class LoverRelationsDto(
     }
 }
 
-data class LoverViewDto(
+data class LoverViewResponse(
     val id: Long,
     val userName: String,
     val points: Int,
@@ -118,8 +118,8 @@ data class LoverViewDto(
     val publicProfile: Boolean,
 ) {
     companion object {
-        fun of(lover: Lover, relationStatus: Relation.Status): LoverViewDto {
-            return LoverViewDto(
+        fun of(lover: Lover, relationStatus: Relation.Status): LoverViewResponse {
+            return LoverViewResponse(
                 id = lover.id,
                 userName = lover.userName,
                 points = lover.points,
@@ -130,8 +130,8 @@ data class LoverViewDto(
             )
         }
 
-        fun of(lover: Lover, relationStatus: RelationStatusDto): LoverViewDto {
-            return LoverViewDto(
+        fun of(lover: Lover, relationStatus: RelationStatusDto): LoverViewResponse {
+            return LoverViewResponse(
                 id = lover.id,
                 userName = lover.userName,
                 points = lover.points,

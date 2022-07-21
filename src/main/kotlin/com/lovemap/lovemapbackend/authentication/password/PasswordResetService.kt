@@ -5,7 +5,7 @@ import com.lovemap.lovemapbackend.authentication.LoginLoverRequest
 import com.lovemap.lovemapbackend.authentication.NewPasswordRequest
 import com.lovemap.lovemapbackend.authentication.ResetPasswordRequest
 import com.lovemap.lovemapbackend.email.EmailService
-import com.lovemap.lovemapbackend.lover.LoverRelationsDto
+import com.lovemap.lovemapbackend.lover.LoverRelationsResponse
 import com.lovemap.lovemapbackend.lover.LoverService
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
@@ -25,7 +25,7 @@ class PasswordResetService(
         emailService.sendPasswordResetEmail(lover, resetCode)
     }
 
-    suspend fun setNewPassword(request: NewPasswordRequest): LoverRelationsDto {
+    suspend fun setNewPassword(request: NewPasswordRequest): LoverRelationsResponse {
         val lover = loverService.unAuthorizedGetByEmail(request.email)
         passwordService.setNewPassword(lover, request.resetCode, request.newPassword)
         return authenticationService.loginLover(LoginLoverRequest(email = request.email, password = request.newPassword))

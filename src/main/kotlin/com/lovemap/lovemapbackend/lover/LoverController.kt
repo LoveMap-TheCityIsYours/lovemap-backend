@@ -14,38 +14,38 @@ class LoverController(
     private val loverRanks: LoverRanks,
 ) {
     @GetMapping("/contributions/{loverId}")
-    suspend fun contributions(@PathVariable loverId: Long): ResponseEntity<LoverContributionsDto> {
+    suspend fun contributions(@PathVariable loverId: Long): ResponseEntity<LoverContributionsResponse> {
         val loveListDto = loverContributionsService.list(loverId)
         return ResponseEntity.ok(loveListDto)
     }
 
     @GetMapping("/{loverId}")
-    suspend fun getLover(@PathVariable loverId: Long): ResponseEntity<LoverRelationsDto> {
+    suspend fun getLover(@PathVariable loverId: Long): ResponseEntity<LoverRelationsResponse> {
         return ResponseEntity.ok(loverRelationService.getWithRelations(loverId))
     }
 
     @GetMapping("/view/{loverId}")
-    suspend fun getLoverView(@PathVariable loverId: Long): ResponseEntity<LoverViewDto> {
+    suspend fun getLoverView(@PathVariable loverId: Long): ResponseEntity<LoverViewResponse> {
         return ResponseEntity.ok(loverRelationService.getById(loverId))
     }
 
     @GetMapping
     suspend fun getLoverByUuid(@RequestParam uuid: String)
-            : ResponseEntity<LoverViewDto> {
+            : ResponseEntity<LoverViewResponse> {
         val loverViewDto = loverRelationService.getByUuid(uuid)
         return ResponseEntity.ok(loverViewDto)
     }
 
     @PostMapping("/{loverId}/shareableLink")
     suspend fun generateLoverLink(@PathVariable loverId: Long)
-            : ResponseEntity<LoverDto> {
+            : ResponseEntity<LoverResponse> {
         val lover = loverService.generateLoverUuid(loverId)
         return ResponseEntity.ok(loverConverter.toDto(lover))
     }
 
     @DeleteMapping("/{loverId}/shareableLink")
     suspend fun deleteLoverLink(@PathVariable loverId: Long)
-            : ResponseEntity<LoverDto> {
+            : ResponseEntity<LoverResponse> {
         val lover = loverService.deleteLoverLink(loverId)
         return ResponseEntity.ok(loverConverter.toDto(lover))
     }

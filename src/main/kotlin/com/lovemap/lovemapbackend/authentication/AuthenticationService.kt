@@ -3,7 +3,7 @@ package com.lovemap.lovemapbackend.authentication
 import com.lovemap.lovemapbackend.authentication.password.PasswordService
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.LoverRelationService
-import com.lovemap.lovemapbackend.lover.LoverRelationsDto
+import com.lovemap.lovemapbackend.lover.LoverRelationsResponse
 import com.lovemap.lovemapbackend.lover.LoverService
 import com.lovemap.lovemapbackend.security.JwtService
 import kotlinx.coroutines.reactor.awaitSingle
@@ -37,7 +37,7 @@ class AuthenticationService(
         return lover
     }
 
-    suspend fun loginLover(request: LoginLoverRequest): LoverRelationsDto {
+    suspend fun loginLover(request: LoginLoverRequest): LoverRelationsResponse {
         logger.debug { "Logging in '$request'" }
         val lover = if (request.email != null) {
             loverService.unAuthorizedGetByEmail(request.email)

@@ -30,11 +30,12 @@ class GeoLocationService(
     private val logger = KotlinLogging.logger {}
 
     fun listByCountry(country: String): Flow<GeoLocation> {
-        return repository.findByCountry(country)
+        return repository.findByCountry(country.trim())
     }
 
     fun listByCity(city: String): Flow<GeoLocation> {
-        return repository.findByCity(city)
+        val preparedCity = city.substringBefore(",").trim()
+        return repository.findByCity(preparedCity)
     }
 
     suspend fun getLocationInfo(loveSpot: LoveSpot): GeoLocation? {
@@ -101,13 +102,13 @@ class GeoLocationService(
         ac: AddressComponent
     ) {
         if (geoResult.postalCode == null && isPostalCode(ac)) {
-            geoResult.postalCode = ac.longName
+            geoResult.postalCode = ac.longName.trim()
         } else if (geoResult.city == null && isCity(ac)) {
-            geoResult.city = ac.longName
+            geoResult.city = ac.longName.trim()
         } else if (geoResult.county == null && isCounty(ac)) {
-            geoResult.county = ac.longName
+            geoResult.county = ac.longName.trim()
         } else if (geoResult.country == null && isCountry(ac)) {
-            geoResult.country = ac.longName
+            geoResult.country = ac.longName.trim()
         }
     }
 

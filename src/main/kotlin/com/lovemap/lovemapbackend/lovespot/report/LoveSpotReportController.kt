@@ -1,6 +1,6 @@
 package com.lovemap.lovemapbackend.lovespot.report
 
-import com.lovemap.lovemapbackend.lovespot.LoveSpotDto
+import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.springframework.http.ResponseEntity
@@ -13,9 +13,9 @@ class LoveSpotReportController(
 ) {
 
     @PutMapping
-    suspend fun reportSpot(@RequestBody request: LoveSpotReportRequest): ResponseEntity<LoveSpotDto> {
+    suspend fun reportSpot(@RequestBody request: LoveSpotReportRequest): ResponseEntity<LoveSpotResponse> {
         val loveSpot = loveSpotReportService.addOrUpdateReport(request)
-        return ResponseEntity.ok(LoveSpotDto.of(loveSpot))
+        return ResponseEntity.ok(LoveSpotResponse.of(loveSpot))
     }
 
     @GetMapping("/bySpot/{loveSpotId}")

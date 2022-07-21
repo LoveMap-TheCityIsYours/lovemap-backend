@@ -12,28 +12,28 @@ class LoverRelationService(
     private val relationService: RelationService,
 ) {
 
-    suspend fun getWithRelations(id: Long): LoverRelationsDto {
+    suspend fun getWithRelations(id: Long): LoverRelationsResponse {
         val lover = loverService.getById(id)
         return loverConverter.toRelationsDto(lover, relationService.getRelationsFrom(id))
     }
 
-    suspend fun getWithRelations(lover: Lover): LoverRelationsDto {
+    suspend fun getWithRelations(lover: Lover): LoverRelationsResponse {
         return loverConverter.toRelationsDto(lover, relationService.getRelationsFrom(lover.id))
     }
 
-    suspend fun getByUuid(uuid: String): LoverViewDto {
+    suspend fun getByUuid(uuid: String): LoverViewResponse {
         val caller = authorizationService.getCaller()
         val lover = loverService.getByUuid(uuid, caller)
         relationService.checkBlockingBetweenLovers(caller.id, lover.id)
         val relationStatusDto = relationService.getRelationStatusDto(caller.id, lover.id)
-        return LoverViewDto.of(lover, relationStatusDto)
+        return LoverViewResponse.of(lover, relationStatusDto)
     }
 
-    suspend fun getById(id: Long): LoverViewDto {
+    suspend fun getById(id: Long): LoverViewResponse {
         val caller = authorizationService.getCaller()
         val lover = loverService.unAuthorizedGetById(id)
         relationService.checkBlockingBetweenLovers(caller.id, lover.id)
         val relationStatusDto = relationService.getRelationStatusDto(caller.id, lover.id)
-        return LoverViewDto.of(lover, relationStatusDto)
+        return LoverViewResponse.of(lover, relationStatusDto)
     }
 }

@@ -2,19 +2,30 @@ package com.lovemap.lovemapbackend.lovespot.list.strategy.coordinate
 
 import com.javadocmd.simplelatlng.LatLng
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
-import com.lovemap.lovemapbackend.lovespot.LoveSpotAdvancedListRequest
 import com.lovemap.lovemapbackend.lovespot.LoveSpotRepository
+import com.lovemap.lovemapbackend.lovespot.list.ListLocationDto
+import com.lovemap.lovemapbackend.lovespot.list.ListLocationDto.COORDINATE
+import com.lovemap.lovemapbackend.lovespot.list.ListOrderingDto
+import com.lovemap.lovemapbackend.lovespot.list.ListOrderingDto.RECENTLY_ACTIVE
 import kotlinx.coroutines.flow.Flow
+import org.springframework.stereotype.Component
 
+@Component
 class RecentlyActiveByCoordinatesStrategy(
-    center: LatLng,
-    distance: Int,
-    limit: Int,
-    typeFilter: Set<LoveSpot.Type>,
     private val repository: LoveSpotRepository
-) : CoordinateBasedStrategy(center, distance, limit, typeFilter) {
+) : CoordinateBasedStrategy() {
 
-    override suspend fun listSpots(): Flow<LoveSpot> {
+    override fun getSupportedConditions(): Set<Pair<ListLocationDto, ListOrderingDto>> {
+        return setOf(Pair(COORDINATE, RECENTLY_ACTIVE))
+    }
+
+    override suspend fun doListSpots(
+        center: LatLng,
+        from: LatLng,
+        to: LatLng,
+        limit: Int,
+        typeFilter: Set<LoveSpot.Type>
+    ): Flow<LoveSpot> {
         return repository.findByCoordinatesOrderByRecentlyActive(
             latFrom = from.latitude,
             longFrom = from.longitude,
@@ -23,20 +34,5 @@ class RecentlyActiveByCoordinatesStrategy(
             typeFilter = typeFilter,
             limit = limit
         )
-    }
-
-    companion object {
-        fun of(
-            request: LoveSpotAdvancedListRequest,
-            repository: LoveSpotRepository
-        ): RecentlyActiveByCoordinatesStrategy {
-            return RecentlyActiveByCoordinatesStrategy(
-                center = LatLng(request.lat!!, request.long!!),
-                distance = request.distanceInMeters!!,
-                limit = request.limit,
-                typeFilter = request.typeFilter.map { it.toModel() }.toSet(),
-                repository = repository
-            )
-        }
     }
 }

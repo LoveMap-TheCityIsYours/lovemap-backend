@@ -1,6 +1,6 @@
 package com.lovemap.lovemapbackend.lovespot.review
 
-data class LoveSpotReviewDto(
+data class LoveSpotReviewResponse(
     val id: Long,
     val loveId: Long,
     val reviewerId: Long,
@@ -10,8 +10,8 @@ data class LoveSpotReviewDto(
     val riskLevel: Int,
 ) {
     companion object {
-        fun of(review: LoveSpotReview): LoveSpotReviewDto {
-            return LoveSpotReviewDto(
+        fun of(review: LoveSpotReview): LoveSpotReviewResponse {
+            return LoveSpotReviewResponse(
                 id = review.id,
                 loveId = review.loveId,
                 reviewerId = review.reviewerId,

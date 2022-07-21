@@ -1,14 +1,12 @@
 package com.lovemap.lovemapbackend.lovespot
 
-import com.lovemap.lovemapbackend.utils.INVALID_DISTANCE_IN_METERS
 import com.lovemap.lovemapbackend.utils.INVALID_LOVE_DESCRIPTION
 import com.lovemap.lovemapbackend.utils.INVALID_LOVE_SPOT_NAME
-import org.hibernate.validator.constraints.Range
 import java.time.LocalTime
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
-data class LoveSpotDto(
+data class LoveSpotResponse(
     val id: Long,
     val name: String,
     val longitude: Double,
@@ -24,8 +22,8 @@ data class LoveSpotDto(
     val type: Type = Type.PUBLIC_SPACE,
 ) {
     companion object {
-        fun of(loveSpot: LoveSpot): LoveSpotDto {
-            return LoveSpotDto(
+        fun of(loveSpot: LoveSpot): LoveSpotResponse {
+            return LoveSpotResponse(
                 id = loveSpot.id,
                 name = loveSpot.name,
                 addedBy = loveSpot.addedBy,
@@ -55,7 +53,7 @@ data class LoveSpotDto(
             }
         }
 
-        fun toModel(): LoveSpot.Availability {
+        fun toEntity(): LoveSpot.Availability {
             return when (this) {
                 ALL_DAY -> LoveSpot.Availability.ALL_DAY
                 NIGHT_ONLY -> LoveSpot.Availability.NIGHT_ONLY
@@ -85,7 +83,7 @@ data class LoveSpotDto(
 
         }
 
-        fun toModel(): LoveSpot.Type {
+        fun toEntity(): LoveSpot.Type {
             return when (this) {
                 PUBLIC_SPACE -> LoveSpot.Type.PUBLIC_SPACE
                 SWINGER_CLUB -> LoveSpot.Type.SWINGER_CLUB
@@ -109,41 +107,14 @@ data class CreateLoveSpotRequest(
     val description: String,
     var customAvailability: Pair<LocalTime, LocalTime>?,
     @field:NotNull
-    val availability: LoveSpotDto.Availability,
-    val type: LoveSpotDto.Type = LoveSpotDto.Type.PUBLIC_SPACE,
+    val availability: LoveSpotResponse.Availability,
+    val type: LoveSpotResponse.Type = LoveSpotResponse.Type.PUBLIC_SPACE,
 )
 
 data class UpdateLoveSpotRequest(
     val name: String? = null,
     val description: String? = null,
-    var availability: LoveSpotDto.Availability?,
-    val type: LoveSpotDto.Type?,
+    var availability: LoveSpotResponse.Availability?,
+    val type: LoveSpotResponse.Type?,
     val customAvailability: Pair<LocalTime, LocalTime>? = null
 )
-
-data class LoveSpotListRequest(
-    val latFrom: Double,
-    val longFrom: Double,
-    val latTo: Double,
-    val longTo: Double,
-    val limit: Int
-)
-
-data class LoveSpotAdvancedListRequest(
-    @field:NotNull
-    val limit: Int,
-    val lat: Double? = null,
-    val long: Double? = null,
-    @field:Range(min = 1, max = 1_000_000, message = INVALID_DISTANCE_IN_METERS)
-    val distanceInMeters: Int? = null,
-    val locationName: String? = null,
-    val typeFilter: List<LoveSpotDto.Type> = LoveSpotDto.Type.values().toList()
-)
-
-enum class ListOrdering {
-    CLOSEST, TOP_RATED, RECENTLY_ACTIVE, POPULAR
-}
-
-enum class ListLocation {
-    COORDINATE, CITY, COUNTRY
-}

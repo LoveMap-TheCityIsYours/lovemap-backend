@@ -9,7 +9,7 @@ class LoveConverter(
     private val loverService: LoverService,
 ) {
 
-    suspend fun toDto(caller: Lover, love: Love): LoveDto {
+    suspend fun toDto(caller: Lover, love: Love): LoveResponse {
         val partnerName: String? = if (caller.id == love.loverPartnerId) {
             loverService.unAuthorizedGetById(love.loverId).userName
         } else {
@@ -17,6 +17,6 @@ class LoveConverter(
                 loverService.unAuthorizedGetById(it).userName
             }
         }
-        return LoveDto.of(love, partnerName)
+        return LoveResponse.of(love, partnerName)
     }
 }

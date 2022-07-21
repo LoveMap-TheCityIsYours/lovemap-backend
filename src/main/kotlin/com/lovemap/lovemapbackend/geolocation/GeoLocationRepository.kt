@@ -12,6 +12,7 @@ interface GeoLocationRepository : CoroutineCrudRepository<GeoLocation, Long> {
         country: String?
     ): GeoLocation?
 
+    // TODO: use projections: https://docs.spring.io/spring-data/r2dbc/docs/current/reference/html/#projections
     fun findByCountry(country: String): Flow<GeoLocation>
 
     fun findByCity(city: String): Flow<GeoLocation>

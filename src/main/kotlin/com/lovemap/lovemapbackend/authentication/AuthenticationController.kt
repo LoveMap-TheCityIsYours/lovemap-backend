@@ -2,8 +2,8 @@ package com.lovemap.lovemapbackend.authentication
 
 import com.lovemap.lovemapbackend.authentication.password.PasswordResetService
 import com.lovemap.lovemapbackend.lover.LoverConverter
-import com.lovemap.lovemapbackend.lover.LoverDto
-import com.lovemap.lovemapbackend.lover.LoverRelationsDto
+import com.lovemap.lovemapbackend.lover.LoverResponse
+import com.lovemap.lovemapbackend.lover.LoverRelationsResponse
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException
@@ -29,7 +29,7 @@ class AuthenticationController(
     private val logger = KotlinLogging.logger {}
 
     @PostMapping("/register")
-    suspend fun register(@RequestBody request: CreateLoverRequest): ResponseEntity<LoverDto> {
+    suspend fun register(@RequestBody request: CreateLoverRequest): ResponseEntity<LoverResponse> {
         validatorService.validate(request)
         logger.debug { "Registering user '${request.userName}'" }
         val lover = authenticationService.createLover(request)
@@ -40,7 +40,7 @@ class AuthenticationController(
     }
 
     @PostMapping("/login")
-    suspend fun login(@RequestBody request: LoginLoverRequest): ResponseEntity<LoverRelationsDto> {
+    suspend fun login(@RequestBody request: LoginLoverRequest): ResponseEntity<LoverRelationsResponse> {
         validateLoginRequest(request)
         try {
             val lover = authenticationService.loginLover(request)
@@ -69,8 +69,8 @@ class AuthenticationController(
     }
 
     @PostMapping("/new-password")
-    suspend fun newPassword(@RequestBody request: NewPasswordRequest): ResponseEntity<LoverRelationsDto> {
-        val lover: LoverRelationsDto = passwordResetService.setNewPassword(request)
+    suspend fun newPassword(@RequestBody request: NewPasswordRequest): ResponseEntity<LoverRelationsResponse> {
+        val lover: LoverRelationsResponse = passwordResetService.setNewPassword(request)
         val jwt = authenticationService.generateToken(lover.userName, request.newPassword)
         return ResponseEntity.ok()
             .header(HttpHeaders.AUTHORIZATION, jwt)

@@ -10,11 +10,11 @@ class LoverConverter(
     private val adminEmails: List<String>,
 ) {
 
-    fun toDto(lover: Lover): LoverDto {
-        return LoverDto.of(lover, adminEmails.contains(lover.email))
+    fun toDto(lover: Lover): LoverResponse {
+        return LoverResponse.of(lover, adminEmails.contains(lover.email))
     }
 
-    suspend fun toRelationsDto(lover: Lover, loverRelations: LoverRelations): LoverRelationsDto {
-        return LoverRelationsDto.of(lover, loverRelations, adminEmails.contains(lover.email))
+    suspend fun toRelationsDto(lover: Lover, loverRelations: LoverRelations): LoverRelationsResponse {
+        return LoverRelationsResponse.of(lover, loverRelations, adminEmails.contains(lover.email))
     }
 }

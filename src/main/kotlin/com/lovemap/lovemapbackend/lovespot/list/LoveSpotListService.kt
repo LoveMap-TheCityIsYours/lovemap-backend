@@ -1,16 +1,28 @@
 package com.lovemap.lovemapbackend.lovespot.list
 
-import com.lovemap.lovemapbackend.lovespot.*
-import com.lovemap.lovemapbackend.lovespot.list.strategy.LoveSpotListStrategyFactory
+import com.lovemap.lovemapbackend.lovespot.LoveSpot
+import com.lovemap.lovemapbackend.lovespot.LoveSpotRepository
+import com.lovemap.lovemapbackend.lovespot.list.strategy.LoveSpotListStrategy
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import org.springframework.stereotype.Service
 
 @Service
 class LoveSpotListService(
-    private val loveSpotListStrategyFactory: LoveSpotListStrategyFactory,
+    loveSpotListStrategies: List<LoveSpotListStrategy>,
+    private val loveSpotListValidator: LoveSpotListValidator,
     private val repository: LoveSpotRepository,
 ) {
     private val maxListLimit = 100
+    private val strategies = HashMap<Pair<ListLocationDto, ListOrderingDto>, LoveSpotListStrategy>()
+
+    init {
+        loveSpotListStrategies.forEach { strategy ->
+            strategy.getSupportedConditions().forEach { condition ->
+                strategies[condition] = strategy
+            }
+        }
+    }
 
     suspend fun list(request: LoveSpotListRequest): Flow<LoveSpot> {
         return repository.findByCoordinatesOrderByRating(
@@ -24,11 +36,12 @@ class LoveSpotListService(
     }
 
     suspend fun advancedList(
-        listOrdering: ListOrdering,
-        listLocation: ListLocation,
+        listOrdering: ListOrderingRequest,
+        listLocation: ListLocationRequest,
         request: LoveSpotAdvancedListRequest
     ): Flow<LoveSpot> {
-        val listStrategy = loveSpotListStrategyFactory.getListStrategy(listOrdering, listLocation, request)
-        return listStrategy.listSpots()
+        val listDto = loveSpotListValidator.validateAndConvertRequest(listOrdering, listLocation, request)
+        val strategyCondition = Pair(listDto.listLocation, listDto.listOrdering)
+        return strategies[strategyCondition]?.listSpots(listDto) ?: emptyFlow()
     }
 }
