@@ -8,16 +8,16 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/geolocations")
 class GeoLocationController(
-    private val geoLocationService: GeoLocationService
+    private val cachedGeoLocationProvider: CachedGeoLocationProvider
 ) {
 
     @GetMapping("/countries")
     suspend fun getCountries(): ResponseEntity<Countries> {
-        return ResponseEntity.ok(geoLocationService.findAllCountries())
+        return ResponseEntity.ok(cachedGeoLocationProvider.findAllCountries())
     }
 
     @GetMapping("/cities")
     suspend fun getCities(): ResponseEntity<Cities> {
-        return ResponseEntity.ok(geoLocationService.findAllCities())
+        return ResponseEntity.ok(cachedGeoLocationProvider.findAllCities())
     }
 }

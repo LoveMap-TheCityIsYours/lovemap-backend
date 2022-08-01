@@ -98,7 +98,7 @@ class LoveSpotService(
     }
 
     private suspend fun setGeoLocation(loveSpot: LoveSpot) {
-        val geoLocation = geoLocationService.getLocationInfo(loveSpot)
+        val geoLocation = geoLocationService.decodeLocationInfo(loveSpot)
         geoLocation?.let {
             loveSpot.geoLocationId = geoLocation.id
             repository.save(loveSpot)

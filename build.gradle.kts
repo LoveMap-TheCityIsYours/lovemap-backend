@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.lovemap"
-version = "1.4.2"
+version = "1.5.0"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -49,6 +49,9 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-webflux-core:1.6.9")
     implementation("org.springdoc:springdoc-openapi-webflux-ui:1.6.9")
 
+    testImplementation(kotlin("test"))
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+    testImplementation("io.mockk:mockk:1.12.5")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
