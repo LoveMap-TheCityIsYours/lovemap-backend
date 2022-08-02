@@ -3,7 +3,6 @@ package com.lovemap.lovemapbackend.utils
 import com.lovemap.lovemapbackend.utils.ErrorCode.ConstraintViolation
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import javax.validation.ConstraintViolationException
 import javax.validation.Validator
 
 const val INVALID_EMAIL = "Invalid email address"

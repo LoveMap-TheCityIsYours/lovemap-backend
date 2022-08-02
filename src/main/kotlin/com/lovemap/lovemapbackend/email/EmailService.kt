@@ -1,7 +1,5 @@
 package com.lovemap.lovemapbackend.email
 
-import com.lovemap.lovemapbackend.authentication.CreateLoverRequest
-import com.lovemap.lovemapbackend.authentication.password.PasswordService
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.LoverService
 import com.mailjet.client.MailjetResponse
@@ -14,8 +12,6 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
-import java.util.*
-import kotlin.math.log
 
 @Service
 class EmailService(

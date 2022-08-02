@@ -7,13 +7,15 @@ import com.lovemap.lovemapbackend.lovespot.list.ListLocationDto
 import com.lovemap.lovemapbackend.lovespot.list.ListLocationDto.COORDINATE
 import com.lovemap.lovemapbackend.lovespot.list.ListOrderingDto
 import com.lovemap.lovemapbackend.lovespot.list.ListOrderingDto.CLOSEST
-import kotlinx.coroutines.flow.Flow
+import com.lovemap.lovemapbackend.lovespot.list.LoveSpotDistanceSorter
+import kotlinx.coroutines.flow.toList
 import org.springframework.stereotype.Component
 
 @Component
 class ClosestByCoordinatesStrategy(
+    sorter: LoveSpotDistanceSorter,
     private val repository: LoveSpotRepository
-) : CoordinateBasedStrategy() {
+) : CoordinateBasedStrategy(sorter) {
 
     override fun getSupportedConditions(): Set<Pair<ListLocationDto, ListOrderingDto>> {
         return setOf(Pair(COORDINATE, CLOSEST))
@@ -25,7 +27,7 @@ class ClosestByCoordinatesStrategy(
         to: LatLng,
         limit: Int,
         typeFilter: Set<LoveSpot.Type>
-    ): Flow<LoveSpot> {
+    ): List<LoveSpot> {
         return repository.findByCoordinatesOrderByClosest(
             latFrom = from.latitude,
             longFrom = from.longitude,
@@ -35,6 +37,8 @@ class ClosestByCoordinatesStrategy(
             centerLong = center.longitude,
             typeFilter = typeFilter,
             limit = limit
-        )
+        ).toList().let {
+            sorter.sortList(center, it)
+        }
     }
 }

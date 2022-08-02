@@ -56,7 +56,7 @@ class LoveSpotController(
         @RequestParam(required = true) listOrdering: ListOrderingRequest,
         @RequestParam(required = true) listLocation: ListLocationRequest,
         @RequestBody request: LoveSpotAdvancedListRequest
-    ): ResponseEntity<Flow<LoveSpotResponse>> {
+    ): ResponseEntity<List<LoveSpotResponse>> {
         val loveSpots = loveSpotListService.advancedList(listOrdering, listLocation, request)
         return ResponseEntity.ok(loveSpots.map { LoveSpotResponse.of(it) })
     }

@@ -4,7 +4,6 @@ import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotRepository
 import com.lovemap.lovemapbackend.lovespot.list.strategy.LoveSpotListStrategy
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import org.springframework.stereotype.Service
 
 @Service
@@ -39,9 +38,9 @@ class LoveSpotListService(
         listOrdering: ListOrderingRequest,
         listLocation: ListLocationRequest,
         request: LoveSpotAdvancedListRequest
-    ): Flow<LoveSpot> {
+    ): List<LoveSpot> {
         val listDto = loveSpotListValidator.validateAndConvertRequest(listOrdering, listLocation, request)
         val strategyCondition = Pair(listDto.listLocation, listDto.listOrdering)
-        return strategies[strategyCondition]?.listSpots(listDto) ?: emptyFlow()
+        return strategies[strategyCondition]?.listSpots(listDto) ?: emptyList()
     }
 }

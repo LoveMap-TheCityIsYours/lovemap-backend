@@ -7,13 +7,15 @@ import com.lovemap.lovemapbackend.lovespot.list.ListLocationDto
 import com.lovemap.lovemapbackend.lovespot.list.ListLocationDto.COORDINATE
 import com.lovemap.lovemapbackend.lovespot.list.ListOrderingDto
 import com.lovemap.lovemapbackend.lovespot.list.ListOrderingDto.POPULAR
-import kotlinx.coroutines.flow.Flow
+import com.lovemap.lovemapbackend.lovespot.list.LoveSpotDistanceSorter
+import kotlinx.coroutines.flow.toList
 import org.springframework.stereotype.Component
 
 @Component
 class PopularByCoordinatesStrategy(
+    sorter: LoveSpotDistanceSorter,
     private val repository: LoveSpotRepository
-) : CoordinateBasedStrategy() {
+) : CoordinateBasedStrategy(sorter) {
 
     override fun getSupportedConditions(): Set<Pair<ListLocationDto, ListOrderingDto>> {
         return setOf(Pair(COORDINATE, POPULAR))
@@ -25,7 +27,7 @@ class PopularByCoordinatesStrategy(
         to: LatLng,
         limit: Int,
         typeFilter: Set<LoveSpot.Type>
-    ): Flow<LoveSpot> {
+    ): List<LoveSpot> {
         return repository.findByCoordinatesOrderByPopularity(
             latFrom = from.latitude,
             longFrom = from.longitude,
@@ -33,6 +35,6 @@ class PopularByCoordinatesStrategy(
             longTo = to.longitude,
             typeFilter = typeFilter,
             limit = limit
-        )
+        ).toList()
     }
 }

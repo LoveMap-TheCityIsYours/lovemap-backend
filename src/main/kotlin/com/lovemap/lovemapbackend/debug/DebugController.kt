@@ -1,13 +1,14 @@
 package com.lovemap.lovemapbackend.debug
 
-import com.lovemap.lovemapbackend.geolocation.*
+import com.lovemap.lovemapbackend.geolocation.CachedGeoLocationProvider
+import com.lovemap.lovemapbackend.geolocation.Cities
+import com.lovemap.lovemapbackend.geolocation.Countries
+import com.lovemap.lovemapbackend.geolocation.GeoLocationService
 import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse
 import com.lovemap.lovemapbackend.lovespot.list.ListLocationRequest
 import com.lovemap.lovemapbackend.lovespot.list.ListOrderingRequest
 import com.lovemap.lovemapbackend.lovespot.list.LoveSpotAdvancedListRequest
 import com.lovemap.lovemapbackend.lovespot.list.LoveSpotListService
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import org.springframework.context.annotation.Profile
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -25,7 +26,7 @@ class DebugController(
         @RequestParam(name = "searchType", required = true) listOrdering: ListOrderingRequest,
         @RequestParam(name = "searchLocation", required = true) listLocation: ListLocationRequest,
         @RequestBody request: LoveSpotAdvancedListRequest
-    ): ResponseEntity<Flow<LoveSpotResponse>> {
+    ): ResponseEntity<List<LoveSpotResponse>> {
         val loveSpots = loveSpotListService.advancedList(listOrdering, listLocation, request)
         return ResponseEntity.ok(loveSpots.map { LoveSpotResponse.of(it) })
     }

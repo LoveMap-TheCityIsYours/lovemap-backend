@@ -1,7 +1,6 @@
 package com.lovemap.lovemapbackend.utils
 
 import org.springframework.http.HttpStatus
-import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
 
 object InstantConverterUtils {

@@ -5,17 +5,19 @@ import com.javadocmd.simplelatlng.LatLngTool
 import com.javadocmd.simplelatlng.util.LengthUnit
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.list.LoveSpotAdvancedListDto
+import com.lovemap.lovemapbackend.lovespot.list.LoveSpotDistanceSorter
 import com.lovemap.lovemapbackend.lovespot.list.strategy.LoveSpotListStrategy
-import kotlinx.coroutines.flow.Flow
 import kotlin.math.sqrt
 
-abstract class CoordinateBasedStrategy : LoveSpotListStrategy {
+abstract class CoordinateBasedStrategy(
+    protected val sorter: LoveSpotDistanceSorter
+) : LoveSpotListStrategy {
 
     private val upperLeftAngle = 315.0
     private val lowerRightAngle = 135.0
     private val sqrt2 = sqrt(2.0)
 
-    final override suspend fun listSpots(listDto: LoveSpotAdvancedListDto): Flow<LoveSpot> {
+    final override suspend fun listSpots(listDto: LoveSpotAdvancedListDto): List<LoveSpot> {
         val distance = listDto.distanceInMeters!!
         val center = LatLng(listDto.latitude!!, listDto.longitude!!)
 
@@ -27,6 +29,7 @@ abstract class CoordinateBasedStrategy : LoveSpotListStrategy {
         val to = LatLng(lowerRight.latitude, lowerRight.longitude)
 
         return doListSpots(center, from, to, listDto.limit, listDto.typeFilter)
+            .let { sorter.filterByDistance(center, listDto.distanceInMeters, it) }
     }
 
     abstract suspend fun doListSpots(
@@ -35,5 +38,5 @@ abstract class CoordinateBasedStrategy : LoveSpotListStrategy {
         to: LatLng,
         limit: Int,
         typeFilter: Set<LoveSpot.Type>
-    ): Flow<LoveSpot>
+    ): List<LoveSpot>
 }
