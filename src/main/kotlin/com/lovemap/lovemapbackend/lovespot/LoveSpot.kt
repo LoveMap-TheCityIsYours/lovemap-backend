@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.sql.Timestamp
+import java.time.Instant
 import java.time.LocalTime
 
 @Table("love_location")
@@ -72,7 +73,7 @@ data class LoveSpot(
     var lastLoveAt: Timestamp? = null,
 
     @Column("last_active_at")
-    var lastActiveAt: Timestamp? = null,
+    var lastActiveAt: Timestamp? = Timestamp.from(Instant.now()),
 ) {
     enum class Availability {
         ALL_DAY, NIGHT_ONLY

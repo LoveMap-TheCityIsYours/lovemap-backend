@@ -7,12 +7,14 @@ import com.lovemap.lovemapbackend.utils.LoveMapException
 import com.lovemap.lovemapbackend.utils.ValidatorService
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import kotlin.math.max
+
+const val MAX_LIMIT: Int = 100
 
 @Service
 class LoveSpotListValidator(
     private val validatorService: ValidatorService
 ) {
-
     fun validateAndConvertRequest(
         listOrdering: ListOrderingRequest,
         listLocation: ListLocationRequest,
@@ -22,7 +24,7 @@ class LoveSpotListValidator(
         validateOrdering(listOrdering, request)
         validateLocation(listLocation, request)
         return LoveSpotAdvancedListDto(
-            limit = request.limit,
+            limit = max(request.limit, MAX_LIMIT),
             typeFilter = convertTypeFilter(request),
             listOrdering = listOrdering.toDto(),
             listLocation = listLocation.toDto(),

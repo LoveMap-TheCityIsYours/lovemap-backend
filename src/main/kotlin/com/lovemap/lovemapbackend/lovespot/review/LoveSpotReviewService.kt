@@ -47,7 +47,7 @@ class LoveSpotReviewService(
         spotReview: LoveSpotReview,
         request: LoveSpotReviewRequest
     ): LoveSpot {
-        val loveSpot = loveSpotService.reviseReviewAverages(spotReview, request)
+        val loveSpot = reviseReviewAverages(spotReview, request)
         loverPointService.updatePointsForReview(spotReview, request, loveSpot)
         spotReview.reviewText = request.reviewText.trim()
         spotReview.reviewStars = request.reviewStars
@@ -67,9 +67,40 @@ class LoveSpotReviewService(
                 riskLevel = request.riskLevel,
             )
         )
-        val loveSpot = loveSpotService.updateReviewAverages(request.loveSpotId, request)
+        val loveSpot = updateReviewAverages(request.loveSpotId, request)
         loverPointService.addPointsForReview(review, loveSpot)
         return loveSpot
+    }
+
+    suspend fun updateReviewAverages(spotId: Long, request: LoveSpotReviewRequest): LoveSpot {
+        val loveSpot = loveSpotService.getById(spotId)
+        if (loveSpot.averageRating == null) {
+            loveSpot.averageRating = request.reviewStars.toDouble()
+            loveSpot.averageDanger = request.riskLevel.toDouble()
+            loveSpot.numberOfRatings = 1
+        } else {
+            var averageRatingWeight = loveSpot.averageRating!! * loveSpot.numberOfRatings
+            var averageDangerWeight = loveSpot.averageDanger!! * loveSpot.numberOfRatings
+            loveSpot.numberOfRatings++
+
+            averageRatingWeight += request.reviewStars
+            loveSpot.averageRating = averageRatingWeight / loveSpot.numberOfRatings
+
+            averageDangerWeight += request.riskLevel
+            loveSpot.averageDanger = averageDangerWeight / loveSpot.numberOfRatings
+        }
+        return loveSpotService.save(loveSpot)
+    }
+
+    suspend fun reviseReviewAverages(previousReview: LoveSpotReview, request: LoveSpotReviewRequest): LoveSpot {
+        val loveSpot = loveSpotService.getById(previousReview.loveSpotId)
+        var averageRatingWeight = loveSpot.averageRating!! * loveSpot.numberOfRatings
+        var averageDangerWeight = loveSpot.averageDanger!! * loveSpot.numberOfRatings
+        averageRatingWeight = averageRatingWeight - previousReview.reviewStars + request.reviewStars
+        averageDangerWeight = averageDangerWeight - previousReview.riskLevel + request.riskLevel
+        loveSpot.averageRating = averageRatingWeight / loveSpot.numberOfRatings
+        loveSpot.averageDanger = averageDangerWeight / loveSpot.numberOfRatings
+        return loveSpotService.save(loveSpot)
     }
 
     private suspend fun validateReview(request: LoveSpotReviewRequest) {

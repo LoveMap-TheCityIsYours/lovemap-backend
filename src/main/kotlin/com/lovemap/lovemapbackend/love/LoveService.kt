@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend.love
 
+import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
@@ -24,7 +25,7 @@ class LoveService(
     private val authorizationService: AuthorizationService,
     private val loveConverter: LoveConverter,
     private val relationService: RelationService,
-    private val spotService: LoveSpotService,
+    private val loveSpotService: LoveSpotService,
     private val loverPointService: LoverPointService,
     private val loveRepository: LoveRepository
 ) {
@@ -35,11 +36,8 @@ class LoveService(
     }
 
     suspend fun create(request: CreateLoveRequest): LoveResponse {
-        val caller = authorizationService.checkAccessFor(request.loverId)
-        spotService.checkExistence(request.loveSpotId)
-        request.loverPartnerId?.let {
-            relationService.checkPartnership(request.loverId, it)
-        }
+        val caller = checkAndValidateLove(request)
+        val happenedAt = getHappenedAt(request)
         val love = loveRepository.save(
             Love(
                 name = request.name.trim(),
@@ -47,12 +45,26 @@ class LoveService(
                 loverId = request.loverId,
                 loverPartnerId = request.loverPartnerId,
                 note = request.note?.trim(),
-                happenedAt = request.happenedAt?.let { Timestamp.from(InstantConverterUtils.fromString(it)) }
-                    ?: Timestamp.from(Instant.now())
+                happenedAt = happenedAt
             )
         )
         loverPointService.addPointsForLovemaking(love)
+        loveSpotService.recordLoveMaking(love)
         return loveConverter.toDto(caller, love)
+    }
+
+    private fun getHappenedAt(request: CreateLoveRequest): Timestamp {
+        return (request.happenedAt?.let { Timestamp.from(InstantConverterUtils.fromString(it)) }
+            ?: Timestamp.from(Instant.now()))
+    }
+
+    private suspend fun checkAndValidateLove(request: CreateLoveRequest): Lover {
+        val caller = authorizationService.checkAccessFor(request.loverId)
+        loveSpotService.checkExistence(request.loveSpotId)
+        request.loverPartnerId?.let {
+            relationService.checkPartnership(request.loverId, it)
+        }
+        return caller
     }
 
     suspend fun update(id: Long, request: UpdateLoveRequest): LoveResponse {

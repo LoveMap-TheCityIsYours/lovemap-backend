@@ -4,10 +4,9 @@ import com.javadocmd.simplelatlng.LatLng
 import com.javadocmd.simplelatlng.LatLngTool
 import com.javadocmd.simplelatlng.util.LengthUnit
 import com.lovemap.lovemapbackend.geolocation.GeoLocationService
+import com.lovemap.lovemapbackend.love.Love
 import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.report.LoveSpotReportRequest
-import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
-import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewRequest
 import com.lovemap.lovemapbackend.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
@@ -21,6 +20,7 @@ import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.sql.Timestamp
 
 private const val TWELVE_METERS_IN_COORDINATES = 0.0001
 private const val MINIMUM_DISTANCE_IN_METERS = 20.0
@@ -55,6 +55,45 @@ class LoveSpotService(
         return loveSpot
     }
 
+    suspend fun recordLoveMaking(love: Love) {
+        val loveSpot = getById(love.loveSpotId)
+        updateLastLoveAt(loveSpot, love)
+        updateLastActiveAt(loveSpot)
+        loveSpot.numberOfLoves += 1
+        updatePopularity(loveSpot)
+    }
+
+    private fun updateLastLoveAt(
+        loveSpot: LoveSpot,
+        love: Love
+    ) {
+        loveSpot.lastLoveAt?.let {
+            if (love.happenedAt.toInstant().isAfter(it.toInstant())) {
+                loveSpot.lastLoveAt = love.happenedAt
+            }
+        } ?: run {
+            loveSpot.lastLoveAt = love.happenedAt
+        }
+    }
+
+    private fun updateLastActiveAt(loveSpot: LoveSpot) {
+        loveSpot.lastActiveAt?.let {
+            if (loveSpot.lastLoveAt!!.toInstant().isAfter(it.toInstant())) {
+                loveSpot.lastActiveAt = loveSpot.lastLoveAt
+            }
+        } ?: run {
+            loveSpot.lastActiveAt = loveSpot.lastLoveAt
+        }
+    }
+
+    // popularity = 2 * number_of_loves + number_of_comments + occurrence_on_wishlists
+    private suspend fun updatePopularity(loveSpot: LoveSpot): LoveSpot {
+        loveSpot.popularity = with(loveSpot) {
+            2 * numberOfLoves + numberOfComments + occurrenceOnWishlists
+        }
+        return repository.save(loveSpot)
+    }
+
     suspend fun create(request: CreateLoveSpotRequest): LoveSpot {
         val caller = authorizationService.getCaller()
         val loveSpot = LoveSpot(
@@ -69,7 +108,7 @@ class LoveSpotService(
         loveSpot.setCustomAvailability(request.customAvailability)
         validateSpotTooClose(request)
         val savedSpot = repository.save(loveSpot)
-        runAsyncTasks(savedSpot, loveSpot)
+        runAsyncCreateTasks(savedSpot, loveSpot)
         return savedSpot
     }
 
@@ -87,7 +126,7 @@ class LoveSpotService(
         }
     }
 
-    private suspend fun runAsyncTasks(
+    private suspend fun runAsyncCreateTasks(
         savedSpot: LoveSpot,
         loveSpot: LoveSpot
     ) {
@@ -135,37 +174,6 @@ class LoveSpotService(
         return repository.save(loveSpot)
     }
 
-    suspend fun updateReviewAverages(spotId: Long, request: LoveSpotReviewRequest): LoveSpot {
-        val loveSpot = getById(spotId)
-        if (loveSpot.averageRating == null) {
-            loveSpot.averageRating = request.reviewStars.toDouble()
-            loveSpot.averageDanger = request.riskLevel.toDouble()
-            loveSpot.numberOfRatings = 1
-        } else {
-            var averageRatingWeight = loveSpot.averageRating!! * loveSpot.numberOfRatings
-            var averageDangerWeight = loveSpot.averageDanger!! * loveSpot.numberOfRatings
-            loveSpot.numberOfRatings++
-
-            averageRatingWeight += request.reviewStars
-            loveSpot.averageRating = averageRatingWeight / loveSpot.numberOfRatings
-
-            averageDangerWeight += request.riskLevel
-            loveSpot.averageDanger = averageDangerWeight / loveSpot.numberOfRatings
-        }
-        return repository.save(loveSpot)
-    }
-
-    suspend fun reviseReviewAverages(previousReview: LoveSpotReview, request: LoveSpotReviewRequest): LoveSpot {
-        val loveSpot = getById(previousReview.loveSpotId)
-        var averageRatingWeight = loveSpot.averageRating!! * loveSpot.numberOfRatings
-        var averageDangerWeight = loveSpot.averageDanger!! * loveSpot.numberOfRatings
-        averageRatingWeight = averageRatingWeight - previousReview.reviewStars + request.reviewStars
-        averageDangerWeight = averageDangerWeight - previousReview.riskLevel + request.riskLevel
-        loveSpot.averageRating = averageRatingWeight / loveSpot.numberOfRatings
-        loveSpot.averageDanger = averageDangerWeight / loveSpot.numberOfRatings
-        return repository.save(loveSpot)
-    }
-
     suspend fun checkExistence(loveSpotId: Long) {
         if (!repository.existsById(loveSpotId)) {
             throw LoveMapException(
@@ -196,5 +204,9 @@ class LoveSpotService(
     suspend fun deleteLoveSpot(loveSpot: LoveSpot) {
         loverPointService.subtractPointsForSpotDeleted(loveSpot)
         repository.delete(loveSpot)
+    }
+
+    suspend fun save(loveSpot: LoveSpot): LoveSpot {
+        return repository.save(loveSpot)
     }
 }

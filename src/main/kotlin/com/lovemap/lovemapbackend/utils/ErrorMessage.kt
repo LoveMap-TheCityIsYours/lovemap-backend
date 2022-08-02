@@ -64,5 +64,6 @@ enum class ErrorCode {
     MissingListCity,
     MissingListCoordinates,
     InvalidDistanceInMeters,
+    InvalidLimit,
 
 }
