@@ -2,6 +2,7 @@ package com.lovemap.lovemapbackend.lovespot
 
 import com.lovemap.lovemapbackend.utils.INVALID_LOVE_DESCRIPTION
 import com.lovemap.lovemapbackend.utils.INVALID_LOVE_SPOT_NAME
+import org.springframework.web.bind.annotation.RequestParam
 import java.time.LocalTime
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
@@ -117,4 +118,18 @@ data class UpdateLoveSpotRequest(
     var availability: LoveSpotResponse.Availability?,
     val type: LoveSpotResponse.Type?,
     val customAvailability: Pair<LocalTime, LocalTime>? = null
+)
+
+data class RecommendationsRequest(
+    val longitude: Double?,
+    val latitude: Double?,
+    val country: String,
+    val typeFilter: List<LoveSpotResponse.Type> = LoveSpotResponse.Type.values().toList()
+)
+
+data class RecommendationsResponse(
+    val topRatedSpots: List<LoveSpotResponse>,
+    val closestSpots: List<LoveSpotResponse>,
+    val recentlyActiveSpots: List<LoveSpotResponse>,
+    val popularSpots: List<LoveSpotResponse>
 )

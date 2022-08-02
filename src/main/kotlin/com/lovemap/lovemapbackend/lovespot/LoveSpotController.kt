@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*
 class LoveSpotController(
     private val loveSpotService: LoveSpotService,
     private val loveSpotListService: LoveSpotListService,
+    private val recommendationService: LoveSpotRecommendationService,
     private val loveSpotRisks: LoveSpotRisks,
     private val validatorService: ValidatorService,
 ) {
@@ -53,12 +54,18 @@ class LoveSpotController(
 
     @PostMapping("/advancedList")
     suspend fun advancedSearch(
-        @RequestParam(required = true) listOrdering: ListOrderingRequest,
-        @RequestParam(required = true) listLocation: ListLocationRequest,
+        @RequestParam listOrdering: ListOrderingRequest,
+        @RequestParam listLocation: ListLocationRequest,
         @RequestBody request: LoveSpotAdvancedListRequest
     ): ResponseEntity<List<LoveSpotResponse>> {
         val loveSpots = loveSpotListService.advancedList(listOrdering, listLocation, request)
         return ResponseEntity.ok(loveSpots.map { LoveSpotResponse.of(it) })
+    }
+
+    @PostMapping("/recommendations")
+    suspend fun recommendations(@RequestBody request: RecommendationsRequest): ResponseEntity<RecommendationsResponse> {
+        val recommendations = recommendationService.getRecommendations(request)
+        return ResponseEntity.ok(recommendations)
     }
 
     @GetMapping("risks")

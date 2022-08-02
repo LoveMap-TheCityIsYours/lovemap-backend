@@ -16,11 +16,11 @@ data class LoveSpotListRequest(
 
 data class LoveSpotAdvancedListRequest(
     @field:NotNull
-    @field:Range(min = 1, max = MAX_LIMIT.toLong(), message = INVALID_LIMIT)
+    @field:Range(min = 0, max = MAX_LIMIT.toLong(), message = INVALID_LIMIT)
     val limit: Int,
-    val lat: Double? = null,
-    val long: Double? = null,
-    @field:Range(min = 1, max = 1_000_000, message = INVALID_DISTANCE_IN_METERS)
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    @field:Range(min = 0, max = 1_000_000, message = INVALID_DISTANCE_IN_METERS)
     val distanceInMeters: Int? = null,
     val locationName: String? = null,
     val typeFilter: List<LoveSpotResponse.Type> = LoveSpotResponse.Type.values().toList()

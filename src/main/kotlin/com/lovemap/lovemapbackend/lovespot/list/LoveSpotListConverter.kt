@@ -1,6 +1,7 @@
 package com.lovemap.lovemapbackend.lovespot.list
 
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
+import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse
 import com.lovemap.lovemapbackend.lovespot.list.ListLocationRequest.*
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException
@@ -12,7 +13,7 @@ import kotlin.math.max
 const val MAX_LIMIT: Int = 100
 
 @Service
-class LoveSpotListValidator(
+class LoveSpotListConverter(
     private val validatorService: ValidatorService
 ) {
     fun validateAndConvertRequest(
@@ -25,11 +26,11 @@ class LoveSpotListValidator(
         validateLocation(listLocation, request)
         return LoveSpotAdvancedListDto(
             limit = max(request.limit, MAX_LIMIT),
-            typeFilter = convertTypeFilter(request),
+            typeFilter = convertTypeFilter(request.typeFilter),
             listOrdering = listOrdering.toDto(),
             listLocation = listLocation.toDto(),
-            latitude = request.lat,
-            longitude = request.long,
+            latitude = request.latitude,
+            longitude = request.longitude,
             distanceInMeters = request.distanceInMeters,
             locationName = request.locationName
         )
@@ -40,7 +41,7 @@ class LoveSpotListValidator(
         request: LoveSpotAdvancedListRequest
     ) {
         if (listOrdering == ListOrderingRequest.CLOSEST) {
-            if (request.lat == null || request.long == null) {
+            if (request.latitude == null || request.longitude == null) {
                 throw LoveMapException(
                     status = HttpStatus.BAD_REQUEST,
                     errorCode = ErrorCode.MissingListCoordinates,
@@ -73,7 +74,7 @@ class LoveSpotListValidator(
                 )
             }
             COORDINATE -> {
-                if (request.lat == null || request.long == null || request.distanceInMeters == null) {
+                if (request.latitude == null || request.longitude == null || request.distanceInMeters == null) {
                     throw LoveMapException(
                         status = HttpStatus.BAD_REQUEST,
                         errorCode = ErrorCode.MissingListCoordinates,
@@ -85,12 +86,11 @@ class LoveSpotListValidator(
         }
     }
 
-    private fun convertTypeFilter(request: LoveSpotAdvancedListRequest): Set<LoveSpot.Type> {
-        val typeFilter = if (request.typeFilter.isEmpty()) {
+    private fun convertTypeFilter(typeFilter: List<LoveSpotResponse.Type>): Set<LoveSpot.Type> {
+        return if (typeFilter.isEmpty()) {
             LoveSpot.Type.values().toSet()
         } else {
-            request.typeFilter.map { it.toEntity() }.toSet()
+            typeFilter.map { it.toEntity() }.toSet()
         }
-        return typeFilter
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 @Service
 class LoveSpotListService(
     loveSpotListStrategies: List<LoveSpotListStrategy>,
-    private val loveSpotListValidator: LoveSpotListValidator,
+    private val loveSpotListValidator: LoveSpotListConverter,
     private val repository: LoveSpotRepository,
 ) {
     private val maxListLimit = 100
