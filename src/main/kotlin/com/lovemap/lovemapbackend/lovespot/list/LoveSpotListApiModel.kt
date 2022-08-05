@@ -29,12 +29,12 @@ data class LoveSpotAdvancedListRequest(
 enum class ListOrderingRequest {
     CLOSEST, TOP_RATED, RECENTLY_ACTIVE, POPULAR;
 
-    fun toDto(): ListOrderingDto {
+    fun toDto(): ListOrdering {
         return when (this) {
-            CLOSEST -> ListOrderingDto.CLOSEST
-            TOP_RATED -> ListOrderingDto.TOP_RATED
-            RECENTLY_ACTIVE -> ListOrderingDto.RECENTLY_ACTIVE
-            POPULAR -> ListOrderingDto.POPULAR
+            CLOSEST -> ListOrdering.CLOSEST
+            TOP_RATED -> ListOrdering.TOP_RATED
+            RECENTLY_ACTIVE -> ListOrdering.RECENTLY_ACTIVE
+            POPULAR -> ListOrdering.POPULAR
         }
     }
 }
@@ -42,11 +42,11 @@ enum class ListOrderingRequest {
 enum class ListLocationRequest {
     COORDINATE, CITY, COUNTRY;
 
-    fun toDto(): ListLocationDto {
+    fun toDto(): ListLocationType {
         return when (this) {
-            COORDINATE -> ListLocationDto.COORDINATE
-            CITY -> ListLocationDto.CITY
-            COUNTRY -> ListLocationDto.COUNTRY
+            COORDINATE -> ListLocationType.COORDINATE
+            CITY -> ListLocationType.CITY
+            COUNTRY -> ListLocationType.COUNTRY
         }
     }
 }

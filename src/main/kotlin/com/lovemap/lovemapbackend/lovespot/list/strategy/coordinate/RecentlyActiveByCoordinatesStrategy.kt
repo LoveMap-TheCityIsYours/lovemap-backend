@@ -3,10 +3,10 @@ package com.lovemap.lovemapbackend.lovespot.list.strategy.coordinate
 import com.javadocmd.simplelatlng.LatLng
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotRepository
-import com.lovemap.lovemapbackend.lovespot.list.ListLocationDto
-import com.lovemap.lovemapbackend.lovespot.list.ListLocationDto.COORDINATE
-import com.lovemap.lovemapbackend.lovespot.list.ListOrderingDto
-import com.lovemap.lovemapbackend.lovespot.list.ListOrderingDto.RECENTLY_ACTIVE
+import com.lovemap.lovemapbackend.lovespot.list.ListLocationType
+import com.lovemap.lovemapbackend.lovespot.list.ListLocationType.COORDINATE
+import com.lovemap.lovemapbackend.lovespot.list.ListOrdering
+import com.lovemap.lovemapbackend.lovespot.list.ListOrdering.RECENTLY_ACTIVE
 import com.lovemap.lovemapbackend.lovespot.list.LoveSpotDistanceSorter
 import kotlinx.coroutines.flow.toList
 import org.springframework.stereotype.Component
@@ -17,7 +17,7 @@ class RecentlyActiveByCoordinatesStrategy(
     private val repository: LoveSpotRepository
 ) : CoordinateBasedStrategy(sorter) {
 
-    override fun getSupportedConditions(): Set<Pair<ListLocationDto, ListOrderingDto>> {
+    override fun getSupportedConditions(): Set<Pair<ListLocationType, ListOrdering>> {
         return setOf(Pair(COORDINATE, RECENTLY_ACTIVE))
     }
 

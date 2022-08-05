@@ -13,7 +13,7 @@ class LoveSpotListService(
     private val repository: LoveSpotRepository,
 ) {
     private val maxListLimit = 100
-    private val strategies = HashMap<Pair<ListLocationDto, ListOrderingDto>, LoveSpotListStrategy>()
+    private val strategies = HashMap<Pair<ListLocationType, ListOrdering>, LoveSpotListStrategy>()
 
     init {
         loveSpotListStrategies.forEach { strategy ->

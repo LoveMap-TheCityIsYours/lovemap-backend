@@ -83,13 +83,17 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
     @Query(
         """
             SELECT * FROM love_location WHERE 
-            geo_location_id IN (:geoLocationIds) 
+            geo_location_id IN 
+            (
+                SELECT id FROM geo_location 
+                WHERE geo_location.city = :city
+            ) 
             AND type IN (:typeFilter)
             ORDER BY average_rating DESC NULLS LAST LIMIT :limit
         """
     )
-    fun findByGeoLocOrderByRating(
-        geoLocationIds: List<Long>,
+    fun findByCityOrderByRating(
+        city: String,
         typeFilter: Set<LoveSpot.Type>,
         limit: Int
     ): Flow<LoveSpot>
@@ -97,15 +101,37 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
     @Query(
         """
             SELECT * FROM love_location WHERE 
-            geo_location_id IN (:geoLocationIds) 
+            geo_location_id IN 
+            (
+                SELECT id FROM geo_location 
+                WHERE geo_location.country = :country
+            ) 
+            AND type IN (:typeFilter)
+            ORDER BY average_rating DESC NULLS LAST LIMIT :limit
+        """
+    )
+    fun findByCountryOrderByRating(
+        country: String,
+        typeFilter: Set<LoveSpot.Type>,
+        limit: Int
+    ): Flow<LoveSpot>
+
+    @Query(
+        """
+            SELECT * FROM love_location WHERE 
+            geo_location_id IN 
+            (
+                SELECT id FROM geo_location 
+                WHERE geo_location.city = :city
+            ) 
             AND type IN (:typeFilter)
             ORDER BY |/((latitude-:centerLat)^2 + (longitude-:centerLong)^2) ASC LIMIT :limit
         """
     )
-    fun findByGeoLocOrderByClosest(
+    fun findByCityOrderByClosest(
         centerLat: Double,
         centerLong: Double,
-        geoLocationIds: List<Long>,
+        city: String,
         typeFilter: Set<LoveSpot.Type>,
         limit: Int
     ): Flow<LoveSpot>
@@ -113,13 +139,37 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
     @Query(
         """
             SELECT * FROM love_location WHERE 
-            geo_location_id IN (:geoLocationIds) 
+            geo_location_id IN 
+            (
+                SELECT id FROM geo_location 
+                WHERE geo_location.country = :country
+            ) 
+            AND type IN (:typeFilter)
+            ORDER BY |/((latitude-:centerLat)^2 + (longitude-:centerLong)^2) ASC LIMIT :limit
+        """
+    )
+    fun findByCountryOrderByClosest(
+        centerLat: Double,
+        centerLong: Double,
+        country: String,
+        typeFilter: Set<LoveSpot.Type>,
+        limit: Int
+    ): Flow<LoveSpot>
+
+    @Query(
+        """
+            SELECT * FROM love_location WHERE 
+            geo_location_id IN 
+            (
+                SELECT id FROM geo_location 
+                WHERE geo_location.city = :city
+            ) 
             AND type IN (:typeFilter)
             ORDER BY last_active_at DESC NULLS LAST LIMIT :limit
         """
     )
-    fun findByGeoLocOrderByRecentlyActive(
-        geoLocationIds: List<Long>,
+    fun findByCityOrderByRecentlyActive(
+        city: String,
         typeFilter: Set<LoveSpot.Type>,
         limit: Int
     ): Flow<LoveSpot>
@@ -127,13 +177,53 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
     @Query(
         """
             SELECT * FROM love_location WHERE 
-            geo_location_id IN (:geoLocationIds) 
+            geo_location_id IN 
+            (
+                SELECT id FROM geo_location 
+                WHERE geo_location.country = :country
+            ) 
+            AND type IN (:typeFilter)
+            ORDER BY last_active_at DESC NULLS LAST LIMIT :limit
+        """
+    )
+    fun findByCountryOrderByRecentlyActive(
+        country: String,
+        typeFilter: Set<LoveSpot.Type>,
+        limit: Int
+    ): Flow<LoveSpot>
+
+    @Query(
+        """
+            SELECT * FROM love_location WHERE 
+            geo_location_id IN 
+            (
+                SELECT id FROM geo_location 
+                WHERE geo_location.city = :city
+            ) 
             AND type IN (:typeFilter)
             ORDER BY popularity DESC LIMIT :limit
         """
     )
-    fun findByGeoLocOrderByPopularity(
-        geoLocationIds: List<Long>,
+    fun findByCityOrderByPopularity(
+        city: String,
+        typeFilter: Set<LoveSpot.Type>,
+        limit: Int
+    ): Flow<LoveSpot>
+
+    @Query(
+        """
+            SELECT * FROM love_location WHERE 
+            geo_location_id IN 
+            (
+                SELECT id FROM geo_location 
+                WHERE geo_location.country = :country
+            ) 
+            AND type IN (:typeFilter)
+            ORDER BY popularity DESC LIMIT :limit
+        """
+    )
+    fun findByCountryOrderByPopularity(
+        country: String,
         typeFilter: Set<LoveSpot.Type>,
         limit: Int
     ): Flow<LoveSpot>
