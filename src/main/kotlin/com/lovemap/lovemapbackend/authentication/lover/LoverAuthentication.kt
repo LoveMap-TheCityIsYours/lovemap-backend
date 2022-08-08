@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.authentication
+package com.lovemap.lovemapbackend.authentication.lover
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
@@ -9,7 +9,7 @@ data class LoverAuthentication(
     var id: Long = 0,
 
     @Column("password_hash")
-    var passwordHash: String,
+    var passwordHash: String?,
 
     @Column("lover_id")
     var loverId: Long,

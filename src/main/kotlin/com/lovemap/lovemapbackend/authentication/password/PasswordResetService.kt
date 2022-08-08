@@ -1,5 +1,9 @@
-package com.lovemap.lovemapbackend.authentication
+package com.lovemap.lovemapbackend.authentication.password
 
+import com.lovemap.lovemapbackend.authentication.LoginLoverRequest
+import com.lovemap.lovemapbackend.authentication.NewPasswordRequest
+import com.lovemap.lovemapbackend.authentication.ResetPasswordRequest
+import com.lovemap.lovemapbackend.authentication.lover.LoverAuthenticationService
 import com.lovemap.lovemapbackend.email.EmailService
 import com.lovemap.lovemapbackend.lover.LoverRelationsResponse
 import com.lovemap.lovemapbackend.lover.LoverService
@@ -10,7 +14,7 @@ import org.springframework.stereotype.Service
 class PasswordResetService(
     private val loverService: LoverService,
     private val passwordService: LoverAuthenticationService,
-    private val authenticationService: AuthenticationService,
+    private val authenticationService: PasswordAuthenticationService,
     private val emailService: EmailService,
 ) {
     private val logger = KotlinLogging.logger {}

@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.security
+package com.lovemap.lovemapbackend.authentication.security
 
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys

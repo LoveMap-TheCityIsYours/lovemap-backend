@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.security
+package com.lovemap.lovemapbackend.authentication.security
 
 import mu.KotlinLogging
 import org.springframework.boot.context.properties.ConfigurationProperties

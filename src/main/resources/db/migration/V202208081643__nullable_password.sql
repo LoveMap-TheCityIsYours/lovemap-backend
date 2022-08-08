@@ -1,0 +1,1 @@
+ALTER TABLE lover_authentication ALTER COLUMN password_hash DROP NOT NULL;

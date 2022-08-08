@@ -5,7 +5,7 @@ import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.relation.RelationService
-import com.lovemap.lovemapbackend.security.AuthorizationService
+import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode.NotFoundById
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.InstantConverterUtils

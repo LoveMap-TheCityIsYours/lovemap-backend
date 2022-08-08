@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.authentication
+package com.lovemap.lovemapbackend.authentication.lover
 
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 

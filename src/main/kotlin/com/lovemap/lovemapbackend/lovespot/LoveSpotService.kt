@@ -7,7 +7,7 @@ import com.lovemap.lovemapbackend.geolocation.GeoLocationService
 import com.lovemap.lovemapbackend.love.Love
 import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.report.LoveSpotReportRequest
-import com.lovemap.lovemapbackend.security.AuthorizationService
+import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException

@@ -13,7 +13,7 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 1
+      maxSurge: 0
       maxUnavailable: 1
   template:
     metadata:
@@ -25,11 +25,15 @@ spec:
         - env:
             - name: spring_profiles_active
               value: prod
-          image: us-east1-docker.pkg.dev/smackmap/lovemap-docker/lovemap-backend:1.6.4
+          image: us-east1-docker.pkg.dev/smackmap/lovemap-docker/lovemap-backend:1.6.6
           imagePullPolicy: Always
           name: lovemap
           ports:
             - containerPort: 8090
+          readinessProbe:
+            httpGet:
+              path: /join-us.html
+              port: 8090
           resources:
             limits:
               memory: 1G

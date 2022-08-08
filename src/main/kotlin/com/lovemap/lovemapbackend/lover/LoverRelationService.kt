@@ -1,7 +1,7 @@
 package com.lovemap.lovemapbackend.lover
 
 import com.lovemap.lovemapbackend.relation.RelationService
-import com.lovemap.lovemapbackend.security.AuthorizationService
+import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import org.springframework.stereotype.Service
 
 @Service
@@ -14,11 +14,11 @@ class LoverRelationService(
 
     suspend fun getWithRelations(id: Long): LoverRelationsResponse {
         val lover = loverService.getById(id)
-        return loverConverter.toRelationsDto(lover, relationService.getRelationsFrom(id))
+        return loverConverter.toRelationsResponse(lover, relationService.getRelationsFrom(id))
     }
 
     suspend fun getWithRelations(lover: Lover): LoverRelationsResponse {
-        return loverConverter.toRelationsDto(lover, relationService.getRelationsFrom(lover.id))
+        return loverConverter.toRelationsResponse(lover, relationService.getRelationsFrom(lover.id))
     }
 
     suspend fun getByUuid(uuid: String): LoverViewResponse {
