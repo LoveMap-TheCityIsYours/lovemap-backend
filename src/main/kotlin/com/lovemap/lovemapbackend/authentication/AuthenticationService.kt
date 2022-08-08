@@ -1,6 +1,5 @@
 package com.lovemap.lovemapbackend.authentication
 
-import com.lovemap.lovemapbackend.authentication.password.PasswordService
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.LoverRelationService
 import com.lovemap.lovemapbackend.lover.LoverRelationsResponse
@@ -19,7 +18,7 @@ import java.time.Instant
 class AuthenticationService(
     private val loverService: LoverService,
     private val loverRelationService: LoverRelationService,
-    private val passwordService: PasswordService,
+    private val passwordService: LoverAuthenticationService,
     private val jwtService: JwtService,
     private val authenticationManager: ReactiveAuthenticationManager,
 ) {

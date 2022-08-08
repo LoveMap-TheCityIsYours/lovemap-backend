@@ -1,6 +1,6 @@
 package com.lovemap.lovemapbackend.security
 
-import com.lovemap.lovemapbackend.authentication.password.PasswordService
+import com.lovemap.lovemapbackend.authentication.LoverAuthenticationService
 import com.lovemap.lovemapbackend.lover.LoverService
 import kotlinx.coroutines.reactor.mono
 import mu.KotlinLogging
@@ -18,7 +18,7 @@ const val AUTHORITY_ADMIN = "ROLE_ADMIN"
 @Service
 class LoverUserDetailsService(
     private val loverService: LoverService,
-    private val passwordService: PasswordService,
+    private val passwordService: LoverAuthenticationService,
     private val passwordEncoder: PasswordEncoder,
     @Value("\${lovemap.admins.emails}")
     private val adminEmails: List<String>,

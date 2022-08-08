@@ -1,6 +1,6 @@
 package com.lovemap.lovemapbackend.security
 
-import com.lovemap.lovemapbackend.authentication.password.Password
+import com.lovemap.lovemapbackend.authentication.LoverAuthentication
 import com.lovemap.lovemapbackend.lover.Lover
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -13,7 +13,7 @@ data class LoverUserDetails(
 ) : UserDetails {
 
     companion object {
-        fun of(lover: Lover, password: Password, authorities: List<String>): LoverUserDetails {
+        fun of(lover: Lover, password: LoverAuthentication, authorities: List<String>): LoverUserDetails {
             return LoverUserDetails(lover.userName, password.passwordHash, authorities)
         }
     }

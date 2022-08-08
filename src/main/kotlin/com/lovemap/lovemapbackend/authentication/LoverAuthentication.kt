@@ -1,10 +1,10 @@
-package com.lovemap.lovemapbackend.authentication.password
+package com.lovemap.lovemapbackend.authentication
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import java.sql.Timestamp
 
-data class Password(
+data class LoverAuthentication(
     @Id
     var id: Long = 0,
 
@@ -19,4 +19,10 @@ data class Password(
 
     @Column("reset_initiated_at")
     var resetInitiatedAt: Timestamp? = null,
+
+    @Column("password_set")
+    var passwordSet: Boolean = true,
+
+    @Column("facebook_connected")
+    var facebookConnected: Boolean = false,
 )

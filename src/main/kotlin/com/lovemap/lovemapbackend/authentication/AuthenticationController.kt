@@ -1,6 +1,5 @@
 package com.lovemap.lovemapbackend.authentication
 
-import com.lovemap.lovemapbackend.authentication.password.PasswordResetService
 import com.lovemap.lovemapbackend.lover.LoverConverter
 import com.lovemap.lovemapbackend.lover.LoverRelationsResponse
 import com.lovemap.lovemapbackend.lover.LoverResponse
@@ -75,6 +74,11 @@ class AuthenticationController(
         return ResponseEntity.ok()
             .header(HttpHeaders.AUTHORIZATION, jwt)
             .body(lover)
+    }
+
+    @PostMapping("/facebook-login")
+    suspend fun facebookLogin(@RequestBody request: FacebookAuthenticationRequest): ResponseEntity<LoverResponse> {
+        TODO("finish")
     }
 
     private fun validateLoginRequest(request: LoginLoverRequest) {

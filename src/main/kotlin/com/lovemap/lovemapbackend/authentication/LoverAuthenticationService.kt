@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.authentication.password
+package com.lovemap.lovemapbackend.authentication
 
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.utils.ErrorCode
@@ -15,24 +15,24 @@ import java.util.*
 
 @Service
 @Transactional
-class PasswordService(
+class LoverAuthenticationService(
     private val passwordEncoder: PasswordEncoder,
-    private val repository: PasswordRepository
+    private val repository: LoverAuthenticationRepository
 ) {
     suspend fun createPassword(lover: Lover, password: String) {
         save(
-            Password(
+            LoverAuthentication(
                 passwordHash = passwordEncoder.encode(password),
                 loverId = lover.id,
             )
         )
     }
 
-    suspend fun save(password: Password): Password {
+    suspend fun save(password: LoverAuthentication): LoverAuthentication {
         return repository.save(password)
     }
 
-    suspend fun getPasswordOfLover(lover: Lover): Password {
+    suspend fun getPasswordOfLover(lover: Lover): LoverAuthentication {
         return repository.findByLoverId(lover.id) ?: throwForbidden(lover)
     }
 
@@ -55,7 +55,7 @@ class PasswordService(
     }
 
     private fun checkResetBackoffPassed(
-        password: Password,
+        password: LoverAuthentication,
         lover: Lover
     ) {
         password.resetInitiatedAt?.let {
@@ -72,7 +72,7 @@ class PasswordService(
     }
 
     private fun checkResetCode(
-        password: Password,
+        password: LoverAuthentication,
         lover: Lover,
         resetCode: String
     ) {
@@ -88,7 +88,7 @@ class PasswordService(
         }
     }
 
-    private fun checkResetCodeStillValid(password: Password, lover: Lover) {
+    private fun checkResetCodeStillValid(password: LoverAuthentication, lover: Lover) {
         password.resetInitiatedAt?.let {
             if (it.toInstant().plus(1, ChronoUnit.DAYS).isBefore(Instant.now())) {
                 throw LoveMapException(
