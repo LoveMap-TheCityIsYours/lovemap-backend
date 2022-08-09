@@ -9,6 +9,10 @@ lovemap:
   google:
     apiKey: "overwrite this apiKey key in production"
 
+  facebook:
+    appId: "overwrite this"
+    appSecret: "overwrite this"
+
   clients:
     - id: dummy
       secret: dummy

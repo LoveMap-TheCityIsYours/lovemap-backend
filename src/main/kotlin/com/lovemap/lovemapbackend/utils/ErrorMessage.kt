@@ -67,5 +67,6 @@ enum class ErrorCode {
     InvalidLimit,
     InvalidListLocationType,
     FacebookEmailOccupied,
+    FacebookLoginFailed,
 
 }

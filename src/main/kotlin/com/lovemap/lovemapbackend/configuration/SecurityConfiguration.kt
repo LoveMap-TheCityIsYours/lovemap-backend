@@ -1,6 +1,7 @@
 package com.lovemap.lovemapbackend.configuration
 
 import com.lovemap.lovemapbackend.authentication.facebook.FacebookAuthenticationManager
+import com.lovemap.lovemapbackend.authentication.facebook.FacebookProperties
 import com.lovemap.lovemapbackend.authentication.security.JwtAuthenticationFilter
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -24,6 +25,7 @@ import org.springframework.web.reactive.config.WebFluxConfigurer
 class SecurityConfiguration(
     @Value("\${lovemap.admins.emails}")
     private val adminEmails: List<String>,
+    private val facebookProperties: FacebookProperties,
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
     private val loverUserDetailsService: ReactiveUserDetailsService,
     private val passwordEncoder: PasswordEncoder
@@ -72,13 +74,16 @@ class SecurityConfiguration(
 
     @Bean
     fun facebookAuthenticationManager(): FacebookAuthenticationManager {
-        return FacebookAuthenticationManager(adminEmails)
+        return FacebookAuthenticationManager(adminEmails, facebookProperties)
     }
 
     @Bean
     fun authenticationManager(): DelegatingReactiveAuthenticationManager {
         return DelegatingReactiveAuthenticationManager(
-            mutableListOf(facebookAuthenticationManager(), userDetailsRepositoryReactiveAuthenticationManager())
+            mutableListOf(
+                facebookAuthenticationManager(),
+                userDetailsRepositoryReactiveAuthenticationManager()
+            )
         )
     }
 
