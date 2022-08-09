@@ -28,7 +28,8 @@ class JwtAuthenticationFilter(
         "/favicon.ico",
         "/webjars",
         "/v3/api-docs",
-        "/debug"
+        "/debug",
+        "/app-ads.txt"
     )
 
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {

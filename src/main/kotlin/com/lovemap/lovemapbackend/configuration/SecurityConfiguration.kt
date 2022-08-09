@@ -48,6 +48,7 @@ class SecurityConfiguration(
             .pathMatchers("/privacy-policy.html").permitAll()
             .pathMatchers("/.well-known/assetlinks.json").permitAll()
             .pathMatchers("/favicon.ico").permitAll()
+            .pathMatchers("/app-ads.txt").permitAll()
 
             .pathMatchers("/love/**").hasRole("USER")
             .pathMatchers("/lover/**").hasRole("USER")
