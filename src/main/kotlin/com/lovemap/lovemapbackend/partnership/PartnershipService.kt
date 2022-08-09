@@ -6,7 +6,7 @@ import com.lovemap.lovemapbackend.partnership.Partnership.Status.PARTNERSHIP_REQ
 import com.lovemap.lovemapbackend.partnership.PartnershipReaction.ACCEPT
 import com.lovemap.lovemapbackend.partnership.PartnershipReaction.DENY
 import com.lovemap.lovemapbackend.relation.RelationService
-import com.lovemap.lovemapbackend.security.AuthorizationService
+import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException

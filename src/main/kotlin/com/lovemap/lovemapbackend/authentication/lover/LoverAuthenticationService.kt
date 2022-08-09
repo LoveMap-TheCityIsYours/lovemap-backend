@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.authentication
+package com.lovemap.lovemapbackend.authentication.lover
 
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.utils.ErrorCode
@@ -28,16 +28,31 @@ class LoverAuthenticationService(
         )
     }
 
-    suspend fun save(password: LoverAuthentication): LoverAuthentication {
-        return repository.save(password)
+    suspend fun createFacebookAuth(lover: Lover, facebookId: String) {
+        save(
+            LoverAuthentication(
+                passwordHash = null,
+                loverId = lover.id,
+                passwordSet = false,
+                facebookId = facebookId
+            )
+        )
     }
 
-    suspend fun getPasswordOfLover(lover: Lover): LoverAuthentication {
+    suspend fun findByFacebookId(facebookId: String): LoverAuthentication? {
+        return repository.findByFacebookId(facebookId)
+    }
+
+    suspend fun save(authentication: LoverAuthentication): LoverAuthentication {
+        return repository.save(authentication)
+    }
+
+    suspend fun getLoverAuthentication(lover: Lover): LoverAuthentication {
         return repository.findByLoverId(lover.id) ?: throwForbidden(lover)
     }
 
     suspend fun initPasswordReset(lover: Lover): String {
-        val password = getPasswordOfLover(lover)
+        val password = getLoverAuthentication(lover)
         checkResetBackoffPassed(password, lover)
         password.resetCode = UUID.randomUUID().toString().substringBefore("-").uppercase()
         password.resetInitiatedAt = Timestamp.from(Instant.now())
@@ -46,7 +61,7 @@ class LoverAuthenticationService(
     }
 
     suspend fun setNewPassword(lover: Lover, resetCode: String, newPassword: String) {
-        val password = getPasswordOfLover(lover)
+        val password = getLoverAuthentication(lover)
         checkResetCode(password, lover, resetCode)
         password.resetCode = null
         password.resetInitiatedAt = null

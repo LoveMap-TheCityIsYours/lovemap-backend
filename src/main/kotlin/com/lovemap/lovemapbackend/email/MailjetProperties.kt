@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConstructorBinding
 
 @ConstructorBinding
 @ConfigurationProperties(prefix = "lovemap.mailjet")
-data class EmailProperties(
+data class MailjetProperties(
     val apiKey: String,
     val secretKey: String
 )

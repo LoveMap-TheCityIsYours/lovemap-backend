@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.security
+package com.lovemap.lovemapbackend.authentication.security
 
 import mu.KotlinLogging
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -28,7 +28,8 @@ class JwtAuthenticationFilter(
         "/favicon.ico",
         "/webjars",
         "/v3/api-docs",
-        "/debug"
+        "/debug",
+        "/app-ads.txt"
     )
 
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {

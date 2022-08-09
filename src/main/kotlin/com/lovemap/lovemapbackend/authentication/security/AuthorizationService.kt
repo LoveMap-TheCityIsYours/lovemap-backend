@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.security
+package com.lovemap.lovemapbackend.authentication.security
 
 import com.lovemap.lovemapbackend.love.Love
 import com.lovemap.lovemapbackend.lover.Lover

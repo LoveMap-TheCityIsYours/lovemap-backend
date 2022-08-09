@@ -66,5 +66,7 @@ enum class ErrorCode {
     InvalidDistanceInMeters,
     InvalidLimit,
     InvalidListLocationType,
+    FacebookEmailOccupied,
+    FacebookLoginFailed,
 
 }

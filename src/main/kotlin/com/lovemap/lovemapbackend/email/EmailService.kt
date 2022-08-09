@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service
 @Service
 class EmailService(
     @Value("classpath:/emails/password-reset.html") private val pwResetTemplate: Resource,
-    private val emailProperties: EmailProperties,
+    private val emailProperties: MailjetProperties,
     private val loverService: LoverService,
     private val blockingCoroutineDispatcher: ExecutorCoroutineDispatcher,
 ) {

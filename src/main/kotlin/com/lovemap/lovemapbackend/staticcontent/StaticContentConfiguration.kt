@@ -16,6 +16,7 @@ class StaticContentConfiguration(
     @Value("classpath:/public/favicon.ico") private val favicon: Resource,
     @Value("classpath:/public/join-us.html") private val joinUsHtml: Resource,
     @Value("classpath:/public/privacy-policy.html") private val privacyPolicyHtml: Resource,
+    @Value("classpath:/public/app-ads.txt") private val appAdsTxt: Resource,
     private val emailService: EmailService,
 ) {
 
@@ -43,6 +44,12 @@ class StaticContentConfiguration(
             withContext(Dispatchers.IO) {
                 ok().contentType(MediaType.TEXT_HTML)
                     .bodyValue(privacyPolicyHtml).block()!!
+            }
+        }
+        GET("/app-ads.txt") {
+            withContext(Dispatchers.IO) {
+                ok().contentType(MediaType.TEXT_HTML)
+                    .bodyValue(appAdsTxt).block()!!
             }
         }
         GET("/.well-known/assetlinks.json") {

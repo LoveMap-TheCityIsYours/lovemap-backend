@@ -1,13 +1,17 @@
-package com.lovemap.lovemapbackend.authentication
+package com.lovemap.lovemapbackend.authentication.password
 
+import com.lovemap.lovemapbackend.authentication.CreateLoverRequest
+import com.lovemap.lovemapbackend.authentication.LoginLoverRequest
+import com.lovemap.lovemapbackend.authentication.lover.LoverAuthenticationService
+import com.lovemap.lovemapbackend.authentication.security.JwtService
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.LoverRelationService
 import com.lovemap.lovemapbackend.lover.LoverRelationsResponse
 import com.lovemap.lovemapbackend.lover.LoverService
-import com.lovemap.lovemapbackend.security.JwtService
 import kotlinx.coroutines.reactor.awaitSingle
 import mu.KotlinLogging
 import org.springframework.security.authentication.ReactiveAuthenticationManager
+import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -15,12 +19,12 @@ import java.sql.Timestamp
 import java.time.Instant
 
 @Service
-class AuthenticationService(
+class PasswordAuthenticationService(
     private val loverService: LoverService,
     private val loverRelationService: LoverRelationService,
-    private val passwordService: LoverAuthenticationService,
+    private val loverAuthenticationService: LoverAuthenticationService,
     private val jwtService: JwtService,
-    private val authenticationManager: ReactiveAuthenticationManager,
+    private val userDetailsRepositoryReactiveAuthenticationManager: UserDetailsRepositoryReactiveAuthenticationManager,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -32,7 +36,7 @@ class AuthenticationService(
             createdAt = Timestamp.from(Instant.now())
         )
         lover = loverService.save(lover)
-        passwordService.createPassword(lover, request.password)
+        loverAuthenticationService.createPassword(lover, request.password)
         return lover
     }
 
@@ -43,18 +47,18 @@ class AuthenticationService(
         } else {
             loverService.unAuthorizedGetByUserName(request.userName!!)
         }
-        authenticateAndGetUser(lover.userName, request.password)
+        authenticateUser(lover.userName, request.password)
         return loverRelationService.getWithRelations(lover)
     }
 
     suspend fun generateToken(userName: String, password: String): String {
         logger.debug { "User login finished '$userName'. Generating token." }
-        val authentication = authenticateAndGetUser(userName, password)
+        val authentication = authenticateUser(userName, password)
         return jwtService.generateToken(authentication)
     }
 
-    private suspend fun authenticateAndGetUser(userName: String, password: String): Authentication {
-        val authenticationMono = authenticationManager
+    private suspend fun authenticateUser(userName: String, password: String): Authentication {
+        val authenticationMono = userDetailsRepositoryReactiveAuthenticationManager
             .authenticate(UsernamePasswordAuthenticationToken(userName, password))
         return authenticationMono.awaitSingle()
     }

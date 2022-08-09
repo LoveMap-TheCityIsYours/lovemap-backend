@@ -1,5 +1,8 @@
 package com.lovemap.lovemapbackend.authentication
 
+import com.lovemap.lovemapbackend.authentication.facebook.FacebookAuthenticationService
+import com.lovemap.lovemapbackend.authentication.password.PasswordAuthenticationService
+import com.lovemap.lovemapbackend.authentication.password.PasswordResetService
 import com.lovemap.lovemapbackend.lover.LoverConverter
 import com.lovemap.lovemapbackend.lover.LoverRelationsResponse
 import com.lovemap.lovemapbackend.lover.LoverResponse
@@ -20,7 +23,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/authentication")
 class AuthenticationController(
-    private val authenticationService: AuthenticationService,
+    private val passwordAuthenticationService: PasswordAuthenticationService,
+    private val facebookAuthenticationService: FacebookAuthenticationService,
     private val passwordResetService: PasswordResetService,
     private val validatorService: ValidatorService,
     private val loverConverter: LoverConverter,
@@ -31,19 +35,19 @@ class AuthenticationController(
     suspend fun register(@RequestBody request: CreateLoverRequest): ResponseEntity<LoverResponse> {
         validatorService.validate(request)
         logger.debug { "Registering user '${request.userName}'" }
-        val lover = authenticationService.createLover(request)
-        val jwt = authenticationService.generateToken(lover.userName, request.password)
+        val lover = passwordAuthenticationService.createLover(request)
+        val jwt = passwordAuthenticationService.generateToken(lover.userName, request.password)
         return ResponseEntity.ok()
             .header(HttpHeaders.AUTHORIZATION, jwt)
-            .body(loverConverter.toDto(lover))
+            .body(loverConverter.toResponse(lover))
     }
 
     @PostMapping("/login")
     suspend fun login(@RequestBody request: LoginLoverRequest): ResponseEntity<LoverRelationsResponse> {
         validateLoginRequest(request)
         try {
-            val lover = authenticationService.loginLover(request)
-            val jwt = authenticationService.generateToken(lover.userName, request.password)
+            val lover = passwordAuthenticationService.loginLover(request)
+            val jwt = passwordAuthenticationService.generateToken(lover.userName, request.password)
             return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION, jwt)
                 .body(lover)
@@ -70,7 +74,7 @@ class AuthenticationController(
     @PostMapping("/new-password")
     suspend fun newPassword(@RequestBody request: NewPasswordRequest): ResponseEntity<LoverRelationsResponse> {
         val lover: LoverRelationsResponse = passwordResetService.setNewPassword(request)
-        val jwt = authenticationService.generateToken(lover.userName, request.newPassword)
+        val jwt = passwordAuthenticationService.generateToken(lover.userName, request.newPassword)
         return ResponseEntity.ok()
             .header(HttpHeaders.AUTHORIZATION, jwt)
             .body(lover)
@@ -78,7 +82,11 @@ class AuthenticationController(
 
     @PostMapping("/facebook-login")
     suspend fun facebookLogin(@RequestBody request: FacebookAuthenticationRequest): ResponseEntity<LoverResponse> {
-        TODO("finish")
+        validatorService.validate(request)
+        val loverAuthenticationResult = facebookAuthenticationService.authenticate(request)
+        return ResponseEntity.ok()
+            .header(HttpHeaders.AUTHORIZATION, loverAuthenticationResult.jwt)
+            .body(loverAuthenticationResult.loverResponse)
     }
 
     private fun validateLoginRequest(request: LoginLoverRequest) {

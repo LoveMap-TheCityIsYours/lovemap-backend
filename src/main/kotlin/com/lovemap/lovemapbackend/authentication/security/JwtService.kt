@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.security
+package com.lovemap.lovemapbackend.authentication.security
 
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
@@ -28,7 +28,7 @@ class JwtService(
 ) {
     val logger = KotlinLogging.logger {}
 
-    private val SECRET_KEY = Keys.hmacShaKeyFor(signingKey.toByteArray(UTF_8))
+    private val secretKey = Keys.hmacShaKeyFor(signingKey.toByteArray(UTF_8))
 
     fun generateToken(authentication: Authentication): String {
         val username = authentication.name
@@ -47,12 +47,12 @@ class JwtService(
             .setClaims(claims)
             .setIssuedAt(now)
             .setExpiration(expirationDate)
-            .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
+            .signWith(secretKey, SignatureAlgorithm.HS256)
         return builder.compact()
     }
 
     fun getAuthentication(token: String): Authentication {
-        val claims: Claims = Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).body
+        val claims: Claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).body
         val authoritiesClaim = claims[AUTHORITIES_KEY]
         val authorities: Collection<GrantedAuthority> = if (authoritiesClaim == null) {
             AuthorityUtils.NO_AUTHORITIES
@@ -66,7 +66,7 @@ class JwtService(
     fun validateToken(token: String): Boolean {
         try {
             val claims: Jws<Claims> = Jwts
-                .parserBuilder().setSigningKey(SECRET_KEY).build()
+                .parserBuilder().setSigningKey(secretKey).build()
                 .parseClaimsJws(token)
             //  parseClaimsJws will check expiration date. No need do here.
             logger.debug("Token validated. Expiration date: {}", claims.body.expiration)

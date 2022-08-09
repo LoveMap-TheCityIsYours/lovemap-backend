@@ -1,6 +1,6 @@
 package com.lovemap.lovemapbackend.lover
 
-import com.lovemap.lovemapbackend.security.AuthorizationService
+import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode.*
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException
@@ -126,5 +126,9 @@ class LoverService(
         val lover = authorizationService.checkAccessFor(loverId)
         lover.uuid = null
         return save(lover)
+    }
+
+    suspend fun unAuthorizedExistsByEmail(email: String): Boolean {
+        return loverRepository.existsByEmail(email)
     }
 }

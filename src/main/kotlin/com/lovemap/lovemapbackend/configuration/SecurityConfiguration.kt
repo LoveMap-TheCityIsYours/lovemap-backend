@@ -1,11 +1,14 @@
 package com.lovemap.lovemapbackend.configuration
 
-import com.lovemap.lovemapbackend.security.JwtAuthenticationFilter
+import com.lovemap.lovemapbackend.authentication.facebook.FacebookAuthenticationManager
+import com.lovemap.lovemapbackend.authentication.facebook.FacebookProperties
+import com.lovemap.lovemapbackend.authentication.security.JwtAuthenticationFilter
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
-import org.springframework.security.authentication.ReactiveAuthenticationManager
+import org.springframework.security.authentication.DelegatingReactiveAuthenticationManager
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder
@@ -20,6 +23,9 @@ import org.springframework.web.reactive.config.WebFluxConfigurer
 @Configuration
 @EnableWebFluxSecurity
 class SecurityConfiguration(
+    @Value("\${lovemap.admins.emails}")
+    private val adminEmails: List<String>,
+    private val facebookProperties: FacebookProperties,
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
     private val loverUserDetailsService: ReactiveUserDetailsService,
     private val passwordEncoder: PasswordEncoder
@@ -42,6 +48,7 @@ class SecurityConfiguration(
             .pathMatchers("/privacy-policy.html").permitAll()
             .pathMatchers("/.well-known/assetlinks.json").permitAll()
             .pathMatchers("/favicon.ico").permitAll()
+            .pathMatchers("/app-ads.txt").permitAll()
 
             .pathMatchers("/love/**").hasRole("USER")
             .pathMatchers("/lover/**").hasRole("USER")
@@ -54,16 +61,31 @@ class SecurityConfiguration(
             .anyExchange().authenticated()
             .and()
             .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.HTTP_BASIC)
-            .authenticationManager(reactiveAuthenticationManager())
+            .authenticationManager(authenticationManager())
             .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
         return http.build()
     }
 
     @Bean
-    fun reactiveAuthenticationManager(): ReactiveAuthenticationManager {
+    fun userDetailsRepositoryReactiveAuthenticationManager(): UserDetailsRepositoryReactiveAuthenticationManager {
         val authenticationManager = UserDetailsRepositoryReactiveAuthenticationManager(loverUserDetailsService)
         authenticationManager.setPasswordEncoder(passwordEncoder)
         return authenticationManager
+    }
+
+    @Bean
+    fun facebookAuthenticationManager(): FacebookAuthenticationManager {
+        return FacebookAuthenticationManager(adminEmails, facebookProperties)
+    }
+
+    @Bean
+    fun authenticationManager(): DelegatingReactiveAuthenticationManager {
+        return DelegatingReactiveAuthenticationManager(
+            mutableListOf(
+                facebookAuthenticationManager(),
+                userDetailsRepositoryReactiveAuthenticationManager()
+            )
+        )
     }
 
     override fun addCorsMappings(registry: CorsRegistry) {

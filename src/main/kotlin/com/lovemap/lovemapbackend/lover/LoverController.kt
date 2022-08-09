@@ -40,14 +40,14 @@ class LoverController(
     suspend fun generateLoverLink(@PathVariable loverId: Long)
             : ResponseEntity<LoverResponse> {
         val lover = loverService.generateLoverUuid(loverId)
-        return ResponseEntity.ok(loverConverter.toDto(lover))
+        return ResponseEntity.ok(loverConverter.toResponse(lover))
     }
 
     @DeleteMapping("/{loverId}/shareableLink")
     suspend fun deleteLoverLink(@PathVariable loverId: Long)
             : ResponseEntity<LoverResponse> {
         val lover = loverService.deleteLoverLink(loverId)
-        return ResponseEntity.ok(loverConverter.toDto(lover))
+        return ResponseEntity.ok(loverConverter.toResponse(lover))
     }
 
     @GetMapping("ranks")
