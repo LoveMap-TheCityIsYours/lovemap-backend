@@ -8,13 +8,14 @@ import org.springframework.security.core.userdetails.UserDetails
 
 data class LoverUserDetails(
     private val userName: String,
+    private val email: String,
     private val password: String?,
     private val authorities: List<String>,
 ) : UserDetails {
 
     companion object {
         fun of(lover: Lover, password: LoverAuthentication, authorities: List<String>): LoverUserDetails {
-            return LoverUserDetails(lover.userName, password.passwordHash, authorities)
+            return LoverUserDetails(lover.userName, lover.email, password.passwordHash, authorities)
         }
     }
 

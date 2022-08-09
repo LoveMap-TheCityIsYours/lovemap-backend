@@ -8,13 +8,9 @@ import com.lovemap.lovemapbackend.authentication.security.JwtService
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.LoverConverter
 import com.lovemap.lovemapbackend.lover.LoverService
-import com.lovemap.lovemapbackend.utils.ErrorCode
-import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.reactor.awaitSingle
-import org.springframework.http.HttpStatus
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Mono
 import java.sql.Timestamp
 import java.time.Instant
 
@@ -28,58 +24,78 @@ class FacebookAuthenticationService(
 ) {
 
     suspend fun authenticate(request: FacebookAuthenticationRequest): LoverAuthenticationResult {
-        val authenticationMono = authenticateWithFacebook(request)
-        val authentication = authenticationMono.doOnError { throw it }.awaitSingle()
         val loverAuthentication = loverAuthenticationService.findByFacebookId(request.facebookId)
         return if (loverAuthentication != null) {
-            loginRegisteredUser(loverAuthentication, authenticationMono)
+            loginRegisteredFacebookUser(request, loverAuthentication)
         } else {
-            registerNewUser(request, authentication)
+            registerNewFacebookUser(request)
         }
     }
 
-    private fun authenticateWithFacebook(request: FacebookAuthenticationRequest): Mono<Authentication> {
-        return authenticationManager.authenticate(
-            FacebookAuthenticationToken(
-                email = request.email,
-                facebookId = request.facebookId,
-                fbAccessToken = request.accessToken,
-            )
+    private suspend fun loginRegisteredFacebookUser(
+        request: FacebookAuthenticationRequest,
+        loverAuthentication: LoverAuthentication,
+    ): LoverAuthenticationResult {
+        // user already registered with facebook.
+        val lover = loverService.unAuthorizedGetById(loverAuthentication.id)
+        val token = facebookAuthenticationToken(lover, request)
+        return authenticateAndLogin(lover, token)
+    }
+
+    private fun facebookAuthenticationToken(
+        lover: Lover,
+        request: FacebookAuthenticationRequest
+    ): FacebookAuthenticationToken {
+        return FacebookAuthenticationToken(
+            email = lover.email,
+            userName = lover.userName,
+            facebookId = request.facebookId,
+            fbAccessToken = request.accessToken,
         )
     }
 
-    private suspend fun loginRegisteredUser(
-        loverAuthentication: LoverAuthentication,
-        authenticationMono: Mono<Authentication>
+    private suspend fun authenticateAndLogin(
+        lover: Lover,
+        token: FacebookAuthenticationToken
     ): LoverAuthenticationResult {
-        val lover = loverService.unAuthorizedGetById(loverAuthentication.id)
-        // user already registered with facebook.
+        val authentication = authenticateWithFacebook(token)
         return LoverAuthenticationResult(
             loverConverter.toResponse(lover),
-            jwtService.generateToken(authenticationMono.awaitSingle())
+            jwtService.generateToken(authentication)
         )
     }
 
-    private suspend fun registerNewUser(
-        request: FacebookAuthenticationRequest,
-        authentication: Authentication
+    private suspend fun authenticateWithFacebook(token: FacebookAuthenticationToken): Authentication {
+        return authenticationManager.authenticate(token).doOnError { throw it }.awaitSingle()
+    }
+
+    private suspend fun registerNewFacebookUser(
+        request: FacebookAuthenticationRequest
     ): LoverAuthenticationResult {
         // user did not register with facebook yet
         // checking whether the email is already registered:
-        if (loverService.unAuthorizedExistsByEmail(request.email)) {
-            // todo: implement api for connecting existing user with facebook account
-            throw LoveMapException(HttpStatus.CONFLICT, ErrorCode.FacebookEmailOccupied)
+        val lover = if (loverService.unAuthorizedExistsByEmail(request.email)) {
+            connectExistingLoverWithFacebook(request)
         } else {
             // new user registration
-            val lover = createLover(request.email, request.facebookId)
-            return LoverAuthenticationResult(
-                loverConverter.toResponse(lover),
-                jwtService.generateToken(authentication)
-            )
+            createNewLover(request.email, request.facebookId)
         }
+        val token = facebookAuthenticationToken(lover, request)
+        return authenticateAndLogin(lover, token)
     }
 
-    suspend fun createLover(email: String, facebookId: String): Lover {
+    private suspend fun connectExistingLoverWithFacebook(
+        request: FacebookAuthenticationRequest,
+    ): Lover {
+        val existingLover = loverService.unAuthorizedGetByEmail(request.email)
+        authenticateWithFacebook(facebookAuthenticationToken(existingLover, request))
+        val loverAuthentication = loverAuthenticationService.getLoverAuthentication(existingLover)
+        loverAuthentication.facebookId = request.facebookId
+        loverAuthenticationService.save(loverAuthentication)
+        return existingLover
+    }
+
+    suspend fun createNewLover(email: String, facebookId: String): Lover {
         loverService.checkUserNameAndEmail(email, email)
         var lover = Lover(
             userName = email,

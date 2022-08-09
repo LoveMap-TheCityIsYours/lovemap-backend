@@ -4,6 +4,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 
 class FacebookAuthenticationToken(
+    private val userName: String,
     private val email: String,
     private val facebookId: String,
     private val fbAccessToken: String,
@@ -12,7 +13,7 @@ class FacebookAuthenticationToken(
 ) : Authentication {
 
     override fun getName(): String {
-        return email
+        return userName
     }
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {

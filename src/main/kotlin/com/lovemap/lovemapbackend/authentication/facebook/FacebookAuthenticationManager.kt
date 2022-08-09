@@ -62,8 +62,10 @@ class FacebookAuthenticationManager(
     ): FacebookAuthenticationToken {
         val facebookId = authentication.principal as String
         return if (facebookIdMatches(facebookId, validationResponse)) {
-            val email = authentication.name
+            val userName = authentication.name
+            val email = authentication.details as String
             FacebookAuthenticationToken(
+                userName = userName,
                 email = email,
                 fbAccessToken = fbAccessToken,
                 facebookId = facebookId,
