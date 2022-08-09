@@ -82,8 +82,8 @@ class AuthenticationController(
 
     @PostMapping("/facebook-login")
     suspend fun facebookLogin(@RequestBody request: FacebookAuthenticationRequest): ResponseEntity<LoverResponse> {
+        validatorService.validate(request)
         val loverAuthenticationResult = facebookAuthenticationService.authenticate(request)
-
         return ResponseEntity.ok()
             .header(HttpHeaders.AUTHORIZATION, loverAuthenticationResult.jwt)
             .body(loverAuthenticationResult.loverResponse)

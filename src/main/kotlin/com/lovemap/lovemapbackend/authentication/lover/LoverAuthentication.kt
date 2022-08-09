@@ -23,6 +23,6 @@ data class LoverAuthentication(
     @Column("password_set")
     var passwordSet: Boolean = true,
 
-    @Column("facebook_connected")
-    var facebookConnected: Boolean = false,
+    @Column("facebook_id")
+    var facebookId: String? = null,
 )

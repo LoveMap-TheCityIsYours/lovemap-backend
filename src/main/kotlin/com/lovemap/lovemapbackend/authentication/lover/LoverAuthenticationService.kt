@@ -28,15 +28,19 @@ class LoverAuthenticationService(
         )
     }
 
-    suspend fun createFacebookAuth(lover: Lover) {
+    suspend fun createFacebookAuth(lover: Lover, facebookId: String) {
         save(
             LoverAuthentication(
                 passwordHash = null,
                 loverId = lover.id,
                 passwordSet = false,
-                facebookConnected = true
+                facebookId = facebookId
             )
         )
+    }
+
+    suspend fun findByFacebookId(facebookId: String): LoverAuthentication? {
+        return repository.findByFacebookId(facebookId)
     }
 
     suspend fun save(authentication: LoverAuthentication): LoverAuthentication {

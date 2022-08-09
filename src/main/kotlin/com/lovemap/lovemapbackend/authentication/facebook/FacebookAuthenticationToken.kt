@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority
 
 class FacebookAuthenticationToken(
     private val email: String,
+    private val facebookId: String,
     private val fbAccessToken: String,
     private var isAuthenticated: Boolean = false,
     private val authorities: MutableCollection<out GrantedAuthority> = mutableListOf()
@@ -27,7 +28,7 @@ class FacebookAuthenticationToken(
     }
 
     override fun getPrincipal(): Any {
-        return email
+        return facebookId
     }
 
     override fun isAuthenticated(): Boolean {

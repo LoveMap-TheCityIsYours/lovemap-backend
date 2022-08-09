@@ -3,14 +3,12 @@ package com.lovemap.lovemapbackend.authentication.facebook
 import com.lovemap.lovemapbackend.authentication.security.AUTHORITY_ADMIN
 import com.lovemap.lovemapbackend.authentication.security.AUTHORITY_USER
 import kotlinx.coroutines.reactor.mono
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import reactor.core.publisher.Mono
 
 class FacebookAuthenticationManager(
-    @Value("\${lovemap.admins.emails}")
     private val adminEmails: List<String>,
 ) : ReactiveAuthenticationManager {
 
@@ -18,10 +16,11 @@ class FacebookAuthenticationManager(
         return if (authentication is FacebookAuthenticationToken) {
             mono {
                 // todo: FB api call: https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow/#checktoken
-                val email = authentication.principal as String
+                val email = authentication.name
                 FacebookAuthenticationToken(
                     email = email,
                     fbAccessToken = authentication.credentials as String,
+                    facebookId = authentication.principal as String,
                     isAuthenticated = true,
                     authorities = getGrantedAuthorities(email)
                 )
