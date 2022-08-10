@@ -6,15 +6,15 @@ metadata:
     app: lovemap
   name: lovemap
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: lovemap
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 0
-      maxUnavailable: 1
+      maxSurge: 1
+      maxUnavailable: 0
   template:
     metadata:
       annotations: {}
