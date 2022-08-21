@@ -7,6 +7,7 @@ import com.lovemap.lovemapbackend.utils.INVALID_PW_RESET_CODE
 import com.lovemap.lovemapbackend.utils.INVALID_USERNAME
 import javax.validation.Valid
 import javax.validation.constraints.Email
+import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
@@ -15,6 +16,7 @@ data class CreateLoverRequest(
     val userName: String,
     @field:Size(min = 6, max = 100, message = INVALID_PASSWORD)
     val password: String,
+    @field:NotEmpty(message = INVALID_EMAIL)
     @field:Email(message = INVALID_EMAIL)
     val email: String
 )
@@ -29,6 +31,7 @@ data class LoginLoverRequest(
 )
 
 data class ResetPasswordRequest(
+    @field:NotEmpty(message = INVALID_EMAIL)
     @field:Email(message = INVALID_EMAIL)
     val email: String
 )
@@ -38,6 +41,7 @@ data class ResetPasswordResponse(
 )
 
 data class NewPasswordRequest(
+    @field:NotEmpty(message = INVALID_EMAIL)
     @field:Email(message = INVALID_EMAIL)
     val email: String,
     @field:Size(min = 8, max = 8, message = INVALID_PW_RESET_CODE)
@@ -47,6 +51,7 @@ data class NewPasswordRequest(
 )
 
 data class FacebookAuthenticationRequest(
+    @field:NotEmpty(message = INVALID_EMAIL)
     @field:Email(message = INVALID_EMAIL)
     val email: String,
     @field:NotNull

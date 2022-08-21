@@ -67,12 +67,14 @@ class AuthenticationController(
 
     @PostMapping("/request-password-reset")
     suspend fun requestPasswordReset(@RequestBody request: ResetPasswordRequest): ResponseEntity<ResetPasswordResponse> {
+        validatorService.validate(request)
         passwordResetService.initPasswordReset(request)
         return ResponseEntity.ok(ResetPasswordResponse("Instructions sent in email."))
     }
 
     @PostMapping("/new-password")
     suspend fun newPassword(@RequestBody request: NewPasswordRequest): ResponseEntity<LoverRelationsResponse> {
+        validatorService.validate(request)
         val lover: LoverRelationsResponse = passwordResetService.setNewPassword(request)
         val jwt = passwordAuthenticationService.generateToken(lover.userName, request.newPassword)
         return ResponseEntity.ok()
