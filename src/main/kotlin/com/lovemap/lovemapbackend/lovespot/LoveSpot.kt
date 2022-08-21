@@ -73,7 +73,7 @@ data class LoveSpot(
     var lastLoveAt: Timestamp? = null,
 
     @Column("last_active_at")
-    var lastActiveAt: Timestamp? = Timestamp.from(Instant.now()),
+    var lastActiveAt: Timestamp? = null,
 ) {
     enum class Availability {
         ALL_DAY, NIGHT_ONLY
