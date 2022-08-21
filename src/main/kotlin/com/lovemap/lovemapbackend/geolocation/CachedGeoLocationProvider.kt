@@ -15,13 +15,15 @@ class CachedGeoLocationProvider(
     private val countryCache = ConcurrentHashMap<String, Unit>()
 
     fun insertIntoCache(geoLocation: GeoLocation) {
-        if (geoLocation.country?.isEmpty() == false && geoLocation.city?.isEmpty() == false) {
-            val city = City(geoLocation.country!!, geoLocation.city!!)
-            if (!cityCache.contains(city)) {
-                cityCache[city] = Unit
-            }
+        if (geoLocation.country?.isEmpty() == false) {
             if (!countryCache.contains(geoLocation.country)) {
                 countryCache[geoLocation.country!!] = Unit
+            }
+            if (geoLocation.city?.isEmpty() == false) {
+                val city = City(geoLocation.country!!, geoLocation.city!!)
+                if (!cityCache.contains(city)) {
+                    cityCache[city] = Unit
+                }
             }
         }
     }
