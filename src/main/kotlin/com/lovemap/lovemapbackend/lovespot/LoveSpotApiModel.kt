@@ -131,5 +131,6 @@ data class RecommendationsResponse(
     val topRatedSpots: List<LoveSpotResponse>,
     val closestSpots: List<LoveSpotResponse>,
     val recentlyActiveSpots: List<LoveSpotResponse>,
-    val popularSpots: List<LoveSpotResponse>
+    val popularSpots: List<LoveSpotResponse>,
+    val newestSpots: List<LoveSpotResponse>,
 )

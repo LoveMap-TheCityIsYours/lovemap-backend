@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
+import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -18,6 +19,7 @@ private const val UNKNOWN_GEO_LOCATION: Long = 1
 @Service
 @Transactional(propagation = Propagation.REQUIRES_NEW)
 class GeoLocationService(
+    private val environment: Environment,
     private val geoApiContext: GeoApiContext,
     private val cachedGeoLocationProvider: CachedGeoLocationProvider,
     private val repository: GeoLocationRepository,
@@ -35,12 +37,17 @@ class GeoLocationService(
 
     suspend fun decodeLocationInfo(loveSpot: LoveSpot): GeoLocation? {
         return withContext(Dispatchers.IO) {
-            logger.info { "Reverse geocoding $loveSpot" }
             try {
-                var geoLocation = decodeLocation(loveSpot)
-                geoLocation = saveOrGetExisting(geoLocation)
-                cachedGeoLocationProvider.insertIntoCache(geoLocation)
-                geoLocation
+                if (!environment.activeProfiles.contains("dev")) {
+                    logger.info { "Reverse geocoding $loveSpot" }
+                    var geoLocation = decodeLocation(loveSpot)
+                    geoLocation = saveOrGetExisting(geoLocation)
+                    cachedGeoLocationProvider.insertIntoCache(geoLocation)
+                    geoLocation
+                } else {
+                    logger.info { "NOT reverse geocoding $loveSpot due to 'dev' profile." }
+                    null
+                }
             } catch (e: Exception) {
                 logger.error("Error occurred during getLocationInfo.", e)
                 null

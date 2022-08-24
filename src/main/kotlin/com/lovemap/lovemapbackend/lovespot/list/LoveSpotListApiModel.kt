@@ -27,7 +27,7 @@ data class LoveSpotAdvancedListRequest(
 )
 
 enum class ListOrderingRequest {
-    CLOSEST, TOP_RATED, RECENTLY_ACTIVE, POPULAR;
+    CLOSEST, TOP_RATED, RECENTLY_ACTIVE, POPULAR, NEWEST;
 
     fun toDto(): ListOrdering {
         return when (this) {
@@ -35,6 +35,7 @@ enum class ListOrderingRequest {
             TOP_RATED -> ListOrdering.TOP_RATED
             RECENTLY_ACTIVE -> ListOrdering.RECENTLY_ACTIVE
             POPULAR -> ListOrdering.POPULAR
+            NEWEST -> ListOrdering.NEWEST
         }
     }
 }
