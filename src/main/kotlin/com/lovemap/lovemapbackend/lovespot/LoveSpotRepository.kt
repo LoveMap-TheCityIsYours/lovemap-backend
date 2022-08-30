@@ -12,7 +12,10 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
             WHERE longitude >= LEAST(:longFrom,:longTo) AND longitude <= GREATEST(:longFrom,:longTo) 
             AND latitude >= LEAST(:latFrom,:latTo) AND latitude <= GREATEST(:latFrom,:latTo) 
             AND type IN (:typeFilter)
-            ORDER BY average_rating DESC NULLS LAST LIMIT :limit
+            ORDER BY 
+                average_rating DESC NULLS LAST, 
+                popularity DESC NULLS LAST 
+            LIMIT :limit
         """
     )
     fun findByCoordinatesOrderByRating(
@@ -107,7 +110,10 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
                 WHERE geo_location.city = :city
             ) 
             AND type IN (:typeFilter)
-            ORDER BY average_rating DESC NULLS LAST LIMIT :limit
+            ORDER BY 
+                average_rating DESC NULLS LAST, 
+                popularity DESC NULLS LAST 
+            LIMIT :limit
         """
     )
     fun findByCityOrderByRating(
@@ -125,7 +131,10 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
                 WHERE geo_location.country = :country
             ) 
             AND type IN (:typeFilter)
-            ORDER BY average_rating DESC NULLS LAST LIMIT :limit
+            ORDER BY 
+                average_rating DESC NULLS LAST, 
+                popularity DESC NULLS LAST 
+            LIMIT :limit
         """
     )
     fun findByCountryOrderByRating(
