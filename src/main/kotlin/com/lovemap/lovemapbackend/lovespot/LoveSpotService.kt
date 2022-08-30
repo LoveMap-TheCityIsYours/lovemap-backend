@@ -55,45 +55,6 @@ class LoveSpotService(
         return loveSpot
     }
 
-    suspend fun recordLoveMaking(love: Love) {
-        val loveSpot = getById(love.loveSpotId)
-        updateLastLoveAt(loveSpot, love)
-        updateLastActiveAt(loveSpot)
-        loveSpot.numberOfLoves += 1
-        updatePopularity(loveSpot)
-    }
-
-    private fun updateLastLoveAt(
-        loveSpot: LoveSpot,
-        love: Love
-    ) {
-        loveSpot.lastLoveAt?.let {
-            if (love.happenedAt.toInstant().isAfter(it.toInstant())) {
-                loveSpot.lastLoveAt = love.happenedAt
-            }
-        } ?: run {
-            loveSpot.lastLoveAt = love.happenedAt
-        }
-    }
-
-    private fun updateLastActiveAt(loveSpot: LoveSpot) {
-        loveSpot.lastActiveAt?.let {
-            if (loveSpot.lastLoveAt!!.toInstant().isAfter(it.toInstant())) {
-                loveSpot.lastActiveAt = loveSpot.lastLoveAt
-            }
-        } ?: run {
-            loveSpot.lastActiveAt = loveSpot.lastLoveAt
-        }
-    }
-
-    // popularity = 2 * number_of_loves + number_of_comments + occurrence_on_wishlists
-    private suspend fun updatePopularity(loveSpot: LoveSpot): LoveSpot {
-        loveSpot.popularity = with(loveSpot) {
-            2 * numberOfLoves + numberOfComments + occurrenceOnWishlists
-        }
-        return repository.save(loveSpot)
-    }
-
     suspend fun create(request: CreateLoveSpotRequest): LoveSpot {
         val caller = authorizationService.getCaller()
         val loveSpot = LoveSpot(

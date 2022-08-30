@@ -47,7 +47,7 @@ class LoveSpotReviewService(
         spotReview: LoveSpotReview,
         request: LoveSpotReviewRequest
     ): LoveSpot {
-        val loveSpot = reviseReviewAverages(spotReview, request)
+        val loveSpot = updateAveragesForChangedReview(spotReview, request)
         loverPointService.updatePointsForReview(spotReview, request, loveSpot)
         spotReview.reviewText = request.reviewText.trim()
         spotReview.reviewStars = request.reviewStars
@@ -67,12 +67,12 @@ class LoveSpotReviewService(
                 riskLevel = request.riskLevel,
             )
         )
-        val loveSpot = updateReviewAverages(request.loveSpotId, request)
+        val loveSpot = updateAveragesForNewReview(request.loveSpotId, request)
         loverPointService.addPointsForReview(review, loveSpot)
         return loveSpot
     }
 
-    suspend fun updateReviewAverages(spotId: Long, request: LoveSpotReviewRequest): LoveSpot {
+    suspend fun updateAveragesForNewReview(spotId: Long, request: LoveSpotReviewRequest): LoveSpot {
         val loveSpot = loveSpotService.getById(spotId)
         if (loveSpot.averageRating == null) {
             loveSpot.averageRating = request.reviewStars.toDouble()
@@ -92,7 +92,7 @@ class LoveSpotReviewService(
         return loveSpotService.save(loveSpot)
     }
 
-    suspend fun reviseReviewAverages(previousReview: LoveSpotReview, request: LoveSpotReviewRequest): LoveSpot {
+    suspend fun updateAveragesForChangedReview(previousReview: LoveSpotReview, request: LoveSpotReviewRequest): LoveSpot {
         val loveSpot = loveSpotService.getById(previousReview.loveSpotId)
         var averageRatingWeight = loveSpot.averageRating!! * loveSpot.numberOfRatings
         var averageDangerWeight = loveSpot.averageDanger!! * loveSpot.numberOfRatings
@@ -129,9 +129,23 @@ class LoveSpotReviewService(
     }
 
     suspend fun deleteReviewsByLove(love: Love) {
-        repository.deleteByReviewerIdAndLoveSpotId(love.loverId, love.loveSpotId)
-        love.loverPartnerId?.let {
-            repository.deleteByReviewerIdAndLoveSpotId(it, love.loveSpotId)
+        val loveSpot = loveSpotService.getById(love.loveSpotId)
+        val review = repository.findByReviewerIdAndLoveId(love.loverId, love.id)
+        if (review != null) {
+            repository.delete(review)
+            loveSpot.numberOfRatings--
         }
+        love.loverPartnerId?.let {
+            val partnerReview = repository.findByReviewerIdAndLoveId(it, love.id)
+            if (partnerReview != null) {
+                repository.delete(partnerReview)
+                loveSpot.numberOfRatings--
+            }
+        }
+        if (loveSpot.numberOfRatings == 0) {
+            loveSpot.averageRating = null
+            loveSpot.averageDanger = null
+        }
+        loveSpotService.save(loveSpot)
     }
 }

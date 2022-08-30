@@ -5,6 +5,7 @@ import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
+import com.lovemap.lovemapbackend.lovespot.LoveSpotStatisticsService
 import com.lovemap.lovemapbackend.relation.RelationService
 import com.lovemap.lovemapbackend.utils.ErrorCode.NotFoundById
 import com.lovemap.lovemapbackend.utils.ErrorMessage
@@ -25,6 +26,7 @@ class LoveService(
     private val loveConverter: LoveConverter,
     private val relationService: RelationService,
     private val loveSpotService: LoveSpotService,
+    private val loveSpotStatisticsService: LoveSpotStatisticsService,
     private val loverPointService: LoverPointService,
     private val loveRepository: LoveRepository
 ) {
@@ -47,8 +49,9 @@ class LoveService(
                 happenedAt = happenedAt
             )
         )
+        val countOfLovesAtSpot = loveRepository.countByLoveSpotId(request.loveSpotId)
+        loveSpotStatisticsService.recordLoveMaking(love, countOfLovesAtSpot)
         loverPointService.addPointsForLovemaking(love)
-        loveSpotService.recordLoveMaking(love)
         return loveConverter.toDto(caller, love)
     }
 
@@ -102,8 +105,8 @@ class LoveService(
         loveRepository.deleteByLoveSpotId(loveSpot.id)
     }
 
-    suspend fun findLovesByLoveSpot(loveSpot: LoveSpot): List<Love> =
-        loveRepository.findByLoveSpotId(loveSpot.id).toList()
+    suspend fun findLovesByLoveSpotId(loveSpotId: Long): List<Love> =
+        loveRepository.findByLoveSpotIdOrderByHappenedAtDesc(loveSpotId).toList()
 
     suspend fun delete(love: Love) {
         loveRepository.delete(love)
