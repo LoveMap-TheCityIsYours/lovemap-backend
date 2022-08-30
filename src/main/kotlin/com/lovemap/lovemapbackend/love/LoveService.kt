@@ -1,16 +1,15 @@
 package com.lovemap.lovemapbackend.love
 
+import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.relation.RelationService
-import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode.NotFoundById
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.InstantConverterUtils
 import com.lovemap.lovemapbackend.utils.LoveMapException
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import org.springframework.http.HttpStatus
@@ -31,7 +30,7 @@ class LoveService(
 ) {
     suspend fun findAllInvolvedLovesFor(loverId: Long): List<LoveResponse> {
         val caller = authorizationService.checkAccessFor(loverId)
-        val loves = loveRepository.findDistinctByLoverIdOrLoverPartnerId(loverId, loverId)
+        val loves = loveRepository.findDistinctByLoverIdOrLoverPartnerIdOrderByHappenedAtDesc(loverId, loverId)
         return loves.map { love -> loveConverter.toDto(caller, love) }.toList()
     }
 
@@ -100,12 +99,11 @@ class LoveService(
     }
 
     suspend fun deleteLovesBySpot(loveSpot: LoveSpot) {
-        val loves = loveRepository.findByLoveSpotId(loveSpot.id)
-        loves.collect { love ->
-            loverPointService.subtractPointsForLovemakingDeleted(love)
-        }
         loveRepository.deleteByLoveSpotId(loveSpot.id)
     }
+
+    suspend fun findLovesByLoveSpot(loveSpot: LoveSpot): List<Love> =
+        loveRepository.findByLoveSpotId(loveSpot.id).toList()
 
     suspend fun delete(love: Love) {
         loveRepository.delete(love)
