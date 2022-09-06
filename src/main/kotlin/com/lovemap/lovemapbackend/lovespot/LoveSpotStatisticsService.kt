@@ -47,28 +47,35 @@ class LoveSpotStatisticsService(
         }
     }
 
-    suspend fun deleteLoveMaking(deletedLove: Love, otherLovesAtSpot: List<Love>): LoveSpot {
+    suspend fun deleteLoveMaking(deletedLove: Love, latestLove: Love?, numberOfLoves: Long): LoveSpot {
         val loveSpot = loveSpotService.getById(deletedLove.loveSpotId)
-        setLastLoveAtForDeleted(loveSpot, otherLovesAtSpot)
-        setLastActiveAtForDeleted(loveSpot, otherLovesAtSpot)
-        loveSpot.numberOfLoves = otherLovesAtSpot.size.toLong()
+        setLastLoveAt(loveSpot, latestLove)
+        setLastActiveAt(loveSpot, latestLove)
+        loveSpot.numberOfLoves = numberOfLoves
         updatePopularity(loveSpot)
         return loveSpotService.save(loveSpot)
     }
 
-    private fun setLastLoveAtForDeleted(loveSpot: LoveSpot, otherLovesAtSpot: List<Love>) {
-        if (otherLovesAtSpot.isNotEmpty()) {
-            loveSpot.lastLoveAt = otherLovesAtSpot[0].happenedAt
+    private fun setLastLoveAt(loveSpot: LoveSpot, latestLove: Love?) {
+        if (latestLove != null) {
+            loveSpot.lastLoveAt = latestLove.happenedAt
         } else {
             loveSpot.lastLoveAt = null
         }
     }
 
-    private fun setLastActiveAtForDeleted(loveSpot: LoveSpot, otherLovesAtSpot: List<Love>) {
-        if (otherLovesAtSpot.isNotEmpty()) {
-            loveSpot.lastActiveAt = otherLovesAtSpot[0].happenedAt
+    private fun setLastActiveAt(loveSpot: LoveSpot, latestLove: Love?) {
+        if (latestLove != null) {
+            loveSpot.lastActiveAt = latestLove.happenedAt
         } else {
             loveSpot.lastActiveAt = null
         }
+    }
+
+    suspend fun updateLatestLoveMaking(latestLove: Love): LoveSpot {
+        val loveSpot = loveSpotService.getById(latestLove.loveSpotId)
+        setLastLoveAt(loveSpot, latestLove)
+        setLastActiveAt(loveSpot, latestLove)
+        return loveSpotService.save(loveSpot)
     }
 }

@@ -58,8 +58,10 @@ class DebugController(
         if (environment.activeProfiles.contains("dev")) {
             val random = Random(System.currentTimeMillis())
             for (i in 0 until amount) {
-                val longitude = random.nextDouble(0.0, 90.0)
-                val latitude = random.nextDouble(0.0, 90.0)
+//                val longitude = random.nextDouble(18.745751, 18.788238)
+//                val latitude = random.nextDouble(47.250339, 47.3)
+                val longitude = random.nextDouble(-180.0, 180.0)
+                val latitude = random.nextDouble(-90.0, 90.0)
                 val name = UUID.randomUUID().toString()
                 loveSpotService.create(
                     CreateLoveSpotRequest(

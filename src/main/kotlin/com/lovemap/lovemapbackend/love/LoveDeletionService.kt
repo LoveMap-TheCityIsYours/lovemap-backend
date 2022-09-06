@@ -25,8 +25,9 @@ class LoveDeletionService(
         loveSpotReviewService.deleteReviewsByLove(love)
         loverPointService.subtractPointsForLovemakingDeleted(love)
         loveService.delete(love)
-        val otherLovesAtSpot = loveService.findLovesByLoveSpotId(love.loveSpotId)
-        loveSpotStatisticsService.deleteLoveMaking(love, otherLovesAtSpot)
+        val latestLove = loveService.findLatestLoveAtSpot(love.loveSpotId)
+        val numberOfLoves = loveService.getNumberOfLovesAtSpot(love.loveSpotId)
+        loveSpotStatisticsService.deleteLoveMaking(love, latestLove, numberOfLoves)
         return loveConverter.toDto(caller, love)
     }
 

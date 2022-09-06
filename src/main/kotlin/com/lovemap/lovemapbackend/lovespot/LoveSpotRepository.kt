@@ -12,6 +12,25 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
             WHERE longitude >= LEAST(:longFrom,:longTo) AND longitude <= GREATEST(:longFrom,:longTo) 
             AND latitude >= LEAST(:latFrom,:latTo) AND latitude <= GREATEST(:latFrom,:latTo) 
             AND type IN (:typeFilter)
+            ORDER BY random() 
+            LIMIT :limit
+        """
+    )
+    fun findByCoordinatesOrderByRandom(
+        latFrom: Double,
+        longFrom: Double,
+        latTo: Double,
+        longTo: Double,
+        typeFilter: Set<LoveSpot.Type>,
+        limit: Int
+    ): Flow<LoveSpot>
+
+    @Query(
+        """
+            SELECT * FROM love_location 
+            WHERE longitude >= LEAST(:longFrom,:longTo) AND longitude <= GREATEST(:longFrom,:longTo) 
+            AND latitude >= LEAST(:latFrom,:latTo) AND latitude <= GREATEST(:latFrom,:latTo) 
+            AND type IN (:typeFilter)
             ORDER BY 
                 average_rating DESC NULLS LAST, 
                 popularity DESC NULLS LAST 

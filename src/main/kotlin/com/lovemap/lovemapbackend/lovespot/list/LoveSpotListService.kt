@@ -24,7 +24,7 @@ class LoveSpotListService(
     }
 
     suspend fun list(request: LoveSpotListRequest): Flow<LoveSpot> {
-        return repository.findByCoordinatesOrderByRating(
+        return repository.findByCoordinatesOrderByRandom(
             longFrom = request.longFrom,
             longTo = request.longTo,
             latFrom = request.latFrom,

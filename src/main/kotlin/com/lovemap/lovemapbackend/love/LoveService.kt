@@ -49,7 +49,7 @@ class LoveService(
                 happenedAt = happenedAt
             )
         )
-        val countOfLovesAtSpot = loveRepository.countByLoveSpotId(request.loveSpotId)
+        val countOfLovesAtSpot = getNumberOfLovesAtSpot(request.loveSpotId)
         loveSpotStatisticsService.recordLoveMaking(love, countOfLovesAtSpot)
         loverPointService.addPointsForLovemaking(love)
         return loveConverter.toDto(caller, love)
@@ -84,6 +84,11 @@ class LoveService(
             love.loverPartnerId = null
         }
         love = loveRepository.save(love)
+        request.happenedAt?.let {
+            findLatestLoveAtSpot(love.loveSpotId)?.let {
+                loveSpotStatisticsService.updateLatestLoveMaking(it)
+            }
+        }
         return loveConverter.toDto(caller, love)
     }
 
@@ -104,6 +109,12 @@ class LoveService(
     suspend fun deleteLovesBySpot(loveSpot: LoveSpot) {
         loveRepository.deleteByLoveSpotId(loveSpot.id)
     }
+
+    suspend fun getNumberOfLovesAtSpot(loveSpotId: Long): Long =
+        loveRepository.countByLoveSpotId(loveSpotId)
+
+    suspend fun findLatestLoveAtSpot(loveSpotId: Long): Love? =
+        loveRepository.findFirstByLoveSpotIdOrderByHappenedAtDesc(loveSpotId)
 
     suspend fun findLovesByLoveSpotId(loveSpotId: Long): List<Love> =
         loveRepository.findByLoveSpotIdOrderByHappenedAtDesc(loveSpotId).toList()
