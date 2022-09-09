@@ -1,23 +1,23 @@
-package com.lovemap.lovemapbackend.lovespot.list.strategy.coordinate
+package com.lovemap.lovemapbackend.lovespot.query.strategy.coordinate
 
 import com.javadocmd.simplelatlng.LatLng
 import com.javadocmd.simplelatlng.LatLngTool
 import com.javadocmd.simplelatlng.util.LengthUnit
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
-import com.lovemap.lovemapbackend.lovespot.list.LoveSpotAdvancedListDto
-import com.lovemap.lovemapbackend.lovespot.list.LoveSpotDistanceSorter
-import com.lovemap.lovemapbackend.lovespot.list.strategy.LoveSpotListStrategy
+import com.lovemap.lovemapbackend.lovespot.query.LoveSpotSearchDto
+import com.lovemap.lovemapbackend.lovespot.query.LoveSpotDistanceSorter
+import com.lovemap.lovemapbackend.lovespot.query.strategy.LoveSpotSearchStrategy
 import kotlin.math.sqrt
 
 abstract class CoordinateBasedStrategy(
     protected val sorter: LoveSpotDistanceSorter
-) : LoveSpotListStrategy {
+) : LoveSpotSearchStrategy {
 
     private val upperLeftAngle = 315.0
     private val lowerRightAngle = 135.0
     private val sqrt2 = sqrt(2.0)
 
-    final override suspend fun listSpots(listDto: LoveSpotAdvancedListDto): List<LoveSpot> {
+    final override suspend fun listSpots(listDto: LoveSpotSearchDto): List<LoveSpot> {
         val distance = listDto.distanceInMeters!!
         val center = LatLng(listDto.latitude!!, listDto.longitude!!)
 

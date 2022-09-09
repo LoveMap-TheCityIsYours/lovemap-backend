@@ -1,8 +1,8 @@
-package com.lovemap.lovemapbackend.lovespot.list
+package com.lovemap.lovemapbackend.lovespot.query
 
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 
-data class LoveSpotAdvancedListDto(
+data class LoveSpotSearchDto(
     val limit: Int,
     val typeFilter: Set<LoveSpot.Type>,
     val listOrdering: ListOrdering,

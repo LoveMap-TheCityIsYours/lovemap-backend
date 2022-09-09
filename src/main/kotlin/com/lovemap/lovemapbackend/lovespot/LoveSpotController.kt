@@ -1,6 +1,6 @@
 package com.lovemap.lovemapbackend.lovespot
 
-import com.lovemap.lovemapbackend.lovespot.list.*
+import com.lovemap.lovemapbackend.lovespot.query.*
 import com.lovemap.lovemapbackend.lovespot.risk.LoveSpotRisks
 import com.lovemap.lovemapbackend.utils.ValidatorService
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/lovespots")
 class LoveSpotController(
     private val loveSpotService: LoveSpotService,
-    private val loveSpotListService: LoveSpotListService,
+    private val loveSpotListService: LoveSpotQueryService,
     private val recommendationService: LoveSpotRecommendationService,
     private val loveSpotRisks: LoveSpotRisks,
     private val validatorService: ValidatorService,
@@ -39,26 +39,30 @@ class LoveSpotController(
         return ResponseEntity.ok(LoveSpotResponse.of(loveSpot))
     }
 
-    @Deprecated("will be removed later")
-    @PostMapping("/search")
-    suspend fun search(@RequestBody request: LoveSpotListRequest): ResponseEntity<Flow<LoveSpotResponse>> {
-        val loveSpots = loveSpotListService.list(request)
-        return ResponseEntity.ok(loveSpots.map { LoveSpotResponse.of(it) })
-    }
-
     @PostMapping("/list")
     suspend fun list(@RequestBody request: LoveSpotListRequest): ResponseEntity<Flow<LoveSpotResponse>> {
         val loveSpots = loveSpotListService.list(request)
         return ResponseEntity.ok(loveSpots.map { LoveSpotResponse.of(it) })
     }
 
+    @Deprecated("will be removed soon")
     @PostMapping("/advancedList")
-    suspend fun advancedSearch(
+    suspend fun advancedList(
         @RequestParam listOrdering: ListOrderingRequest,
         @RequestParam listLocation: ListLocationRequest,
-        @RequestBody request: LoveSpotAdvancedListRequest
+        @RequestBody request: LoveSpotSearchRequest
     ): ResponseEntity<List<LoveSpotResponse>> {
-        val loveSpots = loveSpotListService.advancedList(listOrdering, listLocation, request)
+        val loveSpots = loveSpotListService.search(listOrdering, listLocation, request)
+        return ResponseEntity.ok(loveSpots.map { LoveSpotResponse.of(it) })
+    }
+
+    @PostMapping("/search")
+    suspend fun search(
+        @RequestParam listOrdering: ListOrderingRequest,
+        @RequestParam listLocation: ListLocationRequest,
+        @RequestBody request: LoveSpotSearchRequest
+    ): ResponseEntity<List<LoveSpotResponse>> {
+        val loveSpots = loveSpotListService.search(listOrdering, listLocation, request)
         return ResponseEntity.ok(loveSpots.map { LoveSpotResponse.of(it) })
     }
 

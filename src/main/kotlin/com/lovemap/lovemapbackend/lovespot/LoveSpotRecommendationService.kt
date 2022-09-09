@@ -1,18 +1,18 @@
 package com.lovemap.lovemapbackend.lovespot
 
-import com.lovemap.lovemapbackend.lovespot.list.ListLocationRequest.COUNTRY
-import com.lovemap.lovemapbackend.lovespot.list.ListOrderingRequest.*
-import com.lovemap.lovemapbackend.lovespot.list.LoveSpotAdvancedListRequest
-import com.lovemap.lovemapbackend.lovespot.list.LoveSpotListService
+import com.lovemap.lovemapbackend.lovespot.query.ListLocationRequest.COUNTRY
+import com.lovemap.lovemapbackend.lovespot.query.ListOrderingRequest.*
+import com.lovemap.lovemapbackend.lovespot.query.LoveSpotSearchRequest
+import com.lovemap.lovemapbackend.lovespot.query.LoveSpotQueryService
 import org.springframework.stereotype.Service
 
 @Service
 class LoveSpotRecommendationService(
-    private val loveSpotListService: LoveSpotListService
+    private val loveSpotListService: LoveSpotQueryService
 ) {
 
     suspend fun getRecommendations(request: RecommendationsRequest): RecommendationsResponse {
-        val listRequest = LoveSpotAdvancedListRequest(
+        val listRequest = LoveSpotSearchRequest(
             limit = 2,
             latitude = request.latitude,
             longitude = request.longitude,
@@ -28,29 +28,29 @@ class LoveSpotRecommendationService(
         )
     }
 
-    private suspend fun getTopRatedSpots(listRequest: LoveSpotAdvancedListRequest) =
-        loveSpotListService.advancedList(TOP_RATED, COUNTRY, listRequest)
+    private suspend fun getTopRatedSpots(listRequest: LoveSpotSearchRequest) =
+        loveSpotListService.search(TOP_RATED, COUNTRY, listRequest)
             .map { LoveSpotResponse.of(it) }
 
     private suspend fun getClosestSpots(
         request: RecommendationsRequest,
-        listRequest: LoveSpotAdvancedListRequest
+        listRequest: LoveSpotSearchRequest
     ) = if (request.latitude != null && request.longitude != null) {
-        loveSpotListService.advancedList(CLOSEST, COUNTRY, listRequest).map { LoveSpotResponse.of(it) }
+        loveSpotListService.search(CLOSEST, COUNTRY, listRequest).map { LoveSpotResponse.of(it) }
     } else {
         emptyList()
     }
 
-    private suspend fun getRecentlyActiveSpots(listRequest: LoveSpotAdvancedListRequest) =
-        loveSpotListService.advancedList(RECENTLY_ACTIVE, COUNTRY, listRequest)
+    private suspend fun getRecentlyActiveSpots(listRequest: LoveSpotSearchRequest) =
+        loveSpotListService.search(RECENTLY_ACTIVE, COUNTRY, listRequest)
             .map { LoveSpotResponse.of(it) }
 
-    private suspend fun getPopularSpots(listRequest: LoveSpotAdvancedListRequest) =
-        loveSpotListService.advancedList(POPULAR, COUNTRY, listRequest)
+    private suspend fun getPopularSpots(listRequest: LoveSpotSearchRequest) =
+        loveSpotListService.search(POPULAR, COUNTRY, listRequest)
             .map { LoveSpotResponse.of(it) }
 
-    private suspend fun getNewestSpots(listRequest: LoveSpotAdvancedListRequest): List<LoveSpotResponse> {
-        return loveSpotListService.advancedList(NEWEST, COUNTRY, listRequest)
+    private suspend fun getNewestSpots(listRequest: LoveSpotSearchRequest): List<LoveSpotResponse> {
+        return loveSpotListService.search(NEWEST, COUNTRY, listRequest)
             .map { LoveSpotResponse.of(it) }
     }
 }

@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.lovespot.list
+package com.lovemap.lovemapbackend.lovespot.query
 
 import com.javadocmd.simplelatlng.LatLng
 import com.javadocmd.simplelatlng.LatLngTool

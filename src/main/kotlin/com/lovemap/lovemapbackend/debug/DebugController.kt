@@ -3,14 +3,13 @@ package com.lovemap.lovemapbackend.debug
 import com.lovemap.lovemapbackend.geolocation.CachedGeoLocationProvider
 import com.lovemap.lovemapbackend.geolocation.Cities
 import com.lovemap.lovemapbackend.geolocation.Countries
-import com.lovemap.lovemapbackend.geolocation.GeoLocationService
 import com.lovemap.lovemapbackend.lovespot.CreateLoveSpotRequest
 import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse
 import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse.Availability.ALL_DAY
 import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse.Availability.NIGHT_ONLY
 import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse.Type.PUBLIC_SPACE
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
-import com.lovemap.lovemapbackend.lovespot.list.*
+import com.lovemap.lovemapbackend.lovespot.query.*
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import org.springframework.context.annotation.Profile
@@ -18,7 +17,7 @@ import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.util.UUID
+import java.util.*
 import kotlin.math.floor
 import kotlin.random.Random
 
@@ -26,7 +25,7 @@ import kotlin.random.Random
 @RestController
 @RequestMapping("/debug")
 class DebugController(
-    private val loveSpotListService: LoveSpotListService,
+    private val loveSpotListService: LoveSpotQueryService,
     private val loveSpotService: LoveSpotService,
     private val cachedGeoLocationProvider: CachedGeoLocationProvider,
     private val environment: Environment,
@@ -35,9 +34,9 @@ class DebugController(
     suspend fun advancedSearch(
         @RequestParam(name = "searchType", required = true) listOrdering: ListOrderingRequest,
         @RequestParam(name = "searchLocation", required = true) listLocation: ListLocationRequest,
-        @RequestBody request: LoveSpotAdvancedListRequest
+        @RequestBody request: LoveSpotSearchRequest
     ): ResponseEntity<List<LoveSpotResponse>> {
-        val loveSpots = loveSpotListService.advancedList(listOrdering, listLocation, request)
+        val loveSpots = loveSpotListService.search(listOrdering, listLocation, request)
         return ResponseEntity.ok(loveSpots.map { LoveSpotResponse.of(it) })
     }
 
@@ -53,15 +52,19 @@ class DebugController(
 
     @PostMapping("/createSpots")
     suspend fun createSpots(@RequestParam amount: Int): ResponseEntity<List<LoveSpotResponse>> {
-        // longitude: 16 - 22
-        // latitude: 45 - 48
+//        val longFrom = 16.0
+//        val longTo = 22.0
+//        val latFrom = 45.0
+//        val latTo = 48.0
+        val longFrom = -180.0
+        val longTo = 180.0
+        val latFrom = -90.0
+        val latTo = 90.0
         if (environment.activeProfiles.contains("dev")) {
-            val random = Random(System.currentTimeMillis())
             for (i in 0 until amount) {
-//                val longitude = random.nextDouble(18.745751, 18.788238)
-//                val latitude = random.nextDouble(47.250339, 47.3)
-                val longitude = random.nextDouble(-180.0, 180.0)
-                val latitude = random.nextDouble(-90.0, 90.0)
+                val random = Random(System.currentTimeMillis())
+                val longitude = random.nextDouble(longFrom, longTo)
+                val latitude = random.nextDouble(latFrom, latTo)
                 val name = UUID.randomUUID().toString()
                 loveSpotService.create(
                     CreateLoveSpotRequest(
@@ -78,8 +81,9 @@ class DebugController(
                         PUBLIC_SPACE
                     )
                 )
+
             }
-            val loveSpotFlow = loveSpotListService.list(LoveSpotListRequest(45.0, 16.0, 48.0, 22.0, 100))
+            val loveSpotFlow = loveSpotListService.list(LoveSpotListRequest(latFrom, longFrom, latTo, longTo, 100))
             return ResponseEntity.ok(loveSpotFlow.map { LoveSpotResponse.of(it) }.toList())
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build()

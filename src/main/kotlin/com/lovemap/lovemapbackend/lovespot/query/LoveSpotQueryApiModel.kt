@@ -1,8 +1,9 @@
-package com.lovemap.lovemapbackend.lovespot.list
+package com.lovemap.lovemapbackend.lovespot.query
 
 import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse
 import com.lovemap.lovemapbackend.utils.INVALID_DISTANCE_IN_METERS
-import com.lovemap.lovemapbackend.utils.INVALID_LIMIT
+import com.lovemap.lovemapbackend.utils.INVALID_LIST_LIMIT
+import com.lovemap.lovemapbackend.utils.INVALID_SEARCH_LIMIT
 import org.hibernate.validator.constraints.Range
 import javax.validation.constraints.NotNull
 
@@ -11,12 +12,14 @@ data class LoveSpotListRequest(
     val longFrom: Double,
     val latTo: Double,
     val longTo: Double,
+    @field:NotNull
+    @field:Range(min = 0, max = MAX_LIMIT_LIST.toLong(), message = INVALID_LIST_LIMIT)
     val limit: Int
 )
 
-data class LoveSpotAdvancedListRequest(
+data class LoveSpotSearchRequest(
     @field:NotNull
-    @field:Range(min = 0, max = MAX_LIMIT.toLong(), message = INVALID_LIMIT)
+    @field:Range(min = 0, max = MAX_LIMIT_SEARCH.toLong(), message = INVALID_SEARCH_LIMIT)
     val limit: Int,
     val latitude: Double? = null,
     val longitude: Double? = null,

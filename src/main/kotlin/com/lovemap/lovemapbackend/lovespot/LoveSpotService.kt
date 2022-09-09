@@ -3,24 +3,20 @@ package com.lovemap.lovemapbackend.lovespot
 import com.javadocmd.simplelatlng.LatLng
 import com.javadocmd.simplelatlng.LatLngTool
 import com.javadocmd.simplelatlng.util.LengthUnit
+import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.geolocation.GeoLocationService
-import com.lovemap.lovemapbackend.love.Love
 import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.report.LoveSpotReportRequest
-import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.sql.Timestamp
 
 private const val TWELVE_METERS_IN_COORDINATES = 0.0001
 private const val MINIMUM_DISTANCE_IN_METERS = 20.0
@@ -47,7 +43,7 @@ class LoveSpotService(
             ))
 
         if (loveSpot.geoLocationId == null) {
-            CoroutineScope(Dispatchers.Default).async {
+            CoroutineScope(Dispatchers.IO).async {
                 setGeoLocation(loveSpot)
             }
         }
@@ -91,7 +87,9 @@ class LoveSpotService(
         savedSpot: LoveSpot,
         loveSpot: LoveSpot
     ) {
-        CoroutineScope(Dispatchers.Default).async {
+        logger.info { "Entering async context" }
+        CoroutineScope(Dispatchers.IO).async {
+            logger.info { "Executing async tasks" }
             loverPointService.addPointsForSpotAdded(savedSpot)
             setGeoLocation(loveSpot)
         }

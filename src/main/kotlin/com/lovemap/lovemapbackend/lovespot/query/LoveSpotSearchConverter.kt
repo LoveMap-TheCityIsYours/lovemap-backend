@@ -1,8 +1,8 @@
-package com.lovemap.lovemapbackend.lovespot.list
+package com.lovemap.lovemapbackend.lovespot.query
 
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse
-import com.lovemap.lovemapbackend.lovespot.list.ListLocationRequest.*
+import com.lovemap.lovemapbackend.lovespot.query.ListLocationRequest.*
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import com.lovemap.lovemapbackend.utils.ValidatorService
@@ -10,22 +10,23 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import kotlin.math.max
 
-const val MAX_LIMIT: Int = 100
+const val MAX_LIMIT_LIST: Int = 1000
+const val MAX_LIMIT_SEARCH: Int = 100
 
 @Service
-class LoveSpotListConverter(
+class LoveSpotSearchConverter(
     private val validatorService: ValidatorService
 ) {
     fun validateAndConvertRequest(
         listOrdering: ListOrderingRequest,
         listLocation: ListLocationRequest,
-        request: LoveSpotAdvancedListRequest
-    ): LoveSpotAdvancedListDto {
+        request: LoveSpotSearchRequest
+    ): LoveSpotSearchDto {
         validatorService.validate(request)
         validateOrdering(listOrdering, request)
         validateLocation(listLocation, request)
-        return LoveSpotAdvancedListDto(
-            limit = max(request.limit, MAX_LIMIT),
+        return LoveSpotSearchDto(
+            limit = max(request.limit, MAX_LIMIT_SEARCH),
             typeFilter = convertTypeFilter(request.typeFilter),
             listOrdering = listOrdering.toDto(),
             listLocation = listLocation.toDto(),
@@ -38,7 +39,7 @@ class LoveSpotListConverter(
 
     private fun validateOrdering(
         listOrdering: ListOrderingRequest,
-        request: LoveSpotAdvancedListRequest
+        request: LoveSpotSearchRequest
     ) {
         if (listOrdering == ListOrderingRequest.CLOSEST) {
             if (request.latitude == null || request.longitude == null) {
@@ -54,7 +55,7 @@ class LoveSpotListConverter(
 
     private fun validateLocation(
         listLocation: ListLocationRequest,
-        request: LoveSpotAdvancedListRequest
+        request: LoveSpotSearchRequest
     ) {
         when (listLocation) {
             COUNTRY -> {

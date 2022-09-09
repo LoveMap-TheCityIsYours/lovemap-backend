@@ -1,16 +1,16 @@
-package com.lovemap.lovemapbackend.lovespot.list.strategy.geolocation
+package com.lovemap.lovemapbackend.lovespot.query.strategy.geolocation
 
 import com.javadocmd.simplelatlng.LatLng
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotRepository
-import com.lovemap.lovemapbackend.lovespot.list.ListLocationType
-import com.lovemap.lovemapbackend.lovespot.list.ListLocationType.CITY
-import com.lovemap.lovemapbackend.lovespot.list.ListLocationType.COUNTRY
-import com.lovemap.lovemapbackend.lovespot.list.ListOrdering
-import com.lovemap.lovemapbackend.lovespot.list.ListOrdering.CLOSEST
-import com.lovemap.lovemapbackend.lovespot.list.LoveSpotAdvancedListDto
-import com.lovemap.lovemapbackend.lovespot.list.LoveSpotDistanceSorter
-import com.lovemap.lovemapbackend.lovespot.list.strategy.LoveSpotListStrategy
+import com.lovemap.lovemapbackend.lovespot.query.ListLocationType
+import com.lovemap.lovemapbackend.lovespot.query.ListLocationType.CITY
+import com.lovemap.lovemapbackend.lovespot.query.ListLocationType.COUNTRY
+import com.lovemap.lovemapbackend.lovespot.query.ListOrdering
+import com.lovemap.lovemapbackend.lovespot.query.ListOrdering.CLOSEST
+import com.lovemap.lovemapbackend.lovespot.query.LoveSpotSearchDto
+import com.lovemap.lovemapbackend.lovespot.query.LoveSpotDistanceSorter
+import com.lovemap.lovemapbackend.lovespot.query.strategy.LoveSpotSearchStrategy
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.flow.toList
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component
 class ClosestInLocationStrategy(
     private val sorter: LoveSpotDistanceSorter,
     private val repository: LoveSpotRepository,
-) : LoveSpotListStrategy {
+) : LoveSpotSearchStrategy {
 
     override fun getSupportedConditions(): Set<Pair<ListLocationType, ListOrdering>> {
         return setOf(
@@ -30,7 +30,7 @@ class ClosestInLocationStrategy(
         )
     }
 
-    override suspend fun listSpots(listDto: LoveSpotAdvancedListDto): List<LoveSpot> {
+    override suspend fun listSpots(listDto: LoveSpotSearchDto): List<LoveSpot> {
         val loveSpotFlow = when (listDto.listLocation) {
             ListLocationType.COORDINATE -> throw LoveMapException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
