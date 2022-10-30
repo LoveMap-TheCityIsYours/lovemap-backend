@@ -1,15 +1,16 @@
 package com.lovemap.lovemapbackend.lovespot.review
 
+import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.love.Love
 import com.lovemap.lovemapbackend.love.LoveService
 import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
-import com.lovemap.lovemapbackend.lovespot.LoveSpotService
-import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
+import com.lovemap.lovemapbackend.lovespot.LoveSpotStatisticsService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.toList
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional
 class LoveSpotReviewService(
     private val authorizationService: AuthorizationService,
     private val loveService: LoveService,
-    private val loveSpotService: LoveSpotService,
+    private val loveSpotStatService: LoveSpotStatisticsService,
     private val loverPointService: LoverPointService,
     private val repository: LoveSpotReviewRepository
 ) {
@@ -47,12 +48,13 @@ class LoveSpotReviewService(
         spotReview: LoveSpotReview,
         request: LoveSpotReviewRequest
     ): LoveSpot {
-        val loveSpot = updateAveragesForChangedReview(spotReview, request)
-        loverPointService.updatePointsForReview(spotReview, request, loveSpot)
         spotReview.reviewText = request.reviewText.trim()
         spotReview.reviewStars = request.reviewStars
         spotReview.riskLevel = request.riskLevel
         repository.save(spotReview)
+        val reviews = repository.findAllByLoveSpotIdIn(listOf(request.loveSpotId)).toList()
+        val loveSpot = loveSpotStatService.recalculateLoveSpotReviews(request.loveSpotId, reviews)
+        loverPointService.updatePointsForReviewUpdate(spotReview, request, loveSpot)
         return loveSpot
     }
 
@@ -67,40 +69,10 @@ class LoveSpotReviewService(
                 riskLevel = request.riskLevel,
             )
         )
-        val loveSpot = updateAveragesForNewReview(request.loveSpotId, request)
+        val reviews = repository.findAllByLoveSpotIdIn(listOf(request.loveSpotId)).toList()
+        val loveSpot = loveSpotStatService.recalculateLoveSpotReviews(request.loveSpotId, reviews)
         loverPointService.addPointsForReview(review, loveSpot)
         return loveSpot
-    }
-
-    suspend fun updateAveragesForNewReview(spotId: Long, request: LoveSpotReviewRequest): LoveSpot {
-        val loveSpot = loveSpotService.getById(spotId)
-        if (loveSpot.averageRating == null) {
-            loveSpot.averageRating = request.reviewStars.toDouble()
-            loveSpot.averageDanger = request.riskLevel.toDouble()
-            loveSpot.numberOfRatings = 1
-        } else {
-            var averageRatingWeight = loveSpot.averageRating!! * loveSpot.numberOfRatings
-            var averageDangerWeight = loveSpot.averageDanger!! * loveSpot.numberOfRatings
-            loveSpot.numberOfRatings++
-
-            averageRatingWeight += request.reviewStars
-            loveSpot.averageRating = averageRatingWeight / loveSpot.numberOfRatings
-
-            averageDangerWeight += request.riskLevel
-            loveSpot.averageDanger = averageDangerWeight / loveSpot.numberOfRatings
-        }
-        return loveSpotService.save(loveSpot)
-    }
-
-    suspend fun updateAveragesForChangedReview(previousReview: LoveSpotReview, request: LoveSpotReviewRequest): LoveSpot {
-        val loveSpot = loveSpotService.getById(previousReview.loveSpotId)
-        var averageRatingWeight = loveSpot.averageRating!! * loveSpot.numberOfRatings
-        var averageDangerWeight = loveSpot.averageDanger!! * loveSpot.numberOfRatings
-        averageRatingWeight = averageRatingWeight - previousReview.reviewStars + request.reviewStars
-        averageDangerWeight = averageDangerWeight - previousReview.riskLevel + request.riskLevel
-        loveSpot.averageRating = averageRatingWeight / loveSpot.numberOfRatings
-        loveSpot.averageDanger = averageDangerWeight / loveSpot.numberOfRatings
-        return loveSpotService.save(loveSpot)
     }
 
     private suspend fun validateReview(request: LoveSpotReviewRequest) {
@@ -124,28 +96,22 @@ class LoveSpotReviewService(
         }
     }
 
-    suspend fun deleteReviewsOfSpot(loveSpotId: Long) {
-        repository.deleteByLoveSpotId(loveSpotId)
+    suspend fun deleteReviewsByLove(love: Love) {
+        deleteReviewByLoverAndLove(love.loveSpotId, love.loverId, love.id)
+        deleteReviewByLoverAndLove(love.loveSpotId, love.loverPartnerId, love.id)
     }
 
-    suspend fun deleteReviewsByLove(love: Love) {
-        val loveSpot = loveSpotService.getById(love.loveSpotId)
-        val review = repository.findByReviewerIdAndLoveId(love.loverId, love.id)
-        if (review != null) {
-            repository.delete(review)
-            loveSpot.numberOfRatings--
-        }
-        love.loverPartnerId?.let {
-            val partnerReview = repository.findByReviewerIdAndLoveId(it, love.id)
-            if (partnerReview != null) {
-                repository.delete(partnerReview)
-                loveSpot.numberOfRatings--
+    suspend fun deleteReviewByLoverAndLove(loveSpotId: Long, loverId: Long?, loveId: Long) {
+        loverId?.let {
+            val review = repository.findByReviewerIdAndLoveId(loverId, loveId)
+            if (review != null) {
+                repository.delete(review)
+                val reviews = repository.findAllByLoveSpotIdIn(listOf(loveSpotId)).toList()
+                val loveSpot = loveSpotStatService.recalculateLoveSpotReviews(loveSpotId, reviews)
+                loverPointService.subtractPointsForReviewDeleted(review, loveSpot)
             }
         }
-        if (loveSpot.numberOfRatings == 0) {
-            loveSpot.averageRating = null
-            loveSpot.averageDanger = null
-        }
-        loveSpotService.save(loveSpot)
     }
+
+
 }

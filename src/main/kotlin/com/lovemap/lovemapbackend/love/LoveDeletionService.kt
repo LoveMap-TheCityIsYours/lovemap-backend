@@ -1,10 +1,10 @@
 package com.lovemap.lovemapbackend.love
 
-import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewService
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotStatisticsService
+import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -34,8 +34,7 @@ class LoveDeletionService(
     suspend fun deleteAllLovesAtSpot(loveSpot: LoveSpot) {
         val loves = loveService.findLovesByLoveSpotId(loveSpot.id)
         loves.forEach { love ->
-            loverPointService.subtractPointsForLovemakingDeleted(love)
+            delete(love.id)
         }
-        loveService.deleteLovesBySpot(loveSpot)
     }
 }

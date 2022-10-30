@@ -46,7 +46,7 @@ class LoverPointService(
         }
     }
 
-    suspend fun updatePointsForReview(prevReview: LoveSpotReview, newRequest: LoveSpotReviewRequest, loveSpot: LoveSpot): Lover {
+    suspend fun updatePointsForReviewUpdate(prevReview: LoveSpotReview, newRequest: LoveSpotReviewRequest, loveSpot: LoveSpot): Lover {
         val lover = loverService.unAuthorizedGetById(prevReview.reviewerId)
         updatePointsForReviewSubmitted(prevReview, newRequest, lover)
         updatePointsForReviewReceived(loveSpot, prevReview, newRequest)
@@ -98,6 +98,32 @@ class LoverPointService(
             }
         }
         loverService.save(spotAdder)
+    }
+
+    suspend fun subtractPointsForReviewDeleted(deletedReview: LoveSpotReview, loveSpot: LoveSpot) {
+        val lover = loverService.unAuthorizedGetById(deletedReview.reviewerId)
+        subtractPointsForSubmittedReviewDeleted(deletedReview, lover)
+        subtractPointsForReceivedReviewDeleted(loveSpot, deletedReview)
+    }
+
+    private suspend fun subtractPointsForSubmittedReviewDeleted(deletedReview: LoveSpotReview, lover: Lover) {
+        if (isReviewMeaningful(deletedReview.reviewText)) {
+            lover.points -= points.reviewSubmitted
+            lover.reviewsSubmitted -= 1
+        }
+        loverService.save(lover)
+    }
+
+    private suspend fun subtractPointsForReceivedReviewDeleted(loveSpot: LoveSpot, deletedReview: LoveSpotReview) {
+        if (deletedReview.reviewStars >= 4) {
+            val spotAdder = loverService.unAuthorizedGetById(loveSpot.addedBy)
+            spotAdder.points -= if (deletedReview.reviewStars == 4) {
+                points.reviewReceived4Stars
+            } else {
+                points.reviewReceived5Stars
+            }
+            loverService.save(spotAdder)
+        }
     }
 
     suspend fun addPointsForReport(report: LoveSpotReport, loveSpot: LoveSpot): Lover {

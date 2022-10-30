@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional
 private const val TWELVE_METERS_IN_COORDINATES = 0.0001
 private const val MINIMUM_DISTANCE_IN_METERS = 20.0
 
+@Suppress("DeferredResultUnused")
 @Service
 @Transactional
 class LoveSpotService(

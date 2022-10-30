@@ -1,6 +1,8 @@
 package com.lovemap.lovemapbackend.lovespot
 
 import com.lovemap.lovemapbackend.love.Love
+import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
+import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewRequest
 import org.springframework.stereotype.Service
 
 @Service
@@ -76,6 +78,19 @@ class LoveSpotStatisticsService(
         val loveSpot = loveSpotService.getById(latestLove.loveSpotId)
         setLastLoveAt(loveSpot, latestLove)
         setLastActiveAt(loveSpot, latestLove)
+        return loveSpotService.save(loveSpot)
+    }
+
+    suspend fun recalculateLoveSpotReviews(loveSpotId: Long, reviews: List<LoveSpotReview>): LoveSpot {
+        val loveSpot = loveSpotService.getById(loveSpotId)
+        if (reviews.isNotEmpty()) {
+            loveSpot.averageRating = reviews.sumOf { it.reviewStars }.toDouble() / reviews.size
+            loveSpot.averageDanger = reviews.sumOf { it.riskLevel }.toDouble() / reviews.size
+        } else {
+            loveSpot.averageRating = null
+            loveSpot.averageDanger = null
+        }
+        loveSpot.numberOfRatings = reviews.size
         return loveSpotService.save(loveSpot)
     }
 }
