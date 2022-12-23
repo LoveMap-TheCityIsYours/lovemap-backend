@@ -13,7 +13,7 @@ class LoveSpotPhotoController(
     @PostMapping("{loveSpotId}/photos")
     suspend fun uploadToSpot(
         @PathVariable loveSpotId: Long,
-        @RequestPart("files") filePartFlux: Flux<FilePart>
+        @RequestPart("photos") filePartFlux: Flux<FilePart>
     ) {
         loveSpotPhotoService.uploadToSpot(loveSpotId, filePartFlux.asFlow())
     }
@@ -22,8 +22,19 @@ class LoveSpotPhotoController(
     suspend fun uploadToSpotReview(
         @PathVariable loveSpotId: Long,
         @PathVariable reviewId: Long,
-        @RequestPart("files") filePartFlux: Flux<FilePart>
+        @RequestPart("photos") filePartFlux: Flux<FilePart>
     ) {
         loveSpotPhotoService.uploadToReview(loveSpotId, reviewId, filePartFlux.asFlow())
+    }
+
+    @GetMapping("{loveSpotId}/photos")
+    suspend fun getPhotosForSpot(@PathVariable loveSpotId: Long): List<LoveSpotPhotoResponse> {
+        return loveSpotPhotoService.getPhotosForSpot(loveSpotId)
+    }
+
+    @GetMapping("{loveSpotId}/reviews/{reviewId}/photos")
+    suspend fun getPhotosForReview(@PathVariable loveSpotId: Long,
+                                   @PathVariable reviewId: Long,): List<LoveSpotPhotoResponse> {
+        return loveSpotPhotoService.getPhotosForReview(loveSpotId, reviewId)
     }
 }

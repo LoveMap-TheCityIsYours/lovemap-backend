@@ -20,6 +20,7 @@ data class LoveSpotResponse(
     val averageDanger: Double?,
     val numberOfRatings: Int,
     val addedBy: Long,
+    val numberOfPhotos: Int,
     val type: Type = Type.PUBLIC_SPACE,
 ) {
     companion object {
@@ -34,6 +35,7 @@ data class LoveSpotResponse(
                 averageDanger = loveSpot.averageDanger,
                 numberOfRatings = loveSpot.numberOfRatings,
                 numberOfReports = loveSpot.numberOfReports,
+                numberOfPhotos = loveSpot.numberOfPhotos,
                 description = loveSpot.description,
                 customAvailability = loveSpot.readCustomAvailability(),
                 availability = Availability.of(loveSpot.availability),

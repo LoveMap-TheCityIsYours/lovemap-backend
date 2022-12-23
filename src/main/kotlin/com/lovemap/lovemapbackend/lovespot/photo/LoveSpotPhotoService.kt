@@ -92,4 +92,32 @@ class LoveSpotPhotoService(
             }
         }
     }
+
+    suspend fun getPhotosForSpot(loveSpotId: Long): List<LoveSpotPhotoResponse> {
+        return repository.findAllByLoveSpotId(loveSpotId)
+            .map {
+                LoveSpotPhotoResponse(
+                    loveSpotId = it.loveSpotId,
+                    reviewId = it.loveSpotReviewId,
+                    likes = it.likes,
+                    dislikes = it.dislikes,
+                    url = it.url
+                )
+            }
+            .toList()
+    }
+
+    suspend fun getPhotosForReview(loveSpotId: Long, reviewId: Long): List<LoveSpotPhotoResponse> {
+        return repository.findAllByLoveSpotIdAndLoveSpotReviewId(loveSpotId, reviewId)
+            .map {
+                LoveSpotPhotoResponse(
+                    loveSpotId = it.loveSpotId,
+                    reviewId = it.loveSpotReviewId,
+                    likes = it.likes,
+                    dislikes = it.dislikes,
+                    url = it.url
+                )
+            }
+            .toList()
+    }
 }
