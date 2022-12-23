@@ -74,6 +74,9 @@ data class LoveSpot(
 
     @Column("last_active_at")
     var lastActiveAt: Timestamp? = null,
+
+    @Column("number_of_photos")
+    var numberOfPhotos: Int = 0
 ) {
     enum class Availability {
         ALL_DAY, NIGHT_ONLY

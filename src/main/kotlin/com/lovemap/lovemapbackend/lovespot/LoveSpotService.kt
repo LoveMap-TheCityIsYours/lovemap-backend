@@ -7,13 +7,12 @@ import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.geolocation.GeoLocationService
 import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.report.LoveSpotReportRequest
+import com.lovemap.lovemapbackend.utils.AsyncTaskService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
-import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -21,16 +20,15 @@ import org.springframework.transaction.annotation.Transactional
 private const val TWELVE_METERS_IN_COORDINATES = 0.0001
 private const val MINIMUM_DISTANCE_IN_METERS = 20.0
 
-@Suppress("DeferredResultUnused")
 @Service
 @Transactional
 class LoveSpotService(
     private val authorizationService: AuthorizationService,
     private val loverPointService: LoverPointService,
     private val geoLocationService: GeoLocationService,
+    private val asyncTaskService: AsyncTaskService,
     private val repository: LoveSpotRepository
 ) {
-    private val logger = KotlinLogging.logger {}
 
     suspend fun getById(spotId: Long): LoveSpot {
         val loveSpot = (repository.findById(spotId)
@@ -44,11 +42,17 @@ class LoveSpotService(
             ))
 
         if (loveSpot.geoLocationId == null) {
-            CoroutineScope(Dispatchers.IO).async {
+            asyncTaskService.runAsync {
                 setGeoLocation(loveSpot)
             }
         }
 
+        return loveSpot
+    }
+
+    suspend fun authorizedGetById(spotId: Long): LoveSpot {
+        val loveSpot = getById(spotId)
+        authorizationService.checkAccessFor(loveSpot)
         return loveSpot
     }
 
@@ -66,7 +70,10 @@ class LoveSpotService(
         loveSpot.setCustomAvailability(request.customAvailability)
         validateSpotTooClose(request)
         val savedSpot = repository.save(loveSpot)
-        runAsyncCreateTasks(savedSpot, loveSpot)
+        asyncTaskService.runAsync {
+            loverPointService.addPointsForSpotAdded(savedSpot)
+            setGeoLocation(loveSpot)
+        }
         return savedSpot
     }
 
@@ -81,18 +88,6 @@ class LoveSpotService(
                             "Minimum distance is > ${MINIMUM_DISTANCE_IN_METERS}m."
                 )
             )
-        }
-    }
-
-    private suspend fun runAsyncCreateTasks(
-        savedSpot: LoveSpot,
-        loveSpot: LoveSpot
-    ) {
-        logger.info { "Entering async context" }
-        CoroutineScope(Dispatchers.IO).async {
-            logger.info { "Executing async tasks" }
-            loverPointService.addPointsForSpotAdded(savedSpot)
-            setGeoLocation(loveSpot)
         }
     }
 

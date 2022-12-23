@@ -1,6 +1,5 @@
 package com.lovemap.lovemapbackend.configuration
 
-import com.google.maps.GeoApiContext
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import org.flywaydb.core.Flyway
@@ -38,13 +37,6 @@ class AppConfiguration(
     @Bean
     fun validator(): Validator {
         return LocalValidatorFactoryBean()
-    }
-
-    @Bean
-    fun geoApiContext(): GeoApiContext {
-        return GeoApiContext.Builder()
-            .apiKey(googleApiKey)
-            .build()
     }
 
     @Bean

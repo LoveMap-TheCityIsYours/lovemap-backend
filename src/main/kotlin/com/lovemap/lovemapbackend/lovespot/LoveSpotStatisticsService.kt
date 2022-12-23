@@ -2,7 +2,6 @@ package com.lovemap.lovemapbackend.lovespot
 
 import com.lovemap.lovemapbackend.love.Love
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
-import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewRequest
 import org.springframework.stereotype.Service
 
 @Service
@@ -91,6 +90,12 @@ class LoveSpotStatisticsService(
             loveSpot.averageDanger = null
         }
         loveSpot.numberOfRatings = reviews.size
+        return loveSpotService.save(loveSpot)
+    }
+
+    suspend fun updatePhotoCounter(loveSpotId: Long, photoCount: Int): LoveSpot {
+        val loveSpot = loveSpotService.getById(loveSpotId)
+        loveSpot.numberOfPhotos = photoCount
         return loveSpotService.save(loveSpot)
     }
 }

@@ -26,4 +26,7 @@ data class LoveSpotReview(
 
     @Column("danger_level")
     var riskLevel: Int,
+
+    @Column("number_of_photos")
+    var numberOfPhotos: Int = 0
 )

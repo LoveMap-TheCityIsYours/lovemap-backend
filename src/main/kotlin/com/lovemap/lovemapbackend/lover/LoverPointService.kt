@@ -189,4 +189,18 @@ class LoverPointService(
 
     private fun isReviewMeaningful(reviewText: String) =
         reviewText.length > 10
+
+    suspend fun addPointsForPhotosAdded(loverId: Long, photoCount: Int): Lover {
+        val lover = loverService.unAuthorizedGetById(loverId)
+        lover.points += (points.photoUploaded * photoCount)
+        lover.photosUploaded += photoCount
+        return loverService.save(lover)
+    }
+
+    suspend fun subtractPointsForPhotosDeleted(loverId: Long, deletedPhotoCount: Int): Lover {
+        val lover = loverService.unAuthorizedGetById(loverId)
+        lover.points -= (points.photoUploaded * deletedPhotoCount)
+        lover.photosUploaded -= deletedPhotoCount
+        return loverService.save(lover)
+    }
 }

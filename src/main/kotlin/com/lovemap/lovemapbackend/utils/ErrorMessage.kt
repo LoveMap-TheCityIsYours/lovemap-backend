@@ -68,5 +68,7 @@ enum class ErrorCode {
     InvalidListLocationType,
     FacebookEmailOccupied,
     FacebookLoginFailed,
+    UnsupportedImageFormat,
+    ImageUploadFailed,
 
 }

@@ -33,6 +33,24 @@ class LoveSpotReviewService(
         return repository.findAllByReviewerId(reviewerId)
     }
 
+    suspend fun authorizedGetById(loveSpotId: Long, reviewId: Long): LoveSpotReview {
+        val review = (repository.findById(reviewId)
+            ?: throw LoveMapException(
+                HttpStatus.NOT_FOUND,
+                ErrorMessage(
+                    ErrorCode.NotFoundById,
+                    reviewId.toString(),
+                    "LoveSpotReview not found by ID '$reviewId'."
+                )
+            ))
+
+        if (review.loveSpotId != loveSpotId) {
+            throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.NotFoundById)
+        }
+        authorizationService.checkAccessFor(review.reviewerId)
+        return review
+    }
+
     suspend fun addOrUpdateReview(request: LoveSpotReviewRequest): LoveSpot {
         authorizationService.checkAccessFor(request.reviewerId)
         validateReview(request)
@@ -113,5 +131,10 @@ class LoveSpotReviewService(
         }
     }
 
-
+    suspend fun updatePhotoCounter(reviewId: Long, reviewPhotoCount: Int) {
+        repository.findById(reviewId)?.let {
+            it.numberOfPhotos = reviewPhotoCount
+            repository.save(it)
+        }
+    }
 }

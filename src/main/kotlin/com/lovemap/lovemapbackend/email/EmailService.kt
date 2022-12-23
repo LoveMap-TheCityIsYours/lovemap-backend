@@ -1,12 +1,11 @@
 package com.lovemap.lovemapbackend.email
 
 import com.lovemap.lovemapbackend.lover.Lover
-import com.lovemap.lovemapbackend.lover.LoverService
+import com.lovemap.lovemapbackend.utils.AsyncTaskService
 import com.mailjet.client.MailjetResponse
 import com.mailjet.client.easy.MJEasyClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.async
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
@@ -17,8 +16,7 @@ import org.springframework.stereotype.Service
 class EmailService(
     @Value("classpath:/emails/password-reset.html") private val pwResetTemplate: Resource,
     private val emailProperties: MailjetProperties,
-    private val loverService: LoverService,
-    private val blockingCoroutineDispatcher: ExecutorCoroutineDispatcher,
+    private val asyncTaskService: AsyncTaskService
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -30,7 +28,7 @@ class EmailService(
     }
 
     suspend fun sendPasswordResetEmail(lover: Lover, resetCode: String) {
-        CoroutineScope(Dispatchers.IO).async {
+        asyncTaskService.runBlockingAsync {
             try {
                 var template = pwResetTemplate.inputStream.bufferedReader().use { it.readText() }
                 template = template.replace("{username}", lover.userName)

@@ -56,6 +56,7 @@ class SecurityConfiguration(
             .pathMatchers("/relation/**").hasRole("USER")
             .pathMatchers("/partnership/**").hasRole("USER")
             .pathMatchers("/geolocations/**").hasRole("USER")
+            .pathMatchers("/photos/**").hasRole("USER")
 
             .pathMatchers("/admin/**").hasRole("ADMIN")
             .anyExchange().authenticated()

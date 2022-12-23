@@ -31,11 +31,12 @@ dependencies {
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.apache.commons:commons-lang3:3.12.0")
-    implementation("io.github.microutils:kotlin-logging:2.1.23")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3")
-    implementation("com.javadocmd:simplelatlng:1.3.1")
-    implementation("com.google.maps:google-maps-services:2.1.0")
-    implementation("com.mailjet:mailjet-client:5.2.0")
+    implementation("io.github.microutils:kotlin-logging:3.0.4")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.0")
+    implementation("com.javadocmd:simplelatlng:1.4.0")
+    implementation("com.google.maps:google-maps-services:2.1.2")
+    implementation("com.google.cloud:google-cloud-storage:2.16.0")
+    implementation("com.mailjet:mailjet-client:5.2.1")
 
     implementation("org.bouncycastle:bcprov-jdk15on:1.70")
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
@@ -46,12 +47,12 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("io.r2dbc:r2dbc-postgresql")
 
-    implementation("org.springdoc:springdoc-openapi-webflux-core:1.6.9")
-    implementation("org.springdoc:springdoc-openapi-webflux-ui:1.6.9")
+    implementation("org.springdoc:springdoc-openapi-webflux-core:1.6.14")
+    implementation("org.springdoc:springdoc-openapi-webflux-ui:1.6.14")
 
     testImplementation(kotlin("test"))
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
-    testImplementation("io.mockk:mockk:1.12.5")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+    testImplementation("io.mockk:mockk:1.13.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
