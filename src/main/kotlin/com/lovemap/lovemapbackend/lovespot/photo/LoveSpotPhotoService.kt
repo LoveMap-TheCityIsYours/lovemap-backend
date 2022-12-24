@@ -3,12 +3,15 @@ package com.lovemap.lovemapbackend.lovespot.photo
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.LoverPointService
+import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.lovespot.LoveSpotStatisticsService
+import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewService
 import com.lovemap.lovemapbackend.utils.AsyncTaskService
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import mu.KotlinLogging
@@ -119,5 +122,21 @@ class LoveSpotPhotoService(
                 )
             }
             .toList()
+    }
+
+    suspend fun detachPhotosFromReviews(reviews: List<LoveSpotReview>) {
+        reviews.forEach { review ->
+            repository.findAllByLoveSpotIdAndLoveSpotReviewId(review.loveSpotId, review.id)
+                .collect { photo -> repository.save(photo.copy(loveSpotReviewId = null)) }
+        }
+    }
+
+    suspend fun deletePhotosForLoveSpot(loveSpot: LoveSpot) {
+        repository.findAllByLoveSpotId(loveSpot.id).collect {
+            repository.delete(it)
+            asyncTaskService.runAsync {
+                photoStore.delete(it)
+            }
+        }
     }
 }

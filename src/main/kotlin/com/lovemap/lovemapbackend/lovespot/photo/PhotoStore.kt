@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component
 
 interface PhotoStore {
     fun persist(convertedPhoto: PhotoDto): String
+    fun delete(it: LoveSpotPhoto)
 }
 
 @Component
@@ -57,6 +58,10 @@ class GooglePhotoStore(
             logger.error("Failed to persist photo '{}'.", convertedPhoto.fileName, e)
             throw LoveMapException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.ImageUploadFailed)
         }
+    }
+
+    override fun delete(it: LoveSpotPhoto) {
+        // TODO: finish
     }
 
 }

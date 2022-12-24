@@ -119,6 +119,12 @@ class LoveSpotReviewService(
         deleteReviewByLoverAndLove(love.loveSpotId, love.loverPartnerId, love.id)
     }
 
+    suspend fun getReviewsByLove(love: Love): List<LoveSpotReview> {
+        val review1 = repository.findByReviewerIdAndLoveId(love.loverId, love.id)
+        val review2 = love.loverPartnerId?.let { repository.findByReviewerIdAndLoveId(it, love.id) }
+        return listOfNotNull(review1, review2)
+    }
+
     suspend fun deleteReviewByLoverAndLove(loveSpotId: Long, loverId: Long?, loveId: Long) {
         loverId?.let {
             val review = repository.findByReviewerIdAndLoveId(loverId, loveId)

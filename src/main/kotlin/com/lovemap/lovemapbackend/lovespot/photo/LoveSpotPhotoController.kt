@@ -33,8 +33,10 @@ class LoveSpotPhotoController(
     }
 
     @GetMapping("{loveSpotId}/reviews/{reviewId}/photos")
-    suspend fun getPhotosForReview(@PathVariable loveSpotId: Long,
-                                   @PathVariable reviewId: Long,): List<LoveSpotPhotoResponse> {
+    suspend fun getPhotosForReview(
+        @PathVariable loveSpotId: Long,
+        @PathVariable reviewId: Long,
+    ): List<LoveSpotPhotoResponse> {
         return loveSpotPhotoService.getPhotosForReview(loveSpotId, reviewId)
     }
 }
