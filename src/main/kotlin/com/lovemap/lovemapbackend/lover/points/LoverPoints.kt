@@ -13,4 +13,5 @@ data class LoverPoints(
     val reportReceived: Int,
     val loveSpotAdded: Int,
     val loveMade: Int,
+    val photoUploaded: Int,
 )

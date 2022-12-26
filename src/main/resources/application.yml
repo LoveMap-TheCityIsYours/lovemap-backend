@@ -8,6 +8,8 @@ lovemap:
   signingKey: "overwrite this signing key in production"
   google:
     apiKey: "overwrite this apiKey key in production"
+    projectId: "overwrite this"
+    publicPhotosBucket: "overwrite this"
 
   facebook:
     appId: "overwrite this"
@@ -18,6 +20,9 @@ lovemap:
       secret: dummy
 
   lovespot:
+    photos:
+      supportedFormats: jpg, jpeg, heic, heif, png
+
     risks:
       levels: 3
       riskList:
@@ -40,6 +45,7 @@ lovemap:
       reportReceived: -2
       loveSpotAdded: 5
       loveMade: 1
+      photoUploaded: 5
 
     ranks:
       rankList:
