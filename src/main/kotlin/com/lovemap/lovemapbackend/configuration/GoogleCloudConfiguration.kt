@@ -8,13 +8,13 @@ import org.springframework.boot.context.properties.ConstructorBinding
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.util.ResourceUtils
-import java.io.FileInputStream
+import org.springframework.core.io.ResourceLoader
 
 @Configuration
 @EnableConfigurationProperties(GoogleConfigProperties::class)
 class GoogleCloudConfiguration(
-    private val googleConfigProperties: GoogleConfigProperties
+    private val googleConfigProperties: GoogleConfigProperties,
+    private val resourceLoader: ResourceLoader
 ) {
 
     @Bean
@@ -27,15 +27,15 @@ class GoogleCloudConfiguration(
 
     @Bean
     fun googleCredentials(): Credentials {
-        val file = ResourceUtils.getFile("classpath:bucket-writer-key.json")
-        return ServiceAccountCredentials.fromStream(FileInputStream(file))
+        val inputStream = resourceLoader.getResource("classpath:bucket-writer-key.json").inputStream
+        return ServiceAccountCredentials.fromStream(inputStream)
     }
 }
 
 @ConstructorBinding
 @ConfigurationProperties(prefix = "lovemap.google")
 data class GoogleConfigProperties(
-     val apiKey: String,
-     val projectId: String,
-     val publicPhotosBucket: String
+    val apiKey: String,
+    val projectId: String,
+    val publicPhotosBucket: String
 )
