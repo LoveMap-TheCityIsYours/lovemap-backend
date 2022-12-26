@@ -14,6 +14,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean
 import java.util.concurrent.Executors
 import javax.validation.Validator
 
+
 @Configuration
 @EnableConfigurationProperties(FlywayProperties::class)
 class AppConfiguration(

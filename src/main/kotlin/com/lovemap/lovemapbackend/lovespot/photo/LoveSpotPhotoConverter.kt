@@ -16,11 +16,18 @@ class LoveSpotPhotoConverter(
 ) {
     suspend fun toPhotoDto(filePart: FilePart): PhotoDto {
         val extension = filePart.filename().substringAfterLast(".").lowercase()
+        verifyEncoding(extension)
         return PhotoDto(
             fileName = UUID.randomUUID().toString() + ".$extension",
             extension = extension,
             byteArray = toByteArray(filePart)
         )
+    }
+
+    private fun verifyEncoding(extension: String) {
+        if (supportedFormats.none { it.equals(extension, true) }) {
+            throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.UnsupportedImageFormat)
+        }
     }
 
     private suspend fun toByteArray(filePart: FilePart): ByteArray {
@@ -30,10 +37,6 @@ class LoveSpotPhotoConverter(
     }
 
     fun convertEncoding(photoDto: PhotoDto): PhotoDto {
-        if (supportedFormats.none { it.equals(photoDto.extension, true) }) {
-            throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.UnsupportedImageFormat)
-        }
-
         return photoDto
     }
 }

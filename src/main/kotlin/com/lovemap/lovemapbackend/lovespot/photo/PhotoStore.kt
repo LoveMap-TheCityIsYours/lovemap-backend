@@ -48,8 +48,6 @@ class GooglePhotoStore(
                 Storage.BlobTargetOption.generationMatch()
             }
 
-        Thread.sleep(2000)
-
         return try {
             val blob = storage.create(blobInfo, convertedPhoto.byteArray, precondition)
             logger.info("Photo '{}' successfully persisted.", convertedPhoto.fileName)

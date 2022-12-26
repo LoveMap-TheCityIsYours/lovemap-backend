@@ -21,7 +21,7 @@ lovemap:
 
   lovespot:
     photos:
-      supportedFormats: jpg, jpeg
+      supportedFormats: jpg, jpeg, heic, heif, png
 
     risks:
       levels: 3
