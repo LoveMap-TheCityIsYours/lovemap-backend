@@ -2,10 +2,8 @@ package com.lovemap.lovemapbackend.lovespot.photo
 
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.lover.Lover
-import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
-import com.lovemap.lovemapbackend.lovespot.LoveSpotStatisticsService
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewService
 import com.lovemap.lovemapbackend.utils.AsyncTaskService
@@ -23,10 +21,9 @@ class LoveSpotPhotoService(
     private val converter: LoveSpotPhotoConverter,
     private val asyncTaskService: AsyncTaskService,
     private val authorizationService: AuthorizationService,
-    private val loveSpotStatisticsService: LoveSpotStatisticsService,
     private val loveSpotService: LoveSpotService,
     private val loveSpotReviewService: LoveSpotReviewService,
-    private val loverPointService: LoverPointService,
+    private val loveSpotPhotoStatsService: LoveSpotPhotoStatsService,
     private val repository: LoveSpotPhotoRepository,
     private val photoStore: PhotoStore
 ) {
@@ -37,7 +34,7 @@ class LoveSpotPhotoService(
         loveSpotService.authorizedGetById(loveSpotId)
         val photos: List<PhotoDto> = collectPhotoObjects(fileParts)
         val deferredList: List<Deferred<LoveSpotPhoto>> = persistAllAsync(photos, loveSpotId, null, caller)
-        awaitAllAndUpdateStats(deferredList, caller, loveSpotId, null)
+        loveSpotPhotoStatsService.awaitAllAndUpdateStats(deferredList, caller, loveSpotId, null)
     }
 
     suspend fun uploadToReview(loveSpotId: Long, reviewId: Long, fileParts: Flow<FilePart>) {
@@ -45,7 +42,7 @@ class LoveSpotPhotoService(
         loveSpotReviewService.authorizedGetById(loveSpotId, reviewId)
         val photos: List<PhotoDto> = collectPhotoObjects(fileParts)
         val deferredList: List<Deferred<LoveSpotPhoto>> = persistAllAsync(photos, loveSpotId, reviewId, caller)
-        awaitAllAndUpdateStats(deferredList, caller, loveSpotId, reviewId)
+        loveSpotPhotoStatsService.awaitAllAndUpdateStats(deferredList, caller, loveSpotId, reviewId)
     }
 
     private suspend fun collectPhotoObjects(fileParts: Flow<FilePart>): List<PhotoDto> {
@@ -75,25 +72,6 @@ class LoveSpotPhotoService(
             }
         }
         return deferredList
-    }
-
-    private suspend fun awaitAllAndUpdateStats(
-        deferredList: List<Deferred<LoveSpotPhoto>>,
-        caller: Lover,
-        loveSpotId: Long,
-        reviewId: Long?
-    ) {
-        asyncTaskService.runAsync {
-            deferredList.map { it.await() }
-            logger.info { "Updating statistics for newly added photos." }
-            val photoCount = repository.countByLoveSpotId(loveSpotId).toInt()
-            loveSpotStatisticsService.updatePhotoCounter(loveSpotId, photoCount)
-            loverPointService.addPointsForPhotosAdded(caller.id, photoCount)
-            reviewId?.let {
-                val reviewPhotoCount = repository.countByLoveSpotReviewId(reviewId).toInt()
-                loveSpotReviewService.updatePhotoCounter(reviewId, reviewPhotoCount)
-            }
-        }
     }
 
     suspend fun getPhotosForSpot(loveSpotId: Long): List<LoveSpotPhotoResponse> {

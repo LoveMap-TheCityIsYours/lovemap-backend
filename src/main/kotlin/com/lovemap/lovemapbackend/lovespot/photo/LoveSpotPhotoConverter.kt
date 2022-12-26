@@ -4,6 +4,7 @@ import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.env.Environment
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.HttpStatus
 import org.springframework.http.codec.multipart.FilePart
@@ -12,13 +13,15 @@ import java.util.*
 
 @Component
 class LoveSpotPhotoConverter(
-    @Value("\${lovemap.lovespot.photos.supportedFormats}") private val supportedFormats: Set<String>
+    @Value("\${lovemap.lovespot.photos.supportedFormats}") private val supportedFormats: Set<String>,
+    private val environment: Environment
 ) {
     suspend fun toPhotoDto(filePart: FilePart): PhotoDto {
         val extension = filePart.filename().substringAfterLast(".").lowercase()
+        val profile = environment.activeProfiles.firstOrNull() ?: "dev"
         verifyEncoding(extension)
         return PhotoDto(
-            fileName = UUID.randomUUID().toString() + ".$extension",
+            fileName = profile + "_" + UUID.randomUUID().toString() + ".$extension",
             extension = extension,
             byteArray = toByteArray(filePart)
         )
