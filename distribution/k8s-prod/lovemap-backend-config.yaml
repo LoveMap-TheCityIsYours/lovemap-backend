@@ -3,6 +3,10 @@ kind: BackendConfig
 metadata:
   name: lovemap-hc-config
 spec:
+  timeoutSec: 300
+  logging:
+    enable: true
+    sampleRate: 1
   healthCheck:
     checkIntervalSec: 15
     port: 8090
