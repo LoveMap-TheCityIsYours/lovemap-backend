@@ -39,4 +39,23 @@ class LoveSpotPhotoController(
     ): List<LoveSpotPhotoResponse> {
         return loveSpotPhotoService.getPhotosForReview(loveSpotId, reviewId)
     }
+
+    @DeleteMapping("{loveSpotId}/photos/{photoId}")
+    suspend fun deletePhoto(
+        @PathVariable loveSpotId: Long,
+        @PathVariable photoId: Long
+    ): List<LoveSpotPhotoResponse> {
+        return loveSpotPhotoService.deletePhoto(loveSpotId, photoId)
+    }
 }
+
+
+
+
+
+
+
+
+
+
+

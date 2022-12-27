@@ -7,12 +7,15 @@ import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewService
 import com.lovemap.lovemapbackend.utils.AsyncTaskService
+import com.lovemap.lovemapbackend.utils.ErrorCode
+import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import mu.KotlinLogging
+import org.springframework.http.HttpStatus
 import org.springframework.http.codec.multipart.FilePart
 import org.springframework.stereotype.Service
 
@@ -66,7 +69,8 @@ class LoveSpotPhotoService(
                         url = url,
                         loveSpotId = loveSpotId,
                         loveSpotReviewId = reviewId,
-                        uploadedBy = caller.id
+                        uploadedBy = caller.id,
+                        fileName = photoDto.fileName
                     )
                 )
             }
@@ -76,29 +80,13 @@ class LoveSpotPhotoService(
 
     suspend fun getPhotosForSpot(loveSpotId: Long): List<LoveSpotPhotoResponse> {
         return repository.findAllByLoveSpotId(loveSpotId)
-            .map {
-                LoveSpotPhotoResponse(
-                    loveSpotId = it.loveSpotId,
-                    reviewId = it.loveSpotReviewId,
-                    likes = it.likes,
-                    dislikes = it.dislikes,
-                    url = it.url
-                )
-            }
+            .map { LoveSpotPhotoResponse.of(it) }
             .toList()
     }
 
     suspend fun getPhotosForReview(loveSpotId: Long, reviewId: Long): List<LoveSpotPhotoResponse> {
         return repository.findAllByLoveSpotIdAndLoveSpotReviewId(loveSpotId, reviewId)
-            .map {
-                LoveSpotPhotoResponse(
-                    loveSpotId = it.loveSpotId,
-                    reviewId = it.loveSpotReviewId,
-                    likes = it.likes,
-                    dislikes = it.dislikes,
-                    url = it.url
-                )
-            }
+            .map { LoveSpotPhotoResponse.of(it) }
             .toList()
     }
 
@@ -115,6 +103,32 @@ class LoveSpotPhotoService(
             asyncTaskService.runAsync {
                 photoStore.delete(it)
             }
+        }
+    }
+
+    suspend fun deletePhoto(loveSpotId: Long, photoId: Long): List<LoveSpotPhotoResponse> {
+        return repository.findById(photoId)?.let { photo ->
+            authorizeDeletion(photo, loveSpotId)
+            repository.delete(photo)
+            asyncTaskService.runAsync {
+                photoStore.delete(photo)
+            }
+            getPhotosForSpot(loveSpotId)
+        } ?: throw LoveMapException(HttpStatus.NOT_FOUND, ErrorCode.PhotoNotFound)
+    }
+
+    private suspend fun authorizeDeletion(
+        photo: LoveSpotPhoto,
+        loveSpotId: Long
+    ) {
+        if (photo.loveSpotId != loveSpotId) {
+            throw LoveMapException(HttpStatus.NOT_FOUND, ErrorCode.PhotoNotFound)
+        }
+        if (photo.loveSpotReviewId != null) {
+            loveSpotReviewService.authorizedGetById(loveSpotId, photo.loveSpotReviewId!!)
+        } else {
+            val loveSpot = loveSpotService.getById(loveSpotId)
+            authorizationService.checkAccessFor(loveSpot)
         }
     }
 }

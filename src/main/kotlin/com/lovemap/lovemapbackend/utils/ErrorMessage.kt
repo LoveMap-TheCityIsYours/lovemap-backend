@@ -70,5 +70,7 @@ enum class ErrorCode {
     FacebookLoginFailed,
     UnsupportedImageFormat,
     ImageUploadFailed,
+    PhotoNotFound,
+
 
 }

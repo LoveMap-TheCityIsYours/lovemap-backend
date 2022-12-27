@@ -18,6 +18,9 @@ data class LoveSpotPhoto(
     @Column("uploaded_by")
     var uploadedBy: Long,
 
+    @Column("file_name")
+    var fileName: String,
+
     @Column("love_location_review_id")
     var loveSpotReviewId: Long? = null,
 
@@ -25,5 +28,5 @@ data class LoveSpotPhoto(
     var likes: Int = 0,
 
     @Column("dislikes")
-    var dislikes: Int = 0
+    var dislikes: Int = 0,
 )

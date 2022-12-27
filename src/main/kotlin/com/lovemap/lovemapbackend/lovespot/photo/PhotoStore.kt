@@ -25,7 +25,11 @@ class GooglePhotoStore(
     private val logger = KotlinLogging.logger {}
 
     override fun persist(convertedPhoto: PhotoDto): String {
-        logger.info("Persisting photo '{}' with size {}kB", convertedPhoto.fileName, convertedPhoto.byteArray.size / 1024)
+        logger.info(
+            "Persisting photo '{}' with size {}kB",
+            convertedPhoto.fileName,
+            convertedPhoto.byteArray.size / 1024
+        )
         val storage = StorageOptions.newBuilder()
             .setProjectId(googleConfigProperties.projectId)
             .setCredentials(googleCredentials)
@@ -58,8 +62,21 @@ class GooglePhotoStore(
         }
     }
 
-    override fun delete(it: LoveSpotPhoto) {
-        // TODO: finish
+    override fun delete(photo: LoveSpotPhoto) {
+        logger.info("Deleting photo '{}'", photo.fileName)
+        val storage = StorageOptions.newBuilder()
+            .setProjectId(googleConfigProperties.projectId)
+            .setCredentials(googleCredentials)
+            .build().service
+        val blobId = BlobId.of(googleConfigProperties.publicPhotosBucket, photo.fileName)
+
+        return try {
+            val result = storage.delete(blobId)
+            logger.info("Photo '{}' deleted with result: {}.", photo.fileName, result)
+        } catch (e: Exception) {
+            logger.error("Failed to delete photo '{}'.", photo.fileName, e)
+            throw LoveMapException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.ImageUploadFailed)
+        }
     }
 
 }
