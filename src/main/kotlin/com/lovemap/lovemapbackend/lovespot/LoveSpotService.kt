@@ -164,4 +164,10 @@ class LoveSpotService(
     suspend fun save(loveSpot: LoveSpot): LoveSpot {
         return repository.save(loveSpot)
     }
+
+    suspend fun decrementNumberOfPhotos(loveSpotId: Long) {
+        repository.findById(loveSpotId)?.let {
+            repository.save(it.copy(numberOfPhotos = it.numberOfPhotos - 1))
+        }
+    }
 }

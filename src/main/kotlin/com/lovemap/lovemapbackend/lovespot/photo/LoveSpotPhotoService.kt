@@ -18,6 +18,7 @@ import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.codec.multipart.FilePart
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class LoveSpotPhotoService(
@@ -106,10 +107,12 @@ class LoveSpotPhotoService(
         }
     }
 
+    @Transactional
     suspend fun deletePhoto(loveSpotId: Long, photoId: Long): List<LoveSpotPhotoResponse> {
         return repository.findById(photoId)?.let { photo ->
             authorizeDeletion(photo, loveSpotId)
             repository.delete(photo)
+            loveSpotService.decrementNumberOfPhotos(loveSpotId)
             asyncTaskService.runAsync {
                 photoStore.delete(photo)
             }
