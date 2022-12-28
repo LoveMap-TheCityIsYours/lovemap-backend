@@ -124,11 +124,13 @@ class LoveSpotPhotoService(
         if (photo.loveSpotId != loveSpotId) {
             throw LoveMapException(HttpStatus.NOT_FOUND, ErrorCode.PhotoNotFound)
         }
-        if (photo.loveSpotReviewId != null) {
-            loveSpotReviewService.authorizedGetById(loveSpotId, photo.loveSpotReviewId!!)
-        } else {
-            val loveSpot = loveSpotService.getById(loveSpotId)
-            authorizationService.checkAccessFor(loveSpot)
+        if (!authorizationService.isAdmin()) {
+            if (photo.loveSpotReviewId != null) {
+                loveSpotReviewService.authorizedGetById(loveSpotId, photo.loveSpotReviewId!!)
+            } else {
+                val loveSpot = loveSpotService.getById(loveSpotId)
+                authorizationService.checkAccessFor(loveSpot)
+            }
         }
     }
 }
