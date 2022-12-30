@@ -3,6 +3,7 @@ package com.lovemap.lovemapbackend.lovespot.photo
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
+import java.sql.Timestamp
 
 @Table("love_location_photo")
 data class LoveSpotPhoto(
@@ -17,6 +18,9 @@ data class LoveSpotPhoto(
 
     @Column("uploaded_by")
     var uploadedBy: Long,
+
+    @Column("uploaded_at")
+    var uploadedAt: Timestamp,
 
     @Column("file_name")
     var fileName: String,

@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.codec.multipart.FilePart
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.sql.Timestamp
+import java.time.Instant
 
 @Service
 class LoveSpotPhotoService(
@@ -61,6 +63,7 @@ class LoveSpotPhotoService(
         reviewId: Long?,
         caller: Lover
     ): List<Deferred<LoveSpotPhoto>> {
+        val uploadedAt = Timestamp.from(Instant.now())
         val deferredList: List<Deferred<LoveSpotPhoto>> = photos.map { photoDto ->
             asyncTaskService.runAsync {
                 val convertedPhoto = converter.convertEncoding(photoDto)
@@ -71,6 +74,7 @@ class LoveSpotPhotoService(
                         loveSpotId = loveSpotId,
                         loveSpotReviewId = reviewId,
                         uploadedBy = caller.id,
+                        uploadedAt = uploadedAt,
                         fileName = photoDto.fileName
                     )
                 )
