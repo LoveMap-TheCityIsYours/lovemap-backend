@@ -1,5 +1,7 @@
 package com.lovemap.lovemapbackend.lovespot.photo
 
+import com.lovemap.lovemapbackend.lovespot.photo.like.PhotoLikersDislikers
+import com.lovemap.lovemapbackend.lovespot.photo.like.PhotoLikersDislikersRepository
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.reactor.awaitSingle
@@ -14,8 +16,29 @@ import java.util.*
 @Component
 class LoveSpotPhotoConverter(
     @Value("\${lovemap.lovespot.photos.supportedFormats}") private val supportedFormats: Set<String>,
-    private val environment: Environment
+    private val environment: Environment,
+    private val photoLikersDislikersRepository: PhotoLikersDislikersRepository
 ) {
+    suspend fun toPhotoResponse(
+        loveSpotPhoto: LoveSpotPhoto,
+        photoLikersDislikers: PhotoLikersDislikers
+    ): LoveSpotPhotoResponse {
+        return LoveSpotPhotoResponse.of(
+            photo = loveSpotPhoto,
+            likers = photoLikersDislikers.getLikers(),
+            dislikers = photoLikersDislikers.getDislikers()
+        )
+    }
+
+    suspend fun toPhotoResponse(loveSpotPhoto: LoveSpotPhoto): LoveSpotPhotoResponse {
+        val photoLikersDislikers = photoLikersDislikersRepository.findByPhotoId(loveSpotPhoto.id)
+        return LoveSpotPhotoResponse.of(
+            photo = loveSpotPhoto,
+            likers = photoLikersDislikers?.getLikers() ?: emptySet(),
+            dislikers = photoLikersDislikers?.getDislikers() ?: emptySet()
+        )
+    }
+
     suspend fun toPhotoDto(filePart: FilePart): PhotoDto {
         val extension = filePart.filename().substringAfterLast(".").lowercase()
         val profile = environment.activeProfiles.firstOrNull() ?: "dev"

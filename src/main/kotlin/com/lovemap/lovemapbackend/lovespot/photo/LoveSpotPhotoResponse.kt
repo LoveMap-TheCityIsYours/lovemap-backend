@@ -9,11 +9,13 @@ data class LoveSpotPhotoResponse(
     val uploadedBy: Long,
     val uploadedAt: Instant,
     val likes: Int,
+    val likers: Set<Long>,
     val dislikes: Int,
+    val dislikers: Set<Long>,
     val url: String
 ) {
     companion object {
-        fun of(photo: LoveSpotPhoto): LoveSpotPhotoResponse {
+        fun of(photo: LoveSpotPhoto, likers: Set<Long>, dislikers: Set<Long>): LoveSpotPhotoResponse {
             return LoveSpotPhotoResponse(
                 id = photo.id,
                 loveSpotId = photo.loveSpotId,
@@ -21,7 +23,9 @@ data class LoveSpotPhotoResponse(
                 uploadedBy = photo.uploadedBy,
                 uploadedAt = photo.uploadedAt.toInstant(),
                 likes = photo.likes,
+                likers = likers,
                 dislikes = photo.dislikes,
+                dislikers = dislikers,
                 url = photo.url
             )
         }

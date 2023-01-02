@@ -35,6 +35,35 @@ class LoveSpotPhotoService(
 ) {
     private val logger = KotlinLogging.logger {}
 
+    suspend fun getPhoto(loveSpotId: Long, photoId: Long): LoveSpotPhoto {
+        return repository.findById(photoId) ?. let { photo ->
+            if (photo.loveSpotId != loveSpotId) {
+                throw LoveMapException(HttpStatus.NOT_FOUND, ErrorCode.PhotoNotFound)
+            }
+            photo
+        } ?: throw LoveMapException(HttpStatus.NOT_FOUND, ErrorCode.PhotoNotFound)
+    }
+
+    suspend fun incrementPhotoLikes(photo: LoveSpotPhoto): LoveSpotPhoto {
+        photo.likes = photo.likes + 1
+        return repository.save(photo)
+    }
+
+    suspend fun incrementPhotoDislikes(photo: LoveSpotPhoto): LoveSpotPhoto {
+        photo.dislikes = photo.dislikes + 1
+        return repository.save(photo)
+    }
+
+    suspend fun decrementPhotoLikes(photo: LoveSpotPhoto): LoveSpotPhoto {
+        photo.likes = photo.likes - 1
+        return repository.save(photo)
+    }
+
+    suspend fun decrementPhotoDislikes(photo: LoveSpotPhoto): LoveSpotPhoto {
+        photo.dislikes = photo.dislikes - 1
+        return repository.save(photo)
+    }
+
     suspend fun uploadToSpot(loveSpotId: Long, fileParts: Flow<FilePart>) {
         val caller = authorizationService.getCaller()
         loveSpotService.authorizedGetById(loveSpotId)
@@ -85,13 +114,13 @@ class LoveSpotPhotoService(
 
     suspend fun getPhotosForSpot(loveSpotId: Long): List<LoveSpotPhotoResponse> {
         return repository.findAllByLoveSpotId(loveSpotId)
-            .map { LoveSpotPhotoResponse.of(it) }
+            .map { converter.toPhotoResponse(it) }
             .toList()
     }
 
     suspend fun getPhotosForReview(loveSpotId: Long, reviewId: Long): List<LoveSpotPhotoResponse> {
         return repository.findAllByLoveSpotIdAndLoveSpotReviewId(loveSpotId, reviewId)
-            .map { LoveSpotPhotoResponse.of(it) }
+            .map { converter.toPhotoResponse(it) }
             .toList()
     }
 
@@ -99,45 +128,6 @@ class LoveSpotPhotoService(
         reviews.forEach { review ->
             repository.findAllByLoveSpotIdAndLoveSpotReviewId(review.loveSpotId, review.id)
                 .collect { photo -> repository.save(photo.copy(loveSpotReviewId = null)) }
-        }
-    }
-
-    suspend fun deletePhotosForLoveSpot(loveSpot: LoveSpot) {
-        repository.findAllByLoveSpotId(loveSpot.id).collect {
-            repository.delete(it)
-            asyncTaskService.runAsync {
-                photoStore.delete(it)
-            }
-        }
-    }
-
-    @Transactional
-    suspend fun deletePhoto(loveSpotId: Long, photoId: Long): List<LoveSpotPhotoResponse> {
-        return repository.findById(photoId)?.let { photo ->
-            authorizeDeletion(photo, loveSpotId)
-            repository.delete(photo)
-            loveSpotService.decrementNumberOfPhotos(loveSpotId)
-            asyncTaskService.runAsync {
-                photoStore.delete(photo)
-            }
-            getPhotosForSpot(loveSpotId)
-        } ?: throw LoveMapException(HttpStatus.NOT_FOUND, ErrorCode.PhotoNotFound)
-    }
-
-    private suspend fun authorizeDeletion(
-        photo: LoveSpotPhoto,
-        loveSpotId: Long
-    ) {
-        if (photo.loveSpotId != loveSpotId) {
-            throw LoveMapException(HttpStatus.NOT_FOUND, ErrorCode.PhotoNotFound)
-        }
-        if (!authorizationService.isAdmin()) {
-            if (photo.loveSpotReviewId != null) {
-                loveSpotReviewService.authorizedGetById(loveSpotId, photo.loveSpotReviewId!!)
-            } else {
-                val loveSpot = loveSpotService.getById(loveSpotId)
-                authorizationService.checkAccessFor(loveSpot)
-            }
         }
     }
 }

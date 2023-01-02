@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend.lovespot.photo
 
+import com.lovemap.lovemapbackend.lovespot.photo.like.PhotoLikeService
 import kotlinx.coroutines.reactive.asFlow
 import org.springframework.http.codec.multipart.FilePart
 import org.springframework.web.bind.annotation.*
@@ -8,7 +9,9 @@ import reactor.core.publisher.Flux
 @RestController
 @RequestMapping("/lovespots")
 class LoveSpotPhotoController(
-    private val loveSpotPhotoService: LoveSpotPhotoService
+    private val loveSpotPhotoService: LoveSpotPhotoService,
+    private val photoDeletionService: PhotoDeletionService,
+    private val photoLikeService: PhotoLikeService
 ) {
     @PostMapping("{loveSpotId}/photos")
     suspend fun uploadToSpot(
@@ -45,7 +48,23 @@ class LoveSpotPhotoController(
         @PathVariable loveSpotId: Long,
         @PathVariable photoId: Long
     ): List<LoveSpotPhotoResponse> {
-        return loveSpotPhotoService.deletePhoto(loveSpotId, photoId)
+        return photoDeletionService.deletePhoto(loveSpotId, photoId)
+    }
+
+    @PostMapping("{loveSpotId}/photos/{photoId}/like")
+    suspend fun likePhoto(
+        @PathVariable loveSpotId: Long,
+        @PathVariable photoId: Long
+    ): LoveSpotPhotoResponse {
+        return photoLikeService.likePhoto(loveSpotId, photoId)
+    }
+
+    @PostMapping("{loveSpotId}/photos/{photoId}/dislike")
+    suspend fun dislikePhoto(
+        @PathVariable loveSpotId: Long,
+        @PathVariable photoId: Long
+    ): LoveSpotPhotoResponse {
+        return photoLikeService.dislikePhoto(loveSpotId, photoId)
     }
 }
 

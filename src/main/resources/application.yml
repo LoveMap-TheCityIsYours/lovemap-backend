@@ -46,6 +46,8 @@ lovemap:
       loveSpotAdded: 5
       loveMade: 1
       photoUploaded: 5
+      photoLikeReceived: 1
+      photoDislikeReceived: -1
 
     ranks:
       rankList:

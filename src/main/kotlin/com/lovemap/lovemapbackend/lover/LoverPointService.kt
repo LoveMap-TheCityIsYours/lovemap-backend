@@ -3,6 +3,7 @@ package com.lovemap.lovemapbackend.lover
 import com.lovemap.lovemapbackend.love.Love
 import com.lovemap.lovemapbackend.lover.points.LoverPoints
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
+import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhoto
 import com.lovemap.lovemapbackend.lovespot.report.LoveSpotReport
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewRequest
@@ -46,7 +47,11 @@ class LoverPointService(
         }
     }
 
-    suspend fun updatePointsForReviewUpdate(prevReview: LoveSpotReview, newRequest: LoveSpotReviewRequest, loveSpot: LoveSpot): Lover {
+    suspend fun updatePointsForReviewUpdate(
+        prevReview: LoveSpotReview,
+        newRequest: LoveSpotReviewRequest,
+        loveSpot: LoveSpot
+    ): Lover {
         val lover = loverService.unAuthorizedGetById(prevReview.reviewerId)
         updatePointsForReviewSubmitted(prevReview, newRequest, lover)
         updatePointsForReviewReceived(loveSpot, prevReview, newRequest)
@@ -202,5 +207,55 @@ class LoverPointService(
         lover.points -= (points.photoUploaded * deletedPhotoCount)
         lover.photosUploaded -= deletedPhotoCount
         return loverService.save(lover)
+    }
+
+    suspend fun addPointsForLike(photo: LoveSpotPhoto, lover: Lover) {
+        if (photo.uploadedBy != lover.id) {
+            val uploadedBy = loverService.unAuthorizedGetById(photo.uploadedBy)
+            uploadedBy.points += points.photoLikeReceived
+            loverService.save(uploadedBy)
+        }
+    }
+
+    suspend fun subtractPointsForDislike(photo: LoveSpotPhoto, lover: Lover) {
+        if (photo.uploadedBy != lover.id) {
+            val uploadedBy = loverService.unAuthorizedGetById(photo.uploadedBy)
+            uploadedBy.points += points.photoDislikeReceived
+            loverService.save(uploadedBy)
+        }
+    }
+
+    suspend fun subtractPointsForLikeChangeToDislike(photo: LoveSpotPhoto, lover: Lover) {
+        if (photo.uploadedBy != lover.id) {
+            val uploadedBy = loverService.unAuthorizedGetById(photo.uploadedBy)
+            uploadedBy.points -= points.photoLikeReceived
+            uploadedBy.points += points.photoDislikeReceived
+            loverService.save(uploadedBy)
+        }
+    }
+
+    suspend fun addPointsForDislikeChangeToLike(photo: LoveSpotPhoto, lover: Lover) {
+        if (photo.uploadedBy != lover.id) {
+            val uploadedBy = loverService.unAuthorizedGetById(photo.uploadedBy)
+            uploadedBy.points -= points.photoDislikeReceived
+            uploadedBy.points += points.photoLikeReceived
+            loverService.save(uploadedBy)
+        }
+    }
+
+    suspend fun subtractPointsForUnlike(photo: LoveSpotPhoto, lover: Lover) {
+        if (photo.uploadedBy != lover.id) {
+            val uploadedBy = loverService.unAuthorizedGetById(photo.uploadedBy)
+            uploadedBy.points -= points.photoLikeReceived
+            loverService.save(uploadedBy)
+        }
+    }
+
+    suspend fun addPointsForUndislike(photo: LoveSpotPhoto, lover: Lover) {
+        if (photo.uploadedBy != lover.id) {
+            val uploadedBy = loverService.unAuthorizedGetById(photo.uploadedBy)
+            uploadedBy.points -= points.photoDislikeReceived
+            loverService.save(uploadedBy)
+        }
     }
 }
