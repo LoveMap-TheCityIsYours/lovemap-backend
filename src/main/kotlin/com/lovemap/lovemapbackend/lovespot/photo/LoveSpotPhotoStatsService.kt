@@ -26,9 +26,9 @@ class LoveSpotPhotoStatsService(
         reviewId: Long?
     ) {
         asyncTaskService.runAsync {
-            deferredList.map { it.await() }
+            val uploadedPhotos: List<LoveSpotPhoto> = deferredList.map { it.await() }
             logger.info { "Updating statistics for newly added photos." }
-            val photoCount = repository.countByLoveSpotId(loveSpotId).toInt()
+            val photoCount = uploadedPhotos.size
             loveSpotStatisticsService.updatePhotoCounter(loveSpotId, photoCount)
             loverPointService.addPointsForPhotosAdded(caller.id, photoCount)
             reviewId?.let {

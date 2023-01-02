@@ -46,6 +46,12 @@ data class Lover(
 
     @Column("photos_uploaded")
     var photosUploaded: Int = 0,
+
+    @Column("photo_likes_received")
+    var photoLikesReceived: Int = 0,
+
+    @Column("photo_dislikes_received")
+    var photoDislikesReceived: Int = 0,
 ) {
     fun toView() = LoverView(
         id = id,

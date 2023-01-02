@@ -2,7 +2,6 @@ package com.lovemap.lovemapbackend.lovespot
 
 import com.lovemap.lovemapbackend.utils.INVALID_LOVE_DESCRIPTION
 import com.lovemap.lovemapbackend.utils.INVALID_LOVE_SPOT_NAME
-import org.springframework.web.bind.annotation.RequestParam
 import java.time.LocalTime
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size

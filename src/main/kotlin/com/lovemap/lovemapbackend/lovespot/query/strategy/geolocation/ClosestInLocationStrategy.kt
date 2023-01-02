@@ -8,8 +8,8 @@ import com.lovemap.lovemapbackend.lovespot.query.ListLocationType.CITY
 import com.lovemap.lovemapbackend.lovespot.query.ListLocationType.COUNTRY
 import com.lovemap.lovemapbackend.lovespot.query.ListOrdering
 import com.lovemap.lovemapbackend.lovespot.query.ListOrdering.CLOSEST
-import com.lovemap.lovemapbackend.lovespot.query.LoveSpotSearchDto
 import com.lovemap.lovemapbackend.lovespot.query.LoveSpotDistanceSorter
+import com.lovemap.lovemapbackend.lovespot.query.LoveSpotSearchDto
 import com.lovemap.lovemapbackend.lovespot.query.strategy.LoveSpotSearchStrategy
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException

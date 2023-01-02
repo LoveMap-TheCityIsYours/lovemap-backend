@@ -30,7 +30,7 @@ class PhotoDeletionService(
     suspend fun deletePhotosForLoveSpot(loveSpot: LoveSpot) {
         repository.findAllByLoveSpotId(loveSpot.id).collect { photo ->
             photoLikeService.deletePhotoLikes(photo)
-            loverPointService.subtractPointsForPhotosDeleted(photo.uploadedBy, 1)
+            loverPointService.subtractPointsForPhotoDeleted(photo)
             repository.delete(photo)
             asyncTaskService.runAsync {
                 photoStore.delete(photo)
@@ -43,7 +43,7 @@ class PhotoDeletionService(
         return repository.findById(photoId)?.let { photo ->
             authorizeDeletion(photo, loveSpotId)
             photoLikeService.deletePhotoLikes(photo)
-            loverPointService.subtractPointsForPhotosDeleted(photo.uploadedBy, 1)
+            loverPointService.subtractPointsForPhotoDeleted(photo)
             repository.delete(photo)
             loveSpotService.decrementNumberOfPhotos(loveSpotId)
             asyncTaskService.runAsync {

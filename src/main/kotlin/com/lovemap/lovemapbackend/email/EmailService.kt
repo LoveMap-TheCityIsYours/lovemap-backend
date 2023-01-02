@@ -4,9 +4,6 @@ import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.utils.AsyncTaskService
 import com.mailjet.client.MailjetResponse
 import com.mailjet.client.easy.MJEasyClient
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource

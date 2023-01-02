@@ -95,7 +95,7 @@ class LoveSpotStatisticsService(
 
     suspend fun updatePhotoCounter(loveSpotId: Long, photoCount: Int): LoveSpot {
         val loveSpot = loveSpotService.getById(loveSpotId)
-        loveSpot.numberOfPhotos = photoCount
+        loveSpot.numberOfPhotos += photoCount
         return loveSpotService.save(loveSpot)
     }
 }

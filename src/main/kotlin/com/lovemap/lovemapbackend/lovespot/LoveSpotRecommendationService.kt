@@ -2,8 +2,8 @@ package com.lovemap.lovemapbackend.lovespot
 
 import com.lovemap.lovemapbackend.lovespot.query.ListLocationRequest.COUNTRY
 import com.lovemap.lovemapbackend.lovespot.query.ListOrderingRequest.*
-import com.lovemap.lovemapbackend.lovespot.query.LoveSpotSearchRequest
 import com.lovemap.lovemapbackend.lovespot.query.LoveSpotQueryService
+import com.lovemap.lovemapbackend.lovespot.query.LoveSpotSearchRequest
 import org.springframework.stereotype.Service
 
 @Service

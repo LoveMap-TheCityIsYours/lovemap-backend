@@ -6,7 +6,6 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.sql.Timestamp
-import java.time.Instant
 
 const val LIKE: Int = 1
 const val DISLIKE: Int = -1

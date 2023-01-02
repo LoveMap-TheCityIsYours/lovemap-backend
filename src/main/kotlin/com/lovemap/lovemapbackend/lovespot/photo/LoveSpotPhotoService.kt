@@ -2,7 +2,6 @@ package com.lovemap.lovemapbackend.lovespot.photo
 
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.lover.Lover
-import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewService
@@ -18,7 +17,6 @@ import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.codec.multipart.FilePart
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
 import java.time.Instant
 
@@ -42,26 +40,6 @@ class LoveSpotPhotoService(
             }
             photo
         } ?: throw LoveMapException(HttpStatus.NOT_FOUND, ErrorCode.PhotoNotFound)
-    }
-
-    suspend fun incrementPhotoLikes(photo: LoveSpotPhoto): LoveSpotPhoto {
-        photo.likes = photo.likes + 1
-        return repository.save(photo)
-    }
-
-    suspend fun incrementPhotoDislikes(photo: LoveSpotPhoto): LoveSpotPhoto {
-        photo.dislikes = photo.dislikes + 1
-        return repository.save(photo)
-    }
-
-    suspend fun decrementPhotoLikes(photo: LoveSpotPhoto): LoveSpotPhoto {
-        photo.likes = photo.likes - 1
-        return repository.save(photo)
-    }
-
-    suspend fun decrementPhotoDislikes(photo: LoveSpotPhoto): LoveSpotPhoto {
-        photo.dislikes = photo.dislikes - 1
-        return repository.save(photo)
     }
 
     suspend fun uploadToSpot(loveSpotId: Long, fileParts: Flow<FilePart>) {
@@ -113,13 +91,13 @@ class LoveSpotPhotoService(
     }
 
     suspend fun getPhotosForSpot(loveSpotId: Long): List<LoveSpotPhotoResponse> {
-        return repository.findAllByLoveSpotId(loveSpotId)
+        return repository.findAllByLoveSpotIdOrderByLikesDesc(loveSpotId)
             .map { converter.toPhotoResponse(it) }
             .toList()
     }
 
     suspend fun getPhotosForReview(loveSpotId: Long, reviewId: Long): List<LoveSpotPhotoResponse> {
-        return repository.findAllByLoveSpotIdAndLoveSpotReviewId(loveSpotId, reviewId)
+        return repository.findAllByLoveSpotIdAndLoveSpotReviewIdOrderByLikesDesc(loveSpotId, reviewId)
             .map { converter.toPhotoResponse(it) }
             .toList()
     }
@@ -129,5 +107,25 @@ class LoveSpotPhotoService(
             repository.findAllByLoveSpotIdAndLoveSpotReviewId(review.loveSpotId, review.id)
                 .collect { photo -> repository.save(photo.copy(loveSpotReviewId = null)) }
         }
+    }
+
+    suspend fun incrementPhotoLikes(photo: LoveSpotPhoto): LoveSpotPhoto {
+        photo.likes = photo.likes + 1
+        return repository.save(photo)
+    }
+
+    suspend fun incrementPhotoDislikes(photo: LoveSpotPhoto): LoveSpotPhoto {
+        photo.dislikes = photo.dislikes + 1
+        return repository.save(photo)
+    }
+
+    suspend fun decrementPhotoLikes(photo: LoveSpotPhoto): LoveSpotPhoto {
+        photo.likes = photo.likes - 1
+        return repository.save(photo)
+    }
+
+    suspend fun decrementPhotoDislikes(photo: LoveSpotPhoto): LoveSpotPhoto {
+        photo.dislikes = photo.dislikes - 1
+        return repository.save(photo)
     }
 }

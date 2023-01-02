@@ -1,7 +1,6 @@
 package com.lovemap.lovemapbackend.lovespot
 
 import com.lovemap.lovemapbackend.love.LoveDeletionService
-import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoService
 import com.lovemap.lovemapbackend.lovespot.photo.PhotoDeletionService
 import com.lovemap.lovemapbackend.lovespot.report.LoveSpotReportService
 import org.springframework.stereotype.Service

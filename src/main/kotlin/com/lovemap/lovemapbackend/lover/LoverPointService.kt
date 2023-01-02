@@ -202,10 +202,15 @@ class LoverPointService(
         return loverService.save(lover)
     }
 
-    suspend fun subtractPointsForPhotosDeleted(loverId: Long, deletedPhotoCount: Int): Lover {
-        val lover = loverService.unAuthorizedGetById(loverId)
-        lover.points -= (points.photoUploaded * deletedPhotoCount)
-        lover.photosUploaded -= deletedPhotoCount
+    suspend fun subtractPointsForPhotoDeleted(photo: LoveSpotPhoto): Lover {
+        val lover = loverService.unAuthorizedGetById(photo.uploadedBy)
+        lover.points -= points.photoUploaded
+        lover.photosUploaded -= 1
+        // because I'm lazy to handle self-likes here, I rather keep the stats for deleted photos too
+//        lover.points -= (photo.likes * points.photoLikeReceived)
+//        lover.points -= (photo.dislikes * points.photoDislikeReceived)
+//        lover.photoLikesReceived -= photo.likes
+//        lover.photoDislikesReceived -= photo.dislikes
         return loverService.save(lover)
     }
 
@@ -213,6 +218,7 @@ class LoverPointService(
         if (photo.uploadedBy != lover.id) {
             val uploadedBy = loverService.unAuthorizedGetById(photo.uploadedBy)
             uploadedBy.points += points.photoLikeReceived
+            uploadedBy.photoLikesReceived += 1
             loverService.save(uploadedBy)
         }
     }
@@ -221,6 +227,7 @@ class LoverPointService(
         if (photo.uploadedBy != lover.id) {
             val uploadedBy = loverService.unAuthorizedGetById(photo.uploadedBy)
             uploadedBy.points += points.photoDislikeReceived
+            uploadedBy.photoDislikesReceived += 1
             loverService.save(uploadedBy)
         }
     }
@@ -229,7 +236,9 @@ class LoverPointService(
         if (photo.uploadedBy != lover.id) {
             val uploadedBy = loverService.unAuthorizedGetById(photo.uploadedBy)
             uploadedBy.points -= points.photoLikeReceived
+            uploadedBy.photoLikesReceived -= 1
             uploadedBy.points += points.photoDislikeReceived
+            uploadedBy.photoDislikesReceived += 1
             loverService.save(uploadedBy)
         }
     }
@@ -238,7 +247,9 @@ class LoverPointService(
         if (photo.uploadedBy != lover.id) {
             val uploadedBy = loverService.unAuthorizedGetById(photo.uploadedBy)
             uploadedBy.points -= points.photoDislikeReceived
+            uploadedBy.photoDislikesReceived -= 1
             uploadedBy.points += points.photoLikeReceived
+            uploadedBy.photoLikesReceived += 1
             loverService.save(uploadedBy)
         }
     }
@@ -247,6 +258,7 @@ class LoverPointService(
         if (photo.uploadedBy != lover.id) {
             val uploadedBy = loverService.unAuthorizedGetById(photo.uploadedBy)
             uploadedBy.points -= points.photoLikeReceived
+            uploadedBy.photoLikesReceived -= 1
             loverService.save(uploadedBy)
         }
     }
@@ -255,6 +267,7 @@ class LoverPointService(
         if (photo.uploadedBy != lover.id) {
             val uploadedBy = loverService.unAuthorizedGetById(photo.uploadedBy)
             uploadedBy.points -= points.photoDislikeReceived
+            uploadedBy.photoDislikesReceived -= 1
             loverService.save(uploadedBy)
         }
     }
