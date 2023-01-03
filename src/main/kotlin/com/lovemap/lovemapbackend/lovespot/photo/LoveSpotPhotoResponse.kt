@@ -12,7 +12,8 @@ data class LoveSpotPhotoResponse(
     val likers: Set<Long>,
     val dislikes: Int,
     val dislikers: Set<Long>,
-    val url: String
+    val url: String,
+    val fileName: String
 ) {
     companion object {
         fun of(photo: LoveSpotPhoto, likers: Set<Long>, dislikers: Set<Long>): LoveSpotPhotoResponse {
@@ -26,7 +27,8 @@ data class LoveSpotPhotoResponse(
                 likers = likers,
                 dislikes = photo.dislikes,
                 dislikers = dislikers,
-                url = photo.url
+                url = photo.url,
+                fileName = photo.fileName
             )
         }
     }
