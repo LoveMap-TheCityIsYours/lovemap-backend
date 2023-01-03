@@ -1,6 +1,7 @@
 package com.lovemap.lovemapbackend.partnership
 
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
+import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.LoverService
 import com.lovemap.lovemapbackend.partnership.Partnership.Status.PARTNER
 import com.lovemap.lovemapbackend.partnership.Partnership.Status.PARTNERSHIP_REQUESTED
@@ -11,6 +12,8 @@ import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.merge
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
@@ -31,6 +34,14 @@ class PartnershipService(
 ) {
     private val hoursToRerequestPartnership: Long = 12
     private val logger = KotlinLogging.logger {}
+
+    suspend fun getPartnerOf(loverId: Long): Lover? {
+        val partnership = getLoverPartnerships(loverId)
+            .relations.filter { it.status == PARTNER }.firstOrNull()
+
+        return partnership?.partnerOf(loverId)
+            ?.let { partnerId -> loverService.unAuthorizedGetById(partnerId) }
+    }
 
     suspend fun getLoverPartnerships(loverId: Long): LoverPartnerships {
         authorizationService.checkAccessFor(loverId)

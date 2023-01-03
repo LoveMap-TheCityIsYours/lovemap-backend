@@ -1,8 +1,11 @@
 package com.lovemap.lovemapbackend.partnership
 
+import com.lovemap.lovemapbackend.utils.ErrorCode
+import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
+import org.springframework.http.HttpStatus
 import java.sql.Timestamp
 
 data class Partnership(
@@ -29,6 +32,14 @@ data class Partnership(
 ) {
     enum class Status {
         PARTNERSHIP_REQUESTED, PARTNER
+    }
+
+    fun partnerOf(loverId: Long): Long {
+        return when (loverId) {
+            initiatorId -> { respondentId }
+            respondentId -> { initiatorId }
+            else -> { throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.PartnershipNotFound) }
+        }
     }
 }
 

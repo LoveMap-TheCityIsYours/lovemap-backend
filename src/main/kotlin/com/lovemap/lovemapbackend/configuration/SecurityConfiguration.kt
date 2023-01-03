@@ -52,6 +52,7 @@ class SecurityConfiguration(
 
             .pathMatchers("/love/**").hasRole("USER")
             .pathMatchers("/lover/**").hasRole("USER")
+            .pathMatchers("/lovers/**").hasRole("USER")
             .pathMatchers("/lovespots/**").hasRole("USER")
             .pathMatchers("/relation/**").hasRole("USER")
             .pathMatchers("/partnership/**").hasRole("USER")

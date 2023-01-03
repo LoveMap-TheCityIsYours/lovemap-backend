@@ -146,7 +146,7 @@ class LoveSpotService(
         return repository.findAllById(locationIds)
     }
 
-    fun findAllByIds(locationIds: List<Long>): Flow<LoveSpot> {
+    fun findAllByIds(locationIds: Iterable<Long>): Flow<LoveSpot> {
         return repository.findAllById(locationIds)
     }
 

@@ -3,6 +3,7 @@ package com.lovemap.lovemapbackend.love
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.LoverPointService
+import com.lovemap.lovemapbackend.lover.wishlist.WishlistService
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.lovespot.LoveSpotStatisticsService
@@ -26,6 +27,7 @@ class LoveService(
     private val loveConverter: LoveConverter,
     private val relationService: RelationService,
     private val loveSpotService: LoveSpotService,
+    private val wishlistService: WishlistService,
     private val loveSpotStatisticsService: LoveSpotStatisticsService,
     private val loverPointService: LoverPointService,
     private val loveRepository: LoveRepository
@@ -49,6 +51,7 @@ class LoveService(
                 happenedAt = happenedAt
             )
         )
+        wishlistService.removeFromWishlists(love)
         val countOfLovesAtSpot = getNumberOfLovesAtSpot(request.loveSpotId)
         loveSpotStatisticsService.recordLoveMaking(love, countOfLovesAtSpot)
         loverPointService.addPointsForLovemaking(love)

@@ -3,6 +3,8 @@ package com.lovemap.lovemapbackend.lovespot.photo
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
+import com.lovemap.lovemapbackend.lovespot.photo.converter.LoveSpotPhotoConverter
+import com.lovemap.lovemapbackend.lovespot.photo.converter.PhotoDto
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewService
 import com.lovemap.lovemapbackend.utils.AsyncTaskService

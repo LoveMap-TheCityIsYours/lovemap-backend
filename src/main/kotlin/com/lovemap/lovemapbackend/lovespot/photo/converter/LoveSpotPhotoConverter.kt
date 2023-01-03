@@ -1,5 +1,7 @@
-package com.lovemap.lovemapbackend.lovespot.photo
+package com.lovemap.lovemapbackend.lovespot.photo.converter
 
+import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhoto
+import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoResponse
 import com.lovemap.lovemapbackend.lovespot.photo.like.PhotoLikersDislikers
 import com.lovemap.lovemapbackend.lovespot.photo.like.PhotoLikersDislikersRepository
 import com.lovemap.lovemapbackend.utils.ErrorCode

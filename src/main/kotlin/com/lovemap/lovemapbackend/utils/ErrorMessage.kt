@@ -71,6 +71,7 @@ enum class ErrorCode {
     UnsupportedImageFormat,
     ImageUploadFailed,
     PhotoNotFound,
-
+    WishlistElementNotFound,
+    AlreadyOnWishlist,
 
 }

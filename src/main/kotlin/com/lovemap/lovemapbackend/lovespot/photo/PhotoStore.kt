@@ -6,6 +6,7 @@ import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
 import com.lovemap.lovemapbackend.configuration.GoogleConfigProperties
+import com.lovemap.lovemapbackend.lovespot.photo.converter.PhotoDto
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import mu.KotlinLogging
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component
 
 interface PhotoStore {
     fun persist(convertedPhoto: PhotoDto): String
-    fun delete(it: LoveSpotPhoto)
+    fun delete(photo: LoveSpotPhoto)
 }
 
 @Component
