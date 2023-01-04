@@ -5,15 +5,13 @@ import com.lovemap.lovemapbackend.love.Love
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.partnership.PartnershipService
-import com.lovemap.lovemapbackend.utils.ErrorCode.AlreadyOnWishlist
-import com.lovemap.lovemapbackend.utils.ErrorCode.WishlistElementNotFound
+import com.lovemap.lovemapbackend.utils.ErrorCode.*
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.toSet
-import org.springframework.http.HttpStatus.CONFLICT
-import org.springframework.http.HttpStatus.NOT_FOUND
+import org.springframework.http.HttpStatus.*
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
 import java.time.Instant
@@ -23,14 +21,14 @@ class WishlistService(
     private val authorizationService: AuthorizationService,
     private val loveSpotService: LoveSpotService,
     private val partnershipService: PartnershipService,
-    private val repository: WishlistElementRepository
+    private val repository: WishlistItemRepository
 ) {
 
     suspend fun getWishList(loverId: Long): List<WishlistResponse> {
         authorizationService.checkAccessFor(loverId)
         val wishlistElements = repository.findByLoverId(loverId).toSet()
 
-        val loveSpotIdsToWishlistElements: Map<Long, WishlistElement> =
+        val loveSpotIdsToWishlistElements: Map<Long, WishlistItem> =
             wishlistElements.associateBy({ it.loveSpotId }, { it })
 
         val loveSpots = loveSpotService.findAllByIds(loveSpotIdsToWishlistElements.keys)
@@ -39,13 +37,13 @@ class WishlistService(
 
     private suspend fun convertToResponse(
         loveSpots: Flow<LoveSpot>,
-        loveSpotIdsToWishlistElements: Map<Long, WishlistElement>
+        loveSpotIdsToWishlistElements: Map<Long, WishlistItem>
     ): List<WishlistResponse> {
         return loveSpots.map {
             WishlistResponse.of(
-                wishlistElement = loveSpotIdsToWishlistElements[it.id] ?: throw LoveMapException(
+                wishlistItem = loveSpotIdsToWishlistElements[it.id] ?: throw LoveMapException(
                     NOT_FOUND,
-                    WishlistElementNotFound
+                    WishlistItemNotFound
                 ),
                 loveSpot = it
             )
@@ -66,7 +64,7 @@ class WishlistService(
 
     private suspend fun saveWishlistElementForLover(loveSpotId: Long, loverId: Long, addedAt: Timestamp): Timestamp {
         loveSpotService.getById(loveSpotId)
-        val wishlistElement = WishlistElement(
+        val wishlistElement = WishlistItem(
             loverId = loverId,
             loveSpotId = loveSpotId,
             addedAt = addedAt
@@ -81,12 +79,14 @@ class WishlistService(
         addedAt: Timestamp
     ) {
         partnershipService.getPartnerOf(loverId)?.let { partner ->
-            val partnerWishlistElement = WishlistElement(
-                loverId = partner.id,
-                loveSpotId = loveSpotId,
-                addedAt = addedAt
-            )
-            repository.save(partnerWishlistElement)
+            if (!repository.existsByLoverIdAndLoveSpotId(partner.id, loveSpotId)) {
+                val partnerWishlistElement = WishlistItem(
+                    loverId = partner.id,
+                    loveSpotId = loveSpotId,
+                    addedAt = addedAt
+                )
+                repository.save(partnerWishlistElement)
+            }
         }
     }
 
@@ -99,5 +99,16 @@ class WishlistService(
                 repository.delete(it)
             }
         }
+    }
+
+    suspend fun deleteWishlistItem(loverId: Long, wishlistItemId: Long): List<WishlistResponse> {
+        authorizationService.checkAccessFor(loverId)
+        return repository.findById(wishlistItemId)?.let { wishlistItem ->
+            if (wishlistItem.loverId != loverId) {
+                throw LoveMapException(FORBIDDEN, Forbidden)
+            }
+            repository.delete(wishlistItem)
+            return getWishList(loverId)
+        } ?: throw LoveMapException(NOT_FOUND, WishlistItemNotFound)
     }
 }

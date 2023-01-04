@@ -6,7 +6,7 @@ import org.springframework.data.relational.core.mapping.Table
 import java.sql.Timestamp
 
 @Table("wishlist_element")
-data class WishlistElement(
+data class WishlistItem(
     @Id
     var id: Long = 0,
 

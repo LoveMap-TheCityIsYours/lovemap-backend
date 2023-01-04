@@ -5,17 +5,17 @@ import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse
 import java.time.Instant
 
 data class WishlistResponse(
-    val wishlistElementId: Long,
+    val wishlistItemId: Long,
     val loverId: Long,
     val addedAt: Instant,
     val loveSpot: LoveSpotResponse,
 ) {
     companion object {
-        fun of(wishlistElement: WishlistElement, loveSpot: LoveSpot): WishlistResponse {
+        fun of(wishlistItem: WishlistItem, loveSpot: LoveSpot): WishlistResponse {
             return WishlistResponse(
-                wishlistElementId = wishlistElement.id,
-                loverId = wishlistElement.loverId,
-                addedAt = wishlistElement.addedAt.toInstant(),
+                wishlistItemId = wishlistItem.id,
+                loverId = wishlistItem.loverId,
+                addedAt = wishlistItem.addedAt.toInstant(),
                 loveSpot = LoveSpotResponse.of(loveSpot)
             )
         }

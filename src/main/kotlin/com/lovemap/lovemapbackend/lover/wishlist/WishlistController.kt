@@ -13,6 +13,11 @@ class WishlistController(
         return wishlistService.getWishList(loverId)
     }
 
+    @DeleteMapping("{wishlistItemId}")
+    suspend fun deleteWishlistItem(@PathVariable loverId: Long, @PathVariable wishlistItemId: Long): List<WishlistResponse> {
+        return wishlistService.deleteWishlistItem(loverId, wishlistItemId)
+    }
+
     @PostMapping("/addSpot/{loveSpotId}")
     suspend fun addToWishlist(@PathVariable loverId: Long, @PathVariable loveSpotId: Long): List<WishlistResponse> {
         return wishlistService.addToWishlist(loverId, loveSpotId)
