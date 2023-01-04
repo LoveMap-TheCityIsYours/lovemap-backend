@@ -23,6 +23,7 @@ class JwtAuthenticationFilter(
 
     private val exclusions = listOf(
         "/privacy-policy.html",
+        "/terms-of-use.html",
         "/.well-known/assetlinks.json",
         "/join-us",
         "/favicon.ico",
