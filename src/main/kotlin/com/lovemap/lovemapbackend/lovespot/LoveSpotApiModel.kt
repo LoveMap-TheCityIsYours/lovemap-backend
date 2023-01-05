@@ -2,9 +2,9 @@ package com.lovemap.lovemapbackend.lovespot
 
 import com.lovemap.lovemapbackend.utils.INVALID_LOVE_DESCRIPTION
 import com.lovemap.lovemapbackend.utils.INVALID_LOVE_SPOT_NAME
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Size
 import java.time.LocalTime
-import javax.validation.constraints.NotNull
-import javax.validation.constraints.Size
 
 data class LoveSpotResponse(
     val id: Long,

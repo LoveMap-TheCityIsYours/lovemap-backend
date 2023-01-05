@@ -1,11 +1,10 @@
 package com.lovemap.lovemapbackend.authentication.facebook
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
+import org.springframework.boot.context.properties.bind.ConstructorBinding
 
-@ConstructorBinding
 @ConfigurationProperties(prefix = "lovemap.facebook")
-data class FacebookProperties(
+data class FacebookProperties @ConstructorBinding constructor(
     val appId: String,
     val appSecret: String
 )

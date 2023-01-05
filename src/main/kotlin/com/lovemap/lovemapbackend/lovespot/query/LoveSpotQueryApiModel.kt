@@ -4,8 +4,8 @@ import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse
 import com.lovemap.lovemapbackend.utils.INVALID_DISTANCE_IN_METERS
 import com.lovemap.lovemapbackend.utils.INVALID_LIST_LIMIT
 import com.lovemap.lovemapbackend.utils.INVALID_SEARCH_LIMIT
+import jakarta.validation.constraints.NotNull
 import org.hibernate.validator.constraints.Range
-import javax.validation.constraints.NotNull
 
 data class LoveSpotListRequest(
     val latFrom: Double,

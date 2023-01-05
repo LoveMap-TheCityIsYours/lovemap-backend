@@ -105,9 +105,10 @@ spring:
     url: r2dbc:postgresql://localhost:5432/lovemap
     username: changethis
     password: changethis
-    enabled: true
-    initial-size: 5
-    pool.max-size: 10
+#    initial-size: 5
+    pool:
+      enabled: true
+#      max-size: 10
   jpa:
     properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:

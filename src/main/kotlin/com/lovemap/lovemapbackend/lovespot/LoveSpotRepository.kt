@@ -2,9 +2,10 @@ package com.lovemap.lovemapbackend.lovespot
 
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.r2dbc.repository.Query
+import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.data.repository.kotlin.CoroutineSortingRepository
 
-interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
+interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long>, CoroutineCrudRepository<LoveSpot, Long> {
 
     @Query(
         """
@@ -127,6 +128,7 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
             AND latitude >= LEAST(:latFrom,:latTo) AND latitude <= GREATEST(:latFrom,:latTo)
             AND type IN (:typeFilter) 
             AND last_photo_added_at IS NOT NULL
+            AND number_of_photos > 0 
             ORDER BY last_photo_added_at DESC LIMIT :limit
         """
     )
@@ -340,6 +342,7 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
             ) 
             AND type IN (:typeFilter)
             AND last_photo_added_at IS NOT NULL
+            AND number_of_photos > 0 
             ORDER BY last_photo_added_at DESC LIMIT :limit
         """
     )
@@ -359,6 +362,7 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
             ) 
             AND type IN (:typeFilter)
             AND last_photo_added_at IS NOT NULL
+            AND number_of_photos > 0 
             ORDER BY last_photo_added_at DESC LIMIT :limit
         """
     )

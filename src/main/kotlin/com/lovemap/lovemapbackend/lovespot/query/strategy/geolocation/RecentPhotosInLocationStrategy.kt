@@ -6,7 +6,6 @@ import com.lovemap.lovemapbackend.lovespot.query.ListLocationType
 import com.lovemap.lovemapbackend.lovespot.query.ListLocationType.CITY
 import com.lovemap.lovemapbackend.lovespot.query.ListLocationType.COUNTRY
 import com.lovemap.lovemapbackend.lovespot.query.ListOrdering
-import com.lovemap.lovemapbackend.lovespot.query.ListOrdering.NEWEST
 import com.lovemap.lovemapbackend.lovespot.query.ListOrdering.RECENT_PHOTOS
 import com.lovemap.lovemapbackend.lovespot.query.LoveSpotSearchDto
 import com.lovemap.lovemapbackend.lovespot.query.strategy.LoveSpotSearchStrategy

@@ -2,6 +2,7 @@ package com.lovemap.lovemapbackend.configuration
 
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.stereotype.Component
 import org.springframework.web.server.ServerWebExchange
@@ -43,9 +44,9 @@ class RequestLogger {
         return "<<< [$statusCode] [$method] [$path] ${request.headers}"
     }
 
-    private fun getStatus(response: ServerHttpResponse): HttpStatus = try {
-            response.statusCode!!
-        } catch (ex: Exception) {
-            HttpStatus.CONTINUE
-        }
+    private fun getStatus(response: ServerHttpResponse): HttpStatusCode = try {
+        response.statusCode!!
+    } catch (ex: Exception) {
+        HttpStatus.CONTINUE
+    }
 }

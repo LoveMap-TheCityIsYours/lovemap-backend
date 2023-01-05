@@ -1,11 +1,10 @@
 package com.lovemap.lovemapbackend.lover.points
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
+import org.springframework.boot.context.properties.bind.ConstructorBinding
 
-@ConstructorBinding
 @ConfigurationProperties(prefix = "lovemap.lover.points")
-data class LoverPoints(
+data class LoverPoints @ConstructorBinding constructor(
     val reviewSubmitted: Int,
     val reviewReceived4Stars: Int,
     val reviewReceived5Stars: Int,

@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend.configuration
 
+import jakarta.validation.Validator
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import org.flywaydb.core.Flyway
@@ -12,7 +13,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean
 import java.util.concurrent.Executors
-import javax.validation.Validator
 
 
 @Configuration

@@ -2,7 +2,8 @@ package com.lovemap.lovemapbackend.authentication.security
 
 import mu.KotlinLogging
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
+import org.springframework.boot.context.properties.bind.ConstructorBinding
+
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.Authentication
@@ -78,9 +79,8 @@ class JwtAuthenticationFilter(
     }
 }
 
-@ConstructorBinding
 @ConfigurationProperties(prefix = "lovemap")
-data class LoveMapClients(val clients: List<Client>) {
+data class LoveMapClients @ConstructorBinding constructor(val clients: List<Client>) {
     data class Client(
         val id: String,
         val secret: String

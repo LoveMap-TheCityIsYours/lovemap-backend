@@ -1,12 +1,12 @@
 package com.lovemap.lovemapbackend.utils
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.server.ResponseStatusException
-import javax.validation.ConstraintViolationException
 
 @RestControllerAdvice
 class ExceptionHandlers {
@@ -20,12 +20,12 @@ class ExceptionHandlers {
 
     @ExceptionHandler(ResponseStatusException::class)
     fun responseStatusException(ex: ResponseStatusException): ResponseEntity<String> {
-        if (ex.status == HttpStatus.FORBIDDEN) {
-            return ResponseEntity.status(ex.status).body(
+        if (ex.statusCode == HttpStatus.FORBIDDEN) {
+            return ResponseEntity.status(ex.statusCode).body(
                 ErrorMessages(listOf(ErrorMessage(ErrorCode.InvalidCredentials))).toJson()
             )
         }
-        return ResponseEntity.status(ex.status).body(ex.reason)
+        return ResponseEntity.status(ex.statusCode).body(ex.reason)
     }
 
     @ExceptionHandler(LoveMapException::class)

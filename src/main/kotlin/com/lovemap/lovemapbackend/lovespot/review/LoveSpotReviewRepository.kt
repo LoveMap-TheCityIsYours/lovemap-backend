@@ -1,9 +1,11 @@
 package com.lovemap.lovemapbackend.lovespot.review
 
 import kotlinx.coroutines.flow.Flow
+import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.data.repository.kotlin.CoroutineSortingRepository
 
-interface LoveSpotReviewRepository : CoroutineSortingRepository<LoveSpotReview, Long> {
+interface LoveSpotReviewRepository : CoroutineSortingRepository<LoveSpotReview, Long>,
+    CoroutineCrudRepository<LoveSpotReview, Long> {
     suspend fun findByReviewerIdAndLoveSpotId(reviewerId: Long, loveSpotId: Long): LoveSpotReview?
     suspend fun findByReviewerIdAndLoveId(reviewerId: Long, loveId: Long): LoveSpotReview?
 

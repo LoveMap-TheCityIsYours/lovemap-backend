@@ -4,8 +4,8 @@ import com.google.auth.Credentials
 import com.google.auth.oauth2.ServiceAccountCredentials
 import com.google.maps.GeoApiContext
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.boot.context.properties.bind.ConstructorBinding
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ResourceLoader
@@ -32,9 +32,8 @@ class GoogleCloudConfiguration(
     }
 }
 
-@ConstructorBinding
 @ConfigurationProperties(prefix = "lovemap.google")
-data class GoogleConfigProperties(
+data class GoogleConfigProperties @ConstructorBinding constructor(
     val apiKey: String,
     val projectId: String,
     val publicPhotosBucket: String

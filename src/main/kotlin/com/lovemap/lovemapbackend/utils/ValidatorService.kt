@@ -3,9 +3,9 @@ package com.lovemap.lovemapbackend.utils
 import com.lovemap.lovemapbackend.lovespot.query.MAX_LIMIT_LIST
 import com.lovemap.lovemapbackend.lovespot.query.MAX_LIMIT_SEARCH
 import com.lovemap.lovemapbackend.utils.ErrorCode.ConstraintViolation
+import jakarta.validation.Validator
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import javax.validation.Validator
 
 const val INVALID_EMAIL = "Invalid email address"
 const val INVALID_USERNAME = "Length of username must be between 3 and 25 characters."

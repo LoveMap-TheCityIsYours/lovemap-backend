@@ -5,10 +5,10 @@ import com.lovemap.lovemapbackend.utils.INVALID_EMAIL
 import com.lovemap.lovemapbackend.utils.INVALID_PASSWORD
 import com.lovemap.lovemapbackend.utils.INVALID_PW_RESET_CODE
 import com.lovemap.lovemapbackend.utils.INVALID_USERNAME
-import javax.validation.constraints.Email
-import javax.validation.constraints.NotEmpty
-import javax.validation.constraints.NotNull
-import javax.validation.constraints.Size
+import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.NotEmpty
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Size
 
 data class CreateLoverRequest(
     @field:Size(min = 3, max = 25, message = INVALID_USERNAME)
