@@ -111,4 +111,8 @@ class WishlistService(
             return getWishList(loverId)
         } ?: throw LoveMapException(NOT_FOUND, WishlistItemNotFound)
     }
+
+    suspend fun deleteAllByLoveSpot(loveSpotId: Long) {
+        repository.deleteAllByLoveSpotId(loveSpotId)
+    }
 }

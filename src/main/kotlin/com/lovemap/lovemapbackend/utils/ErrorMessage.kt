@@ -73,5 +73,6 @@ enum class ErrorCode {
     PhotoNotFound,
     WishlistItemNotFound,
     AlreadyOnWishlist,
+    LoveSpotNotFound,
 
 }

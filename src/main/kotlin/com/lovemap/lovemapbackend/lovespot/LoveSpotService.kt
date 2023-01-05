@@ -35,7 +35,7 @@ class LoveSpotService(
             ?: throw LoveMapException(
                 HttpStatus.NOT_FOUND,
                 ErrorMessage(
-                    ErrorCode.NotFoundById,
+                    ErrorCode.LoveSpotNotFound,
                     spotId.toString(),
                     "LoveSpot not found by ID '$spotId'."
                 )
@@ -134,7 +134,7 @@ class LoveSpotService(
             throw LoveMapException(
                 HttpStatus.NOT_FOUND,
                 ErrorMessage(
-                    ErrorCode.NotFoundById,
+                    ErrorCode.LoveSpotNotFound,
                     loveSpotId.toString(),
                     "LoveSpot '$loveSpotId' does not exist."
                 )
