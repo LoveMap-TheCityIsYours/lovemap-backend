@@ -65,6 +65,9 @@ data class LoveSpot(
     @Column("popularity")
     var popularity: Long = 0,
 
+    @Column("created_at")
+    var createdAt: Timestamp,
+
     @Column("last_comment_at")
     var lastCommentAt: Timestamp? = null,
 
@@ -73,6 +76,9 @@ data class LoveSpot(
 
     @Column("last_active_at")
     var lastActiveAt: Timestamp? = null,
+
+    @Column("last_photo_added_at")
+    var lastPhotoAddedAt: Timestamp? = null,
 
     @Column("number_of_photos")
     var numberOfPhotos: Int = 0

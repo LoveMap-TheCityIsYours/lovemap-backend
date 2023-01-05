@@ -24,7 +24,8 @@ class LoveSpotRecommendationService(
             closestSpots = getClosestSpots(request, listRequest),
             recentlyActiveSpots = getRecentlyActiveSpots(listRequest),
             popularSpots = getPopularSpots(listRequest),
-            newestSpots = getNewestSpots(listRequest)
+            newestSpots = getNewestSpots(listRequest),
+            recentPhotoSpots = getRecentPhotoSpots(listRequest)
         )
     }
 
@@ -53,4 +54,10 @@ class LoveSpotRecommendationService(
         return loveSpotListService.search(NEWEST, COUNTRY, listRequest)
             .map { LoveSpotResponse.of(it) }
     }
+
+    private suspend fun getRecentPhotoSpots(listRequest: LoveSpotSearchRequest): List<LoveSpotResponse> {
+        return loveSpotListService.search(RECENT_PHOTOS, COUNTRY, listRequest)
+            .map { LoveSpotResponse.of(it) }
+    }
+
 }

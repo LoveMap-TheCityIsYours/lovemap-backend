@@ -122,6 +122,25 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
 
     @Query(
         """
+            SELECT * FROM love_location
+            WHERE longitude >= LEAST(:longFrom,:longTo) AND longitude <= GREATEST(:longFrom,:longTo)
+            AND latitude >= LEAST(:latFrom,:latTo) AND latitude <= GREATEST(:latFrom,:latTo)
+            AND type IN (:typeFilter) 
+            AND last_photo_added_at IS NOT NULL
+            ORDER BY last_photo_added_at DESC LIMIT :limit
+        """
+    )
+    fun findByCoordinatesOrderByRecentPhoto(
+        latFrom: Double,
+        longFrom: Double,
+        latTo: Double,
+        longTo: Double,
+        typeFilter: Set<LoveSpot.Type>,
+        limit: Int
+    ): Flow<LoveSpot>
+
+    @Query(
+        """
             SELECT * FROM love_location 
             WHERE geo_location_id IN 
             (
@@ -305,6 +324,45 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long> {
         """
     )
     fun findByCountryOrderByNewest(
+        country: String,
+        typeFilter: Set<LoveSpot.Type>,
+        limit: Int
+    ): Flow<LoveSpot>
+
+
+    @Query(
+        """
+            SELECT * FROM love_location  
+            WHERE geo_location_id IN 
+            (
+                SELECT id FROM geo_location 
+                WHERE geo_location.city = :city
+            ) 
+            AND type IN (:typeFilter)
+            AND last_photo_added_at IS NOT NULL
+            ORDER BY last_photo_added_at DESC LIMIT :limit
+        """
+    )
+    fun findByCityOrderByRecentPhoto(
+        city: String,
+        typeFilter: Set<LoveSpot.Type>,
+        limit: Int
+    ): Flow<LoveSpot>
+
+    @Query(
+        """
+            SELECT * FROM love_location 
+            WHERE geo_location_id IN 
+            (
+                SELECT id FROM geo_location 
+                WHERE geo_location.country = :country
+            ) 
+            AND type IN (:typeFilter)
+            AND last_photo_added_at IS NOT NULL
+            ORDER BY last_photo_added_at DESC LIMIT :limit
+        """
+    )
+    fun findByCountryOrderByRecentPhoto(
         country: String,
         typeFilter: Set<LoveSpot.Type>,
         limit: Int

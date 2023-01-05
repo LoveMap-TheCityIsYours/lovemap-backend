@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.toList
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.sql.Timestamp
+import java.time.Instant
 
 @Service
 @Transactional
@@ -81,6 +83,7 @@ class LoveSpotReviewService(
             LoveSpotReview(
                 loveId = request.loveId,
                 reviewerId = request.reviewerId,
+                submittedAt = Timestamp.from(Instant.now()),
                 loveSpotId = request.loveSpotId,
                 reviewStars = request.reviewStars,
                 reviewText = request.reviewText.trim(),

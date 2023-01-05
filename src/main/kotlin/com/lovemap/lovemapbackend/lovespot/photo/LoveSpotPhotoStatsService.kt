@@ -29,7 +29,7 @@ class LoveSpotPhotoStatsService(
             val uploadedPhotos: List<LoveSpotPhoto> = deferredList.map { it.await() }
             logger.info { "Updating statistics for newly added photos." }
             val photoCount = uploadedPhotos.size
-            loveSpotStatisticsService.updatePhotoCounter(loveSpotId, photoCount)
+            loveSpotStatisticsService.updatePhotoStats(loveSpotId, photoCount)
             loverPointService.addPointsForPhotosAdded(caller.id, photoCount)
             reviewId?.let {
                 val reviewPhotoCount = repository.countByLoveSpotReviewId(reviewId).toInt()

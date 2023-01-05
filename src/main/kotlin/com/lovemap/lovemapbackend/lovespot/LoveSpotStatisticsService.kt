@@ -3,6 +3,8 @@ package com.lovemap.lovemapbackend.lovespot
 import com.lovemap.lovemapbackend.love.Love
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
 import org.springframework.stereotype.Service
+import java.sql.Timestamp
+import java.time.Instant
 
 @Service
 class LoveSpotStatisticsService(
@@ -93,9 +95,10 @@ class LoveSpotStatisticsService(
         return loveSpotService.save(loveSpot)
     }
 
-    suspend fun updatePhotoCounter(loveSpotId: Long, photoCount: Int): LoveSpot {
+    suspend fun updatePhotoStats(loveSpotId: Long, photoCount: Int): LoveSpot {
         val loveSpot = loveSpotService.getById(loveSpotId)
         loveSpot.numberOfPhotos += photoCount
+        loveSpot.lastPhotoAddedAt = Timestamp.from(Instant.now())
         return loveSpotService.save(loveSpot)
     }
 }

@@ -14,7 +14,7 @@ data class LoveSpotSearchDto(
 )
 
 enum class ListOrdering {
-    CLOSEST, TOP_RATED, RECENTLY_ACTIVE, POPULAR, NEWEST
+    CLOSEST, TOP_RATED, RECENTLY_ACTIVE, POPULAR, NEWEST, RECENT_PHOTOS
 }
 
 enum class ListLocationType {

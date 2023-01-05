@@ -3,6 +3,7 @@ package com.lovemap.lovemapbackend.lovespot.review
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
+import java.sql.Timestamp
 
 @Table("love_location_review")
 data class LoveSpotReview(
@@ -11,6 +12,9 @@ data class LoveSpotReview(
 
     @Column("love_id")
     var loveId: Long,
+
+    @Column("submitted_at")
+    var submittedAt: Timestamp,
 
     @Column("reviewer_id")
     var reviewerId: Long,

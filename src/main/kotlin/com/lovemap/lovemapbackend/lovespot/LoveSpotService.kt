@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.toList
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.sql.Timestamp
+import java.time.Instant
 
 private const val TWELVE_METERS_IN_COORDINATES = 0.0001
 private const val MINIMUM_DISTANCE_IN_METERS = 20.0
@@ -66,6 +68,7 @@ class LoveSpotService(
             description = request.description.trim(),
             availability = request.availability.toEntity(),
             type = request.type.toEntity(),
+            createdAt = Timestamp.from(Instant.now())
         )
         loveSpot.setCustomAvailability(request.customAvailability)
         validateSpotTooClose(request)
