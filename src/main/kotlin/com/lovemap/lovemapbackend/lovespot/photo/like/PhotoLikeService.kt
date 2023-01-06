@@ -7,6 +7,7 @@ import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhoto
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoResponse
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoService
 import com.lovemap.lovemapbackend.lovespot.photo.converter.LoveSpotPhotoConverter
+import kotlinx.coroutines.flow.Flow
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
@@ -133,7 +134,8 @@ class PhotoLikeService(
             photoId = photoId,
             loverId = lover.id,
             likeOrDislike = likeOrDislike,
-            happenedAt = Timestamp.from(Instant.now())
+            happenedAt = Timestamp.from(Instant.now()),
+            loveSpotId = photo.loveSpotId
         )
         if (likeOrDislike == LIKE) {
             photoService.incrementPhotoLikes(photo)
@@ -193,5 +195,9 @@ class PhotoLikeService(
     suspend fun deletePhotoLikes(photo: LoveSpotPhoto) {
         photoLikeRepository.deleteByPhotoId(photo.id)
         photoLikersDislikersRepository.deleteByPhotoId(photo.id)
+    }
+
+    fun getPhotoLikesFrom(generationTime: Instant): Flow<PhotoLike> {
+        return photoLikeRepository.findAllAfterHappenedAt(Timestamp.from(generationTime))
     }
 }

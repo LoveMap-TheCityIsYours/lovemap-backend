@@ -75,5 +75,6 @@ enum class ErrorCode {
     AlreadyOnWishlist,
     LoveSpotNotFound,
     InternalServerError,
+    UploadedPhotoFileEmpty,
 
 }

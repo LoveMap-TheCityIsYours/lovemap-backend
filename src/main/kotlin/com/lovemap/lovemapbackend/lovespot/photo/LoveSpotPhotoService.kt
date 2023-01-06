@@ -35,7 +35,7 @@ class LoveSpotPhotoService(
     private val logger = KotlinLogging.logger {}
 
     suspend fun getPhoto(loveSpotId: Long, photoId: Long): LoveSpotPhoto {
-        return repository.findById(photoId) ?. let { photo ->
+        return repository.findById(photoId)?.let { photo ->
             if (photo.loveSpotId != loveSpotId) {
                 throw LoveMapException(HttpStatus.NOT_FOUND, ErrorCode.PhotoNotFound)
             }
@@ -60,9 +60,13 @@ class LoveSpotPhotoService(
     }
 
     private suspend fun collectPhotoObjects(fileParts: Flow<FilePart>): List<PhotoDto> {
-        return fileParts
+        val photoDtoList = fileParts
             .map { filePart -> converter.toPhotoDto(filePart) }
             .toList()
+        if (photoDtoList.any { it.byteArray.isEmpty() }) {
+            throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.UploadedPhotoFileEmpty)
+        }
+        return photoDtoList
     }
 
     private suspend fun persistAllAsync(
@@ -129,4 +133,9 @@ class LoveSpotPhotoService(
         photo.dislikes = photo.dislikes - 1
         return repository.save(photo)
     }
+
+    fun getPhotosFrom(generateFrom: Instant): Flow<LoveSpotPhoto> {
+        return repository.findAllAfterUploadedAt(Timestamp.from(generateFrom))
+    }
+
 }

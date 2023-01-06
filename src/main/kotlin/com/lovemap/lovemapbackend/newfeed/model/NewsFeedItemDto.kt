@@ -89,7 +89,7 @@ data class LoveSpotPhotoNewsFeedData(
     val uploadedBy: Long,
     val uploadedAt: Instant,
     val fileName: String,
-    val loveSpotReviewId: Long,
+    val loveSpotReviewId: Long?,
     val likes: Int,
     val dislikes: Int,
 ) : NewsFeedData {
@@ -98,7 +98,7 @@ data class LoveSpotPhotoNewsFeedData(
     }
 }
 
-data class PhotoLikeDislikeNewsFeedData(
+data class PhotoLikeNewsFeedData(
     val id: Long,
     val loveSpotId: Long,
     val loveSpotPhotoId: Long,

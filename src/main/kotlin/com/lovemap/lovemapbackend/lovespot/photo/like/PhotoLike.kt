@@ -25,7 +25,10 @@ data class PhotoLike(
     var happenedAt: Timestamp,
 
     @Column("like_or_dislike")
-    var likeOrDislike: Int
+    var likeOrDislike: Int,
+
+    @Column("love_location_id")
+    var loveSpotId: Long
 )
 
 

@@ -146,4 +146,8 @@ class LoveSpotReviewService(
             repository.save(it)
         }
     }
+
+    fun getPhotosFrom(generateFrom: Instant): Flow<LoveSpotReview> {
+        return repository.findAllAfterSubmittedAt(Timestamp.from(generateFrom))
+    }
 }

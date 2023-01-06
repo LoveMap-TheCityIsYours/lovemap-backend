@@ -29,7 +29,7 @@ data class NewsFeedItem(
         LOVE_SPOT,
         LOVE_SPOT_REVIEW,
         LOVE_SPOT_PHOTO,
-        LOVE_SPOT_PHOTO_LIKE_DISLIKE,
+        LOVE_SPOT_PHOTO_LIKE,
         LOVE,
         WISHLIST_ITEM,
         LOVER

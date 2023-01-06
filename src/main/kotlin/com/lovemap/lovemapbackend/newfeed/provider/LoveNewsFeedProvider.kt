@@ -17,20 +17,20 @@ class LoveNewsFeedProvider(
 ) : NewsFeedProvider {
     private val logger = KotlinLogging.logger{}
 
-    override fun getNewsFeedFrom(now: Instant, generateFrom: Instant): Flow<NewsFeedItemDto> {
+    override fun getNewsFeedFrom(generationTime: Instant, generateFrom: Instant): Flow<NewsFeedItemDto> {
         logger.info { "Getting NewsFeed for Loves from $generateFrom" }
         val loves = loveService.getLovesFrom(generateFrom)
         return loves.map {
             NewsFeedItemDto(
                 type = NewsFeedItem.Type.LOVE,
-                generatedAt = now,
+                generatedAt = generationTime,
                 referenceId = it.id,
-                newsFeedData = loveSpotToNewsFeedData(it)
+                newsFeedData = loveToNewsFeedData(it)
             )
         }
     }
 
-    private suspend fun loveSpotToNewsFeedData(love: Love): LoveNewsFeedData {
+    private suspend fun loveToNewsFeedData(love: Love): LoveNewsFeedData {
         return LoveNewsFeedData(
             id = love.id,
             name = love.name,

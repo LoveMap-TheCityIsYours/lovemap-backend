@@ -36,6 +36,7 @@ class NewsFeedItemConverter(
             referenceId = dto.referenceId,
             loveSpot = loveSpotNewsFeedResponseConverter.convert(dto),
             love = loveNewsFeedResponseConverter.convert(dto),
+            null, null, null, null, null
         )
     }
 
