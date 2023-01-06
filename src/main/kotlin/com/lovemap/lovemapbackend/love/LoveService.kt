@@ -12,6 +12,7 @@ import com.lovemap.lovemapbackend.utils.ErrorCode.NotFoundById
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.InstantConverterUtils
 import com.lovemap.lovemapbackend.utils.LoveMapException
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import org.springframework.http.HttpStatus
@@ -124,5 +125,9 @@ class LoveService(
 
     suspend fun delete(love: Love) {
         loveRepository.delete(love)
+    }
+
+    fun getLovesFrom(generateFrom: Instant): Flow<Love> {
+        return loveRepository.findAllAfterHappenedAt(Timestamp.from(generateFrom))
     }
 }

@@ -173,4 +173,8 @@ class LoveSpotService(
             repository.save(it.apply { numberOfPhotos = it.numberOfPhotos - 1 })
         }
     }
+
+    fun getLoveSpotsFrom(generateFrom: Instant): Flow<LoveSpot> {
+        return repository.findAllAfterCreatedAt(Timestamp.from(generateFrom))
+    }
 }

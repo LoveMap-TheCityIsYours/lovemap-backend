@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend.configuration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.validation.Validator
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -44,5 +45,10 @@ class AppConfiguration(
     fun blockingCoroutineDispatcher(): ExecutorCoroutineDispatcher {
         val threads = Runtime.getRuntime().availableProcessors() * 4
         return Executors.newFixedThreadPool(threads).asCoroutineDispatcher()
+    }
+
+    @Bean
+    fun objectMapper(): ObjectMapper {
+        return ObjectMapper().apply { findAndRegisterModules() }
     }
 }

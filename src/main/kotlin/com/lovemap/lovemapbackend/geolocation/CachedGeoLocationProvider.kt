@@ -13,11 +13,15 @@ class CachedGeoLocationProvider(
 ) {
     private val cityCache = ConcurrentHashMap<City, Unit>()
     private val countryCache = ConcurrentHashMap<String, Unit>()
+    private val countriesByGeoLocationId = ConcurrentHashMap<Long, String>()
 
     fun insertIntoCache(geoLocation: GeoLocation) {
         if (geoLocation.country?.isEmpty() == false) {
             if (!countryCache.contains(geoLocation.country)) {
                 countryCache[geoLocation.country!!] = Unit
+            }
+            if (countriesByGeoLocationId.contains(geoLocation.id)) {
+                countriesByGeoLocationId[geoLocation.id] = geoLocation.country!!
             }
             if (geoLocation.city?.isEmpty() == false) {
                 val city = City(geoLocation.country!!, geoLocation.city!!)
@@ -34,6 +38,11 @@ class CachedGeoLocationProvider(
         } else {
             withContext(Dispatchers.IO) {
                 val countries = repository.findAllCountries().toList()
+                repository.findAllDistinctCountries().collect {
+                    if (it.country != null) {
+                        countriesByGeoLocationId[it.id] = it.country!!
+                    }
+                }
                 synchronized(countryCache) {
                     if (countryCache.isEmpty()) {
                         countryCache.putAll(countries.map { Pair(it, Unit) })
@@ -58,5 +67,9 @@ class CachedGeoLocationProvider(
                 Cities(cities)
             }
         }
+    }
+
+    fun findCountryByGeoLocationId(geoLocationId: Long): String? {
+        return countriesByGeoLocationId[geoLocationId]
     }
 }

@@ -37,4 +37,13 @@ interface GeoLocationRepository : CoroutineCrudRepository<GeoLocation, Long> {
         """
     )
     fun findAllCities(): Flow<GeoLocation>
+
+    @Query(
+        """
+            SELECT DISTINCT ON (country) * 
+            FROM geo_location 
+            WHERE country IS NOT NULL 
+        """
+    )
+    fun findAllDistinctCountries(): Flow<GeoLocation>
 }

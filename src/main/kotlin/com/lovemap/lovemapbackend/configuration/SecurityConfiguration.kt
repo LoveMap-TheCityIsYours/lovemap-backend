@@ -39,6 +39,7 @@ class SecurityConfiguration(
             .csrf().disable()
             .authorizeExchange()
             .pathMatchers("/webjars/swagger-ui/**").permitAll()
+            .pathMatchers("/swagger-ui/**").permitAll()
             .pathMatchers("/v3/api-docs/**").permitAll()
             .pathMatchers("/authentication/**").permitAll()
             .pathMatchers("/debug/**").permitAll()
@@ -59,6 +60,7 @@ class SecurityConfiguration(
             .pathMatchers("/partnership/**").hasRole("USER")
             .pathMatchers("/geolocations/**").hasRole("USER")
             .pathMatchers("/photos/**").hasRole("USER")
+            .pathMatchers("/newsfeed/**").hasRole("USER")
 
             .pathMatchers("/admin/**").hasRole("ADMIN")
             .anyExchange().authenticated()

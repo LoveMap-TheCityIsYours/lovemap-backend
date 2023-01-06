@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.data.repository.kotlin.CoroutineSortingRepository
+import java.sql.Timestamp
 
 interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long>, CoroutineCrudRepository<LoveSpot, Long> {
 
@@ -371,4 +372,13 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long>, Corou
         typeFilter: Set<LoveSpot.Type>,
         limit: Int
     ): Flow<LoveSpot>
+
+    @Query(
+        """
+            SELECT * FROM love_location
+            WHERE created_at > :createdAt
+            ORDER BY created_at DESC
+        """
+    )
+    fun findAllAfterCreatedAt(createdAt: Timestamp): Flow<LoveSpot>
 }

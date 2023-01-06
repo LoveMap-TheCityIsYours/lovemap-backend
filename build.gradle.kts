@@ -27,9 +27,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
-
-//    runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.1")
-
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("io.github.microutils:kotlin-logging:3.0.4")
@@ -48,8 +45,8 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.postgresql:r2dbc-postgresql")
 
-    implementation("org.springdoc:springdoc-openapi-webflux-core:1.6.14")
-    implementation("org.springdoc:springdoc-openapi-webflux-ui:1.6.14")
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-api:2.0.2")
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.2")
 
     testImplementation(kotlin("test"))
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")

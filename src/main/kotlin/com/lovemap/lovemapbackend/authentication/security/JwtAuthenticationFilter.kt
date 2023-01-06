@@ -29,6 +29,7 @@ class JwtAuthenticationFilter(
         "/join-us",
         "/favicon.ico",
         "/webjars",
+        "/swagger",
         "/v3/api-docs",
         "/debug",
         "/app-ads.txt"

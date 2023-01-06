@@ -13,6 +13,9 @@ data class NewsFeedItem(
     @Column("generated_at")
     var generatedAt: Timestamp,
 
+    @Column("happened_at")
+    var happenedAt: Timestamp,
+
     @Column("type")
     var type: Type,
 

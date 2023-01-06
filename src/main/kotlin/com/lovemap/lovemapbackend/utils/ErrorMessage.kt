@@ -74,5 +74,6 @@ enum class ErrorCode {
     WishlistItemNotFound,
     AlreadyOnWishlist,
     LoveSpotNotFound,
+    InternalServerError,
 
 }
