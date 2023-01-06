@@ -101,4 +101,11 @@ class LoveSpotStatisticsService(
         loveSpot.lastPhotoAddedAt = Timestamp.from(Instant.now())
         return loveSpotService.save(loveSpot)
     }
+
+    suspend fun changeWishlistOccurrence(loveSpotId: Long, plusOccurrence: Int) {
+        val loveSpot = loveSpotService.getById(loveSpotId)
+        loveSpot.occurrenceOnWishlists += plusOccurrence
+        updatePopularity(loveSpot)
+        loveSpotService.save(loveSpot)
+    }
 }
