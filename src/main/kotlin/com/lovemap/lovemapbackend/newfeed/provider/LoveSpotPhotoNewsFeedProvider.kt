@@ -18,7 +18,7 @@ class LoveSpotPhotoNewsFeedProvider(
     private val logger = KotlinLogging.logger {}
 
     override fun getNewsFeedFrom(generationTime: Instant, generateFrom: Instant): Flow<NewsFeedItemDto> {
-        logger.info { "Getting NewsFeed for LoveSpots from $generateFrom" }
+        logger.info { "Getting NewsFeed for LoveSpot Photos from $generateFrom" }
         val photos = photoService.getPhotosFrom(generateFrom)
         return photos.map {
             NewsFeedItemDto(

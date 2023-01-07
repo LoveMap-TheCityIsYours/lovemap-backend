@@ -5,6 +5,7 @@ import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemResponse
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.toSet
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import java.util.*
@@ -24,10 +25,10 @@ class CachedNewsFeedService(
 
         val itemDtoList = repository.findLastLimit(limit)
             .map { newsFeedItemConverter.dtoFromItem(it) }
-            .toList()
+            .toSet(TreeSet()) as TreeSet
         logger.info { "Fetched last NewsFeedItems from DB with size: ${itemDtoList.size}" }
 
-        val mergedFeed = TreeSet(itemDtoList).apply { addAll(freshFeed) }.take(limit)
+        val mergedFeed = itemDtoList.apply { addAll(freshFeed) }.take(limit)
         cache.clear()
         cache.addAll(mergedFeed)
         logger.info { "Merged fresh + last stored NewsFeed data for a combined cache with size of: ${mergedFeed.size}" }
@@ -46,7 +47,7 @@ class CachedNewsFeedService(
         logger.info { "Updating Cache because it's empty" }
         val lastStoredFeed = repository.findLastLimit(limit)
             .map { newsFeedItemConverter.dtoFromItem(it) }
-            .toList().toSortedSet()
+            .toSet(TreeSet())
         logger.info { "Fetched last stored feed with size: ${lastStoredFeed.size}" }
         cache.clear()
         cache.addAll(lastStoredFeed)

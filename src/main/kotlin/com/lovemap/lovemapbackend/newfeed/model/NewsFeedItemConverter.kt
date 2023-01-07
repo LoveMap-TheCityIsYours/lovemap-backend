@@ -11,7 +11,12 @@ import java.time.format.DateTimeFormatter
 class NewsFeedItemConverter(
     private val newsFeedDataParser: NewsFeedDataParser,
     private val loveSpotNewsFeedResponseConverter: LoveSpotNewsFeedResponseConverter,
+    private val loverNewsFeedResponseConverter: LoverNewsFeedResponseConverter,
     private val loveNewsFeedResponseConverter: LoveNewsFeedResponseConverter,
+    private val loveSpotPhotoNewsFeedResponseConverter: LoveSpotPhotoNewsFeedResponseConverter,
+    private val loveSpotReviewNewsFeedResponseConverter: LoveSpotReviewNewsFeedResponseConverter,
+    private val photoLikeNewsFeedResponseConverter: PhotoLikeNewsFeedResponseConverter,
+    private val wishlistNewsFeedResponseConverter: WishlistNewsFeedResponseConverter
 ) {
     private val dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
         .withZone(ZoneId.from(ZoneOffset.UTC))
@@ -36,7 +41,11 @@ class NewsFeedItemConverter(
             referenceId = dto.referenceId,
             loveSpot = loveSpotNewsFeedResponseConverter.convert(dto),
             love = loveNewsFeedResponseConverter.convert(dto),
-            null, null, null, null, null
+            lover = loverNewsFeedResponseConverter.convert(dto),
+            loveSpotReview = loveSpotReviewNewsFeedResponseConverter.convert(dto),
+            loveSpotPhoto = loveSpotPhotoNewsFeedResponseConverter.convert(dto),
+            photoLike = photoLikeNewsFeedResponseConverter.convert(dto),
+            wishlist = wishlistNewsFeedResponseConverter.convert(dto),
         )
     }
 

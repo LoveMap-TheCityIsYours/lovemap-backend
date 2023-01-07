@@ -141,4 +141,8 @@ class WishlistService(
     suspend fun deleteAllByLoveSpot(loveSpotId: Long) {
         repository.deleteAllByLoveSpotId(loveSpotId)
     }
+
+    fun getWishlistItemsFrom(generateFrom: Instant): Flow<WishlistItem> {
+        return repository.findAllAfterAddedAt(Timestamp.from(generateFrom))
+    }
 }

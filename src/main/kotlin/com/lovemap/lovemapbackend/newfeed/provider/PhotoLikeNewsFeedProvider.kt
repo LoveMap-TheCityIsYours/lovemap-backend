@@ -18,9 +18,9 @@ class PhotoLikeNewsFeedProvider(
     private val logger = KotlinLogging.logger {}
 
     override fun getNewsFeedFrom(generationTime: Instant, generateFrom: Instant): Flow<NewsFeedItemDto> {
-        logger.info { "Getting NewsFeed for Loves from $generateFrom" }
-        val loves = photoLikeService.getPhotoLikesFrom(generateFrom)
-        return loves.map {
+        logger.info { "Getting NewsFeed for PhotoLikes from $generateFrom" }
+        val photoLikes = photoLikeService.getPhotoLikesFrom(generateFrom)
+        return photoLikes.map {
             NewsFeedItemDto(
                 type = NewsFeedItem.Type.LOVE_SPOT_PHOTO_LIKE,
                 generatedAt = generationTime,

@@ -1,14 +1,11 @@
 package com.lovemap.lovemapbackend.newfeed
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.lovemap.lovemapbackend.lover.LoverService
-import com.lovemap.lovemapbackend.lover.wishlist.WishlistService
-import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoService
-import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewService
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto
 import com.lovemap.lovemapbackend.newfeed.provider.NewsFeedProvider
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.toSet
 import kotlinx.coroutines.reactor.mono
 import mu.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
@@ -22,22 +19,9 @@ import java.util.concurrent.TimeUnit
 
 const val REFRESH_RATE_MINUTES: Long = 15
 
-/*
-        LOVE_SPOT,
-        LOVE_SPOT_REVIEW,
-        LOVE_SPOT_PHOTO,
-        LOVE_SPOT_PHOTO_LIKE_DISLIKE,
-        LOVE,
-        WISHLIST_ITEM,
-        LOVER
- */
 @Component
 class ScheduledNewsFeedGenerator(
     private val newsFeedProviders: List<NewsFeedProvider>,
-    private val reviewService: LoveSpotReviewService,
-    private val photoService: LoveSpotPhotoService,
-    private val wishlistService: WishlistService,
-    private val loverService: LoverService,
     private val objectMapper: ObjectMapper,
     private val cachedNewsFeedService: CachedNewsFeedService,
     private val newsFeedRepository: NewsFeedRepository
@@ -54,7 +38,7 @@ class ScheduledNewsFeedGenerator(
                     generateBatchFrom(generationTime, last.generatedAt.toInstant())
                 }
             } ?: run {
-                generateBatchFrom(generationTime, generationTime.minus(Duration.ofDays(15)))
+                generateBatchFrom(generationTime, generationTime.minus(Duration.ofDays(90)))
             }
 
         }.subscribe()
@@ -76,7 +60,7 @@ class ScheduledNewsFeedGenerator(
         logger.info { "Starting to generate NewsFeedItems" }
         val completeFeed: SortedSet<NewsFeedItemDto> = newsFeedProviders.map {
             it.getNewsFeedFrom(generationTime, generateFrom)
-        }.flatMap { it.toList().toSortedSet() }.toSortedSet()
+        }.flatMapTo(TreeSet()) { it.toList() }
 
         cachedNewsFeedService.updateCache(completeFeed)
         val newsFeedItemList = completeFeed.map { it.toNewsFeedItem(objectMapper) }

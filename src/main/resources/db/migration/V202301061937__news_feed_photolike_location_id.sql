@@ -1,7 +1,4 @@
---ALTER TABLE photo_like ADD COLUMN love_location_id BIGINT NOT NULL DEFAULT 1
---CONSTRAINT fk_photo_like_love_location_id REFERENCES love_location(id);
-
-ALTER TABLE photo_like ADD COLUMN love_location_id BIGINT NOT NULL DEFAULT 1023
+ALTER TABLE photo_like ADD COLUMN love_location_id BIGINT NOT NULL DEFAULT 1
 CONSTRAINT fk_photo_like_love_location_id REFERENCES love_location(id);
 
 UPDATE photo_like

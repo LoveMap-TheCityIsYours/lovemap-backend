@@ -4,9 +4,12 @@ import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.utils.ErrorCode.*
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException
+import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.sql.Timestamp
+import java.time.Instant
 import java.util.*
 
 @Service
@@ -130,5 +133,9 @@ class LoverService(
 
     suspend fun unAuthorizedExistsByEmail(email: String): Boolean {
         return loverRepository.existsByEmail(email)
+    }
+
+    fun getLoversFrom(generateFrom: Instant): Flow<Lover> {
+        return loverRepository.findAllAfterCreatedAt(Timestamp.from(generateFrom))
     }
 }

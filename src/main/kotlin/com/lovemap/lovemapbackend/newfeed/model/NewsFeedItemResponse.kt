@@ -24,7 +24,7 @@ enum class NewsFeedItemType {
     LOVE_SPOT,
     LOVE_SPOT_REVIEW,
     LOVE_SPOT_PHOTO,
-    LOVE_SPOT_PHOTO_LIKE_DISLIKE,
+    LOVE_SPOT_PHOTO_LIKE,
     LOVE,
     WISHLIST_ITEM,
     LOVER;
@@ -71,7 +71,7 @@ data class LoveSpotPhotoNewsFeedResponse(
     val uploadedBy: Long,
     val uploadedAt: Instant,
     val fileName: String,
-    val loveSpotReviewId: Long,
+    val loveSpotReviewId: Long?,
     val likes: Int,
     val dislikes: Int,
 )
