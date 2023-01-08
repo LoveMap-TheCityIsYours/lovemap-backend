@@ -45,7 +45,7 @@ class ValidatorService(
     }
 
     fun validatePageRequest(page: Int, size: Int, totalCount: Int) {
-        if (page * size + size > totalCount) {
+        if (page * size > totalCount) {
             throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.NewsFeedPageNotFound)
         }
         if (page < 0 || size < 1) {

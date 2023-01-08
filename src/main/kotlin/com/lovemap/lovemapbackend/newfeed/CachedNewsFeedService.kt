@@ -11,6 +11,8 @@ import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.math.max
+import kotlin.math.min
 
 @Service
 class CachedNewsFeedService(
@@ -50,7 +52,7 @@ class CachedNewsFeedService(
             fillCacheFromDatabase()
         }
         validatorService.validatePageRequest(page, size, cache.size)
-        val pageItems = cache.subList(page * size, page * size + size)
+        val pageItems = cache.subList(page * size, min(page * size + size, cache.size))
         logger.info { "Returning page with size: ${pageItems.size}" }
         return pageItems.map { newsFeedItemConverter.dtoToResponse(it) }
     }
