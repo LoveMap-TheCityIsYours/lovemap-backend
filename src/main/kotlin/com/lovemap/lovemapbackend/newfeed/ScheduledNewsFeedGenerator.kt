@@ -21,7 +21,7 @@ import java.time.ZonedDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-const val REFRESH_RATE_MINUTES: Long = 2
+const val REFRESH_RATE_MINUTES: Long = 30
 
 @Component
 class ScheduledNewsFeedGenerator(

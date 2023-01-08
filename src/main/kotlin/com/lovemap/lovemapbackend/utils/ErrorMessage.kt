@@ -76,5 +76,7 @@ enum class ErrorCode {
     LoveSpotNotFound,
     InternalServerError,
     UploadedPhotoFileEmpty,
+    NewsFeedPageNotFound,
+    InvalidPageRequest,
 
 }
