@@ -26,6 +26,7 @@ CREATE TYPE news_feed_item_type AS ENUM (
 	'LOVER'
 );
 
+
 CREATE TABLE news_feed_item
 (
 	id						BIGSERIAL 				PRIMARY KEY,

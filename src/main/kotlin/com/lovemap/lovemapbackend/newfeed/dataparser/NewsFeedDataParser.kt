@@ -1,6 +1,6 @@
 package com.lovemap.lovemapbackend.newfeed.dataparser
 
-import com.lovemap.lovemapbackend.newfeed.NewsFeedItem
+import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedData
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException

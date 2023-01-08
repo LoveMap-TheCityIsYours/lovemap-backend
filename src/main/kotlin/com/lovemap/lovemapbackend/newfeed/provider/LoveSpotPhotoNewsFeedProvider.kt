@@ -2,7 +2,7 @@ package com.lovemap.lovemapbackend.newfeed.provider
 
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhoto
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoService
-import com.lovemap.lovemapbackend.newfeed.NewsFeedItem
+import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newfeed.model.LoveSpotPhotoNewsFeedData
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto
 import kotlinx.coroutines.flow.Flow

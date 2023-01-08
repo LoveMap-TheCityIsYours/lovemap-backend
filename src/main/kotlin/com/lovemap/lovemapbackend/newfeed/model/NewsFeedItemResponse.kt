@@ -1,7 +1,7 @@
 package com.lovemap.lovemapbackend.newfeed.model
 
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
-import com.lovemap.lovemapbackend.newfeed.NewsFeedItem
+import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import java.time.Instant
 
 data class NewsFeedItemResponse(
@@ -11,13 +11,13 @@ data class NewsFeedItemResponse(
     val happenedAt: Instant,
     val happenedAtFormatted: String,
     val referenceId: Long,
-    val loveSpot: LoveSpotNewsFeedResponse?,
-    val love: LoveNewsFeedResponse?,
-    val loveSpotReview: LoveSpotReviewNewsFeedResponse?,
-    val loveSpotPhoto: LoveSpotPhotoNewsFeedResponse?,
-    val photoLike: PhotoLikeNewsFeedResponse?,
-    val wishlist: WishlistNewsFeedResponse?,
-    val lover: LoverNewsFeedResponse?
+    val loveSpot: LoveSpotNewsFeedResponse? = null,
+    val love: LoveNewsFeedResponse? = null,
+    val loveSpotReview: LoveSpotReviewNewsFeedResponse? = null,
+    val loveSpotPhoto: LoveSpotPhotoNewsFeedResponse? = null,
+    val photoLike: PhotoLikeNewsFeedResponse? = null,
+    val wishlist: WishlistNewsFeedResponse? = null,
+    val lover: LoverNewsFeedResponse? = null
 )
 
 enum class NewsFeedItemType {

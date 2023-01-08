@@ -2,7 +2,7 @@ package com.lovemap.lovemapbackend.newfeed.provider
 
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewService
-import com.lovemap.lovemapbackend.newfeed.NewsFeedItem
+import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newfeed.model.LoveSpotReviewNewsFeedData
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto
 import kotlinx.coroutines.flow.Flow

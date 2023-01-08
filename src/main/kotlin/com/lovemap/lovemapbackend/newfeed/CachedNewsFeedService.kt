@@ -1,10 +1,10 @@
 package com.lovemap.lovemapbackend.newfeed
 
+import com.lovemap.lovemapbackend.newfeed.data.NewsFeedRepository
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemConverter
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemResponse
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.toSet
 import mu.KotlinLogging
 import org.springframework.stereotype.Service

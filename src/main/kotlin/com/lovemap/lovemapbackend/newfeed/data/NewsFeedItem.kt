@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.newfeed
+package com.lovemap.lovemapbackend.newfeed.data
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column

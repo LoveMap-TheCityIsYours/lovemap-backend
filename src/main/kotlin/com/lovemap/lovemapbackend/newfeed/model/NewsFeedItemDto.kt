@@ -2,7 +2,7 @@ package com.lovemap.lovemapbackend.newfeed.model
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
-import com.lovemap.lovemapbackend.newfeed.NewsFeedItem
+import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import java.sql.Timestamp
 import java.time.Instant
 

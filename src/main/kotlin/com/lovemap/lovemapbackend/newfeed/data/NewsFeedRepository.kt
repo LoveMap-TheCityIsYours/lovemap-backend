@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.newfeed
+package com.lovemap.lovemapbackend.newfeed.data
 
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.r2dbc.repository.Query

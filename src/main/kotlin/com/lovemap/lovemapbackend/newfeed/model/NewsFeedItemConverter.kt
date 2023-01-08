@@ -1,7 +1,10 @@
 package com.lovemap.lovemapbackend.newfeed.model
 
-import com.lovemap.lovemapbackend.newfeed.NewsFeedItem
+import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newfeed.dataparser.NewsFeedDataParser
+import com.lovemap.lovemapbackend.utils.ErrorCode
+import com.lovemap.lovemapbackend.utils.LoveMapException
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -10,14 +13,11 @@ import java.time.format.DateTimeFormatter
 @Component
 class NewsFeedItemConverter(
     private val newsFeedDataParser: NewsFeedDataParser,
-    private val loveSpotNewsFeedResponseConverter: LoveSpotNewsFeedResponseConverter,
-    private val loverNewsFeedResponseConverter: LoverNewsFeedResponseConverter,
-    private val loveNewsFeedResponseConverter: LoveNewsFeedResponseConverter,
-    private val loveSpotPhotoNewsFeedResponseConverter: LoveSpotPhotoNewsFeedResponseConverter,
-    private val loveSpotReviewNewsFeedResponseConverter: LoveSpotReviewNewsFeedResponseConverter,
-    private val photoLikeNewsFeedResponseConverter: PhotoLikeNewsFeedResponseConverter,
-    private val wishlistNewsFeedResponseConverter: WishlistNewsFeedResponseConverter
+    responseDecorators: List<TypeBasedNewsFeedResponseDecorator>
 ) {
+    private val responseDecoratorMap: Map<NewsFeedItem.Type, TypeBasedNewsFeedResponseDecorator> =
+        responseDecorators.associateBy { it.supportedType() }
+
     private val dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
         .withZone(ZoneId.from(ZoneOffset.UTC))
 
@@ -32,21 +32,16 @@ class NewsFeedItemConverter(
     }
 
     fun dtoToResponse(dto: NewsFeedItemDto): NewsFeedItemResponse {
-        return NewsFeedItemResponse(
+        val initializedResponse = NewsFeedItemResponse(
             type = NewsFeedItemType.ofType(dto.type),
             generatedAt = dto.generatedAt,
             generatedAtFormatted = dateTimeFormatter.format(dto.generatedAt),
             happenedAt = dto.newsFeedData.happenedAt(),
             happenedAtFormatted = dateTimeFormatter.format(dto.newsFeedData.happenedAt()),
-            referenceId = dto.referenceId,
-            loveSpot = loveSpotNewsFeedResponseConverter.convert(dto),
-            love = loveNewsFeedResponseConverter.convert(dto),
-            lover = loverNewsFeedResponseConverter.convert(dto),
-            loveSpotReview = loveSpotReviewNewsFeedResponseConverter.convert(dto),
-            loveSpotPhoto = loveSpotPhotoNewsFeedResponseConverter.convert(dto),
-            photoLike = photoLikeNewsFeedResponseConverter.convert(dto),
-            wishlist = wishlistNewsFeedResponseConverter.convert(dto),
+            referenceId = dto.referenceId
         )
+        return responseDecoratorMap[dto.type]?.decorate(initializedResponse, dto.newsFeedData)
+            ?: throw LoveMapException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.InternalServerError)
     }
 
 }
