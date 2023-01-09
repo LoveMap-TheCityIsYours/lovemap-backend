@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend.newfeed
 
+import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedRepository
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemConverter
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto
@@ -11,11 +12,10 @@ import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
-import kotlin.math.max
 import kotlin.math.min
 
 @Service
-class CachedNewsFeedService(
+class NewsFeedService(
     private val newsFeedItemConverter: NewsFeedItemConverter,
     private val validatorService: ValidatorService,
     private val repository: NewsFeedRepository
@@ -66,5 +66,9 @@ class CachedNewsFeedService(
         cache.clear()
         cache.addAll(lastStoredFeed)
         return lastStoredFeed.toList()
+    }
+
+    fun removeFromCache(type: NewsFeedItem.Type, referenceId: Long) {
+        cache.removeIf { it.referenceId == referenceId && it.type == type }
     }
 }

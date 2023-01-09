@@ -25,7 +25,7 @@ spec:
         - env:
             - name: spring_profiles_active
               value: prod
-          image: us-east1-docker.pkg.dev/smackmap/lovemap-docker/lovemap-backend:1.11.1
+          image: us-east1-docker.pkg.dev/smackmap/lovemap-docker/lovemap-backend:1.11.3
           imagePullPolicy: Always
           name: lovemap
           ports:

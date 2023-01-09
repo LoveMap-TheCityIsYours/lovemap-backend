@@ -6,6 +6,8 @@ import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotStatisticsService
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoService
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewService
+import com.lovemap.lovemapbackend.newfeed.NewsFeedDeletionService
+import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -18,7 +20,8 @@ class LoveDeletionService(
     private val loveConverter: LoveConverter,
     private val loveSpotReviewService: LoveSpotReviewService,
     private val loveSpotPhotoService: LoveSpotPhotoService,
-    private val loveSpotStatisticsService: LoveSpotStatisticsService
+    private val loveSpotStatisticsService: LoveSpotStatisticsService,
+    private val newsFeedDeletionService: NewsFeedDeletionService
 ) {
 
     suspend fun delete(id: Long): LoveResponse {
@@ -32,6 +35,7 @@ class LoveDeletionService(
         val latestLove = loveService.findLatestLoveAtSpot(love.loveSpotId)
         val numberOfLoves = loveService.getNumberOfLovesAtSpot(love.loveSpotId)
         loveSpotStatisticsService.deleteLoveMaking(love, latestLove, numberOfLoves)
+        newsFeedDeletionService.deleteByTypeAndReferenceId(NewsFeedItem.Type.LOVE, id)
         return loveConverter.toDto(caller, love)
     }
 

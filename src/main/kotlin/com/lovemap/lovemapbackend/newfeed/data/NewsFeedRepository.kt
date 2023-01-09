@@ -9,6 +9,8 @@ import java.sql.Timestamp
 interface NewsFeedRepository : CoroutineSortingRepository<NewsFeedItem, Long>,
     CoroutineCrudRepository<NewsFeedItem, Long> {
 
+    suspend fun deleteByTypeAndReferenceId(type: NewsFeedItem.Type, referenceId: Long)
+
     @Query(
         """
             SELECT * FROM news_feed_item 

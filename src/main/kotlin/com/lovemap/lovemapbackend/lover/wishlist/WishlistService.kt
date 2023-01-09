@@ -5,6 +5,8 @@ import com.lovemap.lovemapbackend.love.Love
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.lovespot.LoveSpotStatisticsService
+import com.lovemap.lovemapbackend.newfeed.NewsFeedDeletionService
+import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.partnership.PartnershipService
 import com.lovemap.lovemapbackend.utils.ErrorCode.*
 import com.lovemap.lovemapbackend.utils.LoveMapException
@@ -23,7 +25,8 @@ class WishlistService(
     private val loveSpotService: LoveSpotService,
     private val partnershipService: PartnershipService,
     private val loveSpotStatisticsService: LoveSpotStatisticsService,
-    private val repository: WishlistItemRepository
+    private val repository: WishlistItemRepository,
+    private val newsFeedDeletionService: NewsFeedDeletionService
 ) {
 
     suspend fun getWishList(loverId: Long): List<WishlistResponse> {
@@ -139,6 +142,9 @@ class WishlistService(
     }
 
     suspend fun deleteAllByLoveSpot(loveSpotId: Long) {
+        repository.findAllByLoveSpotId(loveSpotId).collect { wishlistItem ->
+            newsFeedDeletionService.deleteByTypeAndReferenceId(NewsFeedItem.Type.WISHLIST_ITEM, wishlistItem.id)
+        }
         repository.deleteAllByLoveSpotId(loveSpotId)
     }
 

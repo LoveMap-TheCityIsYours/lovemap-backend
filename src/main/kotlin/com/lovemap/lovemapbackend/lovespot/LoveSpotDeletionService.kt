@@ -4,6 +4,8 @@ import com.lovemap.lovemapbackend.love.LoveDeletionService
 import com.lovemap.lovemapbackend.lover.wishlist.WishlistService
 import com.lovemap.lovemapbackend.lovespot.photo.PhotoDeletionService
 import com.lovemap.lovemapbackend.lovespot.report.LoveSpotReportService
+import com.lovemap.lovemapbackend.newfeed.NewsFeedDeletionService
+import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,6 +17,7 @@ class LoveSpotDeletionService(
     private val loveSpotReportService: LoveSpotReportService,
     private val photoDeletionService: PhotoDeletionService,
     private val wishlistService: WishlistService,
+    private val newsFeedDeletionService: NewsFeedDeletionService
 ) {
 
     suspend fun deleteSpot(loveSpotId: Long): LoveSpot {
@@ -24,6 +27,7 @@ class LoveSpotDeletionService(
         loveDeletionService.deleteAllLovesAtSpot(loveSpot)
         wishlistService.deleteAllByLoveSpot(loveSpotId)
         loveSpotService.deleteLoveSpot(loveSpot)
+        newsFeedDeletionService.deleteByTypeAndReferenceId(NewsFeedItem.Type.LOVE_SPOT, loveSpotId)
         return loveSpot
     }
 }

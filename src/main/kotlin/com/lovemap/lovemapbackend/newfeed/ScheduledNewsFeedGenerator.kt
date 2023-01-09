@@ -27,7 +27,7 @@ const val REFRESH_RATE_MINUTES: Long = 30
 class ScheduledNewsFeedGenerator(
     private val newsFeedProviders: List<NewsFeedProvider>,
     private val objectMapper: ObjectMapper,
-    private val cachedNewsFeedService: CachedNewsFeedService,
+    private val cachedNewsFeedService: NewsFeedService,
     private val newsFeedRepository: NewsFeedRepository,
     private val generationRepository: NewsFeedGenerationRepository
 ) {

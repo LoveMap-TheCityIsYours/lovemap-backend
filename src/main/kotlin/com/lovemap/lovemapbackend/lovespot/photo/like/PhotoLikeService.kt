@@ -7,6 +7,8 @@ import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhoto
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoResponse
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoService
 import com.lovemap.lovemapbackend.lovespot.photo.converter.LoveSpotPhotoConverter
+import com.lovemap.lovemapbackend.newfeed.NewsFeedDeletionService
+import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import kotlinx.coroutines.flow.Flow
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -20,7 +22,8 @@ class PhotoLikeService(
     private val converter: LoveSpotPhotoConverter,
     private val loverPointService: LoverPointService,
     private val photoLikeRepository: PhotoLikeRepository,
-    private val photoLikersDislikersRepository: PhotoLikersDislikersRepository
+    private val photoLikersDislikersRepository: PhotoLikersDislikersRepository,
+    private val newsFeedDeletionService: NewsFeedDeletionService
 ) {
 
     @Transactional
@@ -193,6 +196,9 @@ class PhotoLikeService(
     }
 
     suspend fun deletePhotoLikes(photo: LoveSpotPhoto) {
+        photoLikeRepository.findByPhotoId(photo.id).collect { photoLike ->
+            newsFeedDeletionService.deleteByTypeAndReferenceId(NewsFeedItem.Type.LOVE_SPOT_PHOTO_LIKE, photoLike.id)
+        }
         photoLikeRepository.deleteByPhotoId(photo.id)
         photoLikersDislikersRepository.deleteByPhotoId(photo.id)
     }

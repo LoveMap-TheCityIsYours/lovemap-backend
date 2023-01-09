@@ -6,6 +6,8 @@ import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.lovespot.photo.like.PhotoLikeService
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewService
+import com.lovemap.lovemapbackend.newfeed.NewsFeedDeletionService
+import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.utils.AsyncTaskService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException
@@ -23,11 +25,13 @@ class PhotoDeletionService(
     private val authorizationService: AuthorizationService,
     private val loveSpotReviewService: LoveSpotReviewService,
     private val photoLikeService: PhotoLikeService,
-    private val loverPointService: LoverPointService
+    private val loverPointService: LoverPointService,
+    private val newsFeedDeletionService: NewsFeedDeletionService
 ) {
 
     suspend fun deletePhotosForLoveSpot(loveSpot: LoveSpot) {
         repository.findAllByLoveSpotId(loveSpot.id).collect { photo ->
+            newsFeedDeletionService.deleteByTypeAndReferenceId(NewsFeedItem.Type.LOVE_SPOT_PHOTO, photo.id)
             photoLikeService.deletePhotoLikes(photo)
             loverPointService.subtractPointsForPhotoDeleted(photo)
             repository.delete(photo)

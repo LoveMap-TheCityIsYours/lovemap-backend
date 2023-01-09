@@ -19,4 +19,6 @@ interface WishlistItemRepository : CoroutineCrudRepository<WishlistItem, Long> {
         """
     )
     fun findAllAfterAddedAt(addedAt: Timestamp): Flow<WishlistItem>
+
+    fun findAllByLoveSpotId(loveSpotId: Long): Flow<WishlistItem>
 }
