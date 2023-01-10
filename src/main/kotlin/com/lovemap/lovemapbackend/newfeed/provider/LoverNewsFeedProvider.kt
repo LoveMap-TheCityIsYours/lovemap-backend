@@ -17,7 +17,7 @@ class LoverNewsFeedProvider(
 ) : NewsFeedProvider {
     private val logger = KotlinLogging.logger{}
 
-    override fun getNewsFeedFrom(generationTime: Instant, generateFrom: Instant): Flow<NewsFeedItemDto> {
+    override suspend fun getNewsFeedFrom(generationTime: Instant, generateFrom: Instant): Flow<NewsFeedItemDto> {
         logger.info { "Getting NewsFeed for Lovers from $generateFrom" }
         val loves = loverService.getLoversFrom(generateFrom)
         return loves.map {
@@ -25,7 +25,8 @@ class LoverNewsFeedProvider(
                 type = NewsFeedItem.Type.LOVER,
                 generatedAt = generationTime,
                 referenceId = it.id,
-                newsFeedData = loverToNewsFeedData(it)
+                newsFeedData = loverToNewsFeedData(it),
+                country = NewsFeedItem.DEFAULT_COUNTRY
             )
         }
     }

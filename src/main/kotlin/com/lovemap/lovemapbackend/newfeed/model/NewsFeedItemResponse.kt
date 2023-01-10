@@ -11,6 +11,7 @@ data class NewsFeedItemResponse(
     val happenedAt: Instant,
     val happenedAtFormatted: String,
     val referenceId: Long,
+    val country: String,
     val loveSpot: LoveSpotNewsFeedResponse? = null,
     val love: LoveNewsFeedResponse? = null,
     val loveSpotReview: LoveSpotReviewNewsFeedResponse? = null,

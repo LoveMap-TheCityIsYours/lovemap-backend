@@ -27,6 +27,7 @@ class NewsFeedItemConverter(
             type = item.type,
             generatedAt = item.generatedAt.toInstant(),
             referenceId = item.referenceId,
+            country = item.country,
             newsFeedData = newsFeedDataParser.parse(item.type, item.data)
         )
     }
@@ -38,7 +39,8 @@ class NewsFeedItemConverter(
             generatedAtFormatted = dateTimeFormatter.format(dto.generatedAt),
             happenedAt = dto.newsFeedData.happenedAt(),
             happenedAtFormatted = dateTimeFormatter.format(dto.newsFeedData.happenedAt()),
-            referenceId = dto.referenceId
+            referenceId = dto.referenceId,
+            country = dto.country
         )
         return responseDecoratorMap[dto.type]?.decorate(initializedResponse, dto.newsFeedData)
             ?: throw LoveMapException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.InternalServerError)

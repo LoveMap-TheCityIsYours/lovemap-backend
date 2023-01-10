@@ -4,6 +4,7 @@ import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
+import com.lovemap.lovemapbackend.lovespot.LoveSpotStatisticsService
 import kotlinx.coroutines.flow.Flow
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional
 class LoveSpotReportService(
     private val authorizationService: AuthorizationService,
     private val loveSpotService: LoveSpotService,
+    private val loveSpotStatisticsService: LoveSpotStatisticsService,
     private val loverPointService: LoverPointService,
     private val repository: LoveSpotReportRepository
 ) {
@@ -52,7 +54,7 @@ class LoveSpotReportService(
                 reportText = request.reportText.trim(),
             )
         )
-        val loveSpot = loveSpotService.updateNumberOfReports(request.loveSpotId, request)
+        val loveSpot = loveSpotStatisticsService.updateNumberOfReports(request.loveSpotId)
         loverPointService.addPointsForReport(review, loveSpot)
         return loveSpot
     }

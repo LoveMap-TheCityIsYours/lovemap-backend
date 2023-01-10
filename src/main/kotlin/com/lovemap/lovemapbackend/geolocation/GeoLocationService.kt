@@ -35,6 +35,10 @@ class GeoLocationService(
         return repository.findByCity(preparedCity)
     }
 
+    suspend fun findGeoLocationById(geoLocationId: Long): GeoLocation? {
+        return repository.findById(geoLocationId)
+    }
+
     suspend fun decodeLocationInfo(loveSpot: LoveSpot): GeoLocation? {
         return withContext(Dispatchers.IO) {
             try {

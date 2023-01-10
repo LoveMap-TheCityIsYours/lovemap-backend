@@ -5,6 +5,7 @@ import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
 import java.time.Instant
+import kotlin.math.max
 
 @Service
 class LoveSpotStatisticsService(
@@ -102,10 +103,22 @@ class LoveSpotStatisticsService(
         return loveSpotService.save(loveSpot)
     }
 
+    suspend fun decrementNumberOfPhotos(loveSpotId: Long) {
+        val loveSpot = loveSpotService.getById(loveSpotId)
+        loveSpot.numberOfPhotos = max(loveSpot.numberOfPhotos - 1, 0)
+        loveSpotService.save(loveSpot)
+    }
+
     suspend fun changeWishlistOccurrence(loveSpotId: Long, plusOccurrence: Int) {
         val loveSpot = loveSpotService.getById(loveSpotId)
-        loveSpot.occurrenceOnWishlists += plusOccurrence
+        loveSpot.occurrenceOnWishlists = max(loveSpot.occurrenceOnWishlists + plusOccurrence, 0)
         updatePopularity(loveSpot)
         loveSpotService.save(loveSpot)
+    }
+
+    suspend fun updateNumberOfReports(loveSpotId: Long): LoveSpot {
+        val loveSpot = loveSpotService.getById(loveSpotId)
+        loveSpot.numberOfReports += 1
+        return loveSpotService.save(loveSpot)
     }
 }

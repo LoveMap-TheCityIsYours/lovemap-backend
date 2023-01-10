@@ -22,6 +22,9 @@ data class NewsFeedItem(
     @Column("reference_id")
     var referenceId: Long,
 
+    @Column("country")
+    var country: String = DEFAULT_COUNTRY,
+
     @Column("data")
     var data: String
 ) {
@@ -33,5 +36,9 @@ data class NewsFeedItem(
         LOVE,
         WISHLIST_ITEM,
         LOVER
+    }
+
+    companion object {
+        const val DEFAULT_COUNTRY = "GLOBAL"
     }
 }

@@ -10,6 +10,7 @@ data class NewsFeedItemDto(
     val id: Long? = null,
     val type: NewsFeedItem.Type,
     val generatedAt: Instant,
+    val country: String,
     val referenceId: Long,
     val newsFeedData: NewsFeedData
 ) : Comparable<NewsFeedItemDto> {
@@ -24,6 +25,7 @@ data class NewsFeedItemDto(
             happenedAt = Timestamp.from(newsFeedData.happenedAt()),
             type = type,
             referenceId = referenceId,
+            country = country,
             data = objectMapper.writeValueAsString(newsFeedData)
         )
     }
@@ -53,6 +55,7 @@ data class NewsFeedItemDto(
 
 interface NewsFeedData {
     fun happenedAt(): Instant
+    fun loveSpotId(): Long?
 }
 
 data class LoveSpotNewsFeedData(
@@ -64,9 +67,8 @@ data class LoveSpotNewsFeedData(
     val type: LoveSpot.Type,
     val country: String?
 ) : NewsFeedData {
-    override fun happenedAt(): Instant {
-        return createdAt
-    }
+    override fun happenedAt(): Instant = createdAt
+    override fun loveSpotId(): Long = id
 }
 
 data class LoveSpotReviewNewsFeedData(
@@ -78,9 +80,8 @@ data class LoveSpotReviewNewsFeedData(
     val reviewStars: Int,
     val riskLevel: Int
 ) : NewsFeedData {
-    override fun happenedAt(): Instant {
-        return submittedAt
-    }
+    override fun happenedAt(): Instant = submittedAt
+    override fun loveSpotId(): Long = loveSpotId
 }
 
 data class LoveSpotPhotoNewsFeedData(
@@ -93,9 +94,8 @@ data class LoveSpotPhotoNewsFeedData(
     val likes: Int,
     val dislikes: Int,
 ) : NewsFeedData {
-    override fun happenedAt(): Instant {
-        return uploadedAt
-    }
+    override fun happenedAt(): Instant = uploadedAt
+    override fun loveSpotId(): Long = loveSpotId
 }
 
 data class PhotoLikeNewsFeedData(
@@ -106,9 +106,8 @@ data class PhotoLikeNewsFeedData(
     val loverId: Long,
     val likeOrDislike: Int
 ) : NewsFeedData {
-    override fun happenedAt(): Instant {
-        return happenedAt
-    }
+    override fun happenedAt(): Instant = happenedAt
+    override fun loveSpotId(): Long = loveSpotId
 }
 
 data class LoveNewsFeedData(
@@ -119,9 +118,8 @@ data class LoveNewsFeedData(
     val happenedAt: Instant,
     val loverPartnerId: Long?,
 ) : NewsFeedData {
-    override fun happenedAt(): Instant {
-        return happenedAt
-    }
+    override fun happenedAt(): Instant = happenedAt
+    override fun loveSpotId(): Long = loveSpotId
 }
 
 data class WishlistNewsFeedData(
@@ -130,9 +128,8 @@ data class WishlistNewsFeedData(
     val loveSpotId: Long,
     val addedAt: Instant
 ) : NewsFeedData {
-    override fun happenedAt(): Instant {
-        return addedAt
-    }
+    override fun happenedAt(): Instant = addedAt
+    override fun loveSpotId(): Long = loveSpotId
 }
 
 data class LoverNewsFeedData(
@@ -144,7 +141,6 @@ data class LoverNewsFeedData(
     val points: Int,
     val uuid: String?
 ) : NewsFeedData {
-    override fun happenedAt(): Instant {
-        return joinedAt
-    }
+    override fun happenedAt(): Instant = joinedAt
+    override fun loveSpotId(): Long? = null
 }

@@ -13,11 +13,12 @@ import java.time.Instant
 
 @Component
 class WishlistNewsFeedProvider(
-    private val wishlistService: WishlistService
+    private val wishlistService: WishlistService,
+    private val cachedLoveSpotService: CachedLoveSpotService,
 ) : NewsFeedProvider {
     private val logger = KotlinLogging.logger{}
 
-    override fun getNewsFeedFrom(generationTime: Instant, generateFrom: Instant): Flow<NewsFeedItemDto> {
+    override suspend fun getNewsFeedFrom(generationTime: Instant, generateFrom: Instant): Flow<NewsFeedItemDto> {
         logger.info { "Getting NewsFeed for Wishlists from $generateFrom" }
         val wishlistItems = wishlistService.getWishlistItemsFrom(generateFrom)
         return wishlistItems.map {
@@ -25,6 +26,7 @@ class WishlistNewsFeedProvider(
                 type = NewsFeedItem.Type.WISHLIST_ITEM,
                 generatedAt = generationTime,
                 referenceId = it.id,
+                country = cachedLoveSpotService.getCountryByLoveSpotId(it.loveSpotId),
                 newsFeedData = wishlistToNewsFeedData(it)
             )
         }

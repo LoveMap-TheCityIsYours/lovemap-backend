@@ -68,8 +68,4 @@ class CachedGeoLocationProvider(
             }
         }
     }
-
-    fun findCountryByGeoLocationId(geoLocationId: Long): String? {
-        return countriesByGeoLocationId[geoLocationId]
-    }
 }

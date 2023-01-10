@@ -4,6 +4,7 @@ import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.lover.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
+import com.lovemap.lovemapbackend.lovespot.LoveSpotStatisticsService
 import com.lovemap.lovemapbackend.lovespot.photo.like.PhotoLikeService
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewService
 import com.lovemap.lovemapbackend.newfeed.NewsFeedDeletionService
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional
 class PhotoDeletionService(
     private val repository: LoveSpotPhotoRepository,
     private val loveSpotService: LoveSpotService,
+    private val loveSpotStatisticsService: LoveSpotStatisticsService,
     private val asyncTaskService: AsyncTaskService,
     private val photoStore: PhotoStore,
     private val photoService: LoveSpotPhotoService,
@@ -48,7 +50,7 @@ class PhotoDeletionService(
             photoLikeService.deletePhotoLikes(photo)
             loverPointService.subtractPointsForPhotoDeleted(photo)
             repository.delete(photo)
-            loveSpotService.decrementNumberOfPhotos(loveSpotId)
+            loveSpotStatisticsService.decrementNumberOfPhotos(loveSpotId)
             asyncTaskService.runAsync {
                 photoStore.delete(photo)
             }

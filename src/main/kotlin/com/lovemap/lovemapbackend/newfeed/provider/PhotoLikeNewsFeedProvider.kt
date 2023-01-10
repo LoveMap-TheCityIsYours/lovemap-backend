@@ -14,10 +14,11 @@ import java.time.Instant
 @Component
 class PhotoLikeNewsFeedProvider(
     private val photoLikeService: PhotoLikeService,
+    private val cachedLoveSpotService: CachedLoveSpotService,
 ) : NewsFeedProvider {
     private val logger = KotlinLogging.logger {}
 
-    override fun getNewsFeedFrom(generationTime: Instant, generateFrom: Instant): Flow<NewsFeedItemDto> {
+    override suspend fun getNewsFeedFrom(generationTime: Instant, generateFrom: Instant): Flow<NewsFeedItemDto> {
         logger.info { "Getting NewsFeed for PhotoLikes from $generateFrom" }
         val photoLikes = photoLikeService.getPhotoLikesFrom(generateFrom)
         return photoLikes.map {
@@ -25,6 +26,7 @@ class PhotoLikeNewsFeedProvider(
                 type = NewsFeedItem.Type.LOVE_SPOT_PHOTO_LIKE,
                 generatedAt = generationTime,
                 referenceId = it.id,
+                country = cachedLoveSpotService.getCountryByLoveSpotId(it.loveSpotId),
                 newsFeedData = photoLikeToNewsFeedData(it)
             )
         }

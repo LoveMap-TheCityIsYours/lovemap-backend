@@ -1,6 +1,7 @@
 package com.lovemap.lovemapbackend.newfeed
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.lovemap.lovemapbackend.geolocation.CachedGeoLocationProvider
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedGeneration
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedGenerationRepository
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
@@ -27,9 +28,10 @@ const val REFRESH_RATE_MINUTES: Long = 30
 class ScheduledNewsFeedGenerator(
     private val newsFeedProviders: List<NewsFeedProvider>,
     private val objectMapper: ObjectMapper,
-    private val cachedNewsFeedService: NewsFeedService,
+    private val newsFeedService: NewsFeedService,
     private val newsFeedRepository: NewsFeedRepository,
-    private val generationRepository: NewsFeedGenerationRepository
+    private val generationRepository: NewsFeedGenerationRepository,
+    private val cachedGeoLocationProvider: CachedGeoLocationProvider
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -89,8 +91,10 @@ class ScheduledNewsFeedGenerator(
             it.getNewsFeedFrom(generationTime, generateFrom)
         }.flatMapTo(TreeSet()) { it.toList() }
 
-        cachedNewsFeedService.updateCache(completeFeed)
-        val newsFeedItemList: List<NewsFeedItem> = completeFeed.map { it.toNewsFeedItem(objectMapper) }
+        newsFeedService.updateCache(completeFeed)
+        val newsFeedItemList: List<NewsFeedItem> = completeFeed.map {
+            it.toNewsFeedItem(objectMapper)
+        }
         logger.info { "Generated '${newsFeedItemList.size}' NewsFeedItems" }
         newsFeedRepository.saveAll(newsFeedItemList).collect()
         return newsFeedItemList

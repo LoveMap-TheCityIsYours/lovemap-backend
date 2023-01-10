@@ -1,6 +1,5 @@
 package com.lovemap.lovemapbackend.newfeed.provider
 
-import com.lovemap.lovemapbackend.geolocation.CachedGeoLocationProvider
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
@@ -15,19 +14,21 @@ import java.time.Instant
 @Component
 class LoveSpotNewsFeedProvider(
     private val loveSpotService: LoveSpotService,
-    private val geoLocationProvider: CachedGeoLocationProvider,
+    private val cachedLoveSpotService: CachedLoveSpotService,
 ) : NewsFeedProvider {
     private val logger = KotlinLogging.logger {}
 
-    override fun getNewsFeedFrom(generationTime: Instant, generateFrom: Instant): Flow<NewsFeedItemDto> {
+    override suspend fun getNewsFeedFrom(generationTime: Instant, generateFrom: Instant): Flow<NewsFeedItemDto> {
         logger.info { "Getting NewsFeed for LoveSpots from $generateFrom" }
         val loveSpots = loveSpotService.getLoveSpotsFrom(generateFrom)
         return loveSpots.map {
+            val loveSpotNewsFeedData: LoveSpotNewsFeedData = loveSpotToNewsFeedData(it)
             NewsFeedItemDto(
                 type = NewsFeedItem.Type.LOVE_SPOT,
                 generatedAt = generationTime,
                 referenceId = it.id,
-                newsFeedData = loveSpotToNewsFeedData(it)
+                newsFeedData = loveSpotNewsFeedData,
+                country = loveSpotNewsFeedData.country ?: NewsFeedItem.DEFAULT_COUNTRY
             )
         }
     }
@@ -40,7 +41,7 @@ class LoveSpotNewsFeedProvider(
             name = loveSpot.name,
             description = loveSpot.description,
             type = loveSpot.type,
-            country = loveSpot.geoLocationId?.let { geoLocationProvider.findCountryByGeoLocationId(it) },
+            country = cachedLoveSpotService.getCountryByLoveSpotId(loveSpot.id),
         )
     }
 

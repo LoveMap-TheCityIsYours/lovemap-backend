@@ -7,5 +7,5 @@ import java.time.Instant
 
 interface NewsFeedProvider {
     fun supportedType(): NewsFeedItem.Type
-    fun getNewsFeedFrom(generationTime: Instant, generateFrom: Instant): Flow<NewsFeedItemDto>
+    suspend fun getNewsFeedFrom(generationTime: Instant, generateFrom: Instant): Flow<NewsFeedItemDto>
 }

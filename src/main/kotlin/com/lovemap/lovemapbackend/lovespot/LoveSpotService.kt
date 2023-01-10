@@ -6,7 +6,6 @@ import com.javadocmd.simplelatlng.util.LengthUnit
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.geolocation.GeoLocationService
 import com.lovemap.lovemapbackend.lover.LoverPointService
-import com.lovemap.lovemapbackend.lovespot.report.LoveSpotReportRequest
 import com.lovemap.lovemapbackend.utils.AsyncTaskService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
@@ -153,12 +152,6 @@ class LoveSpotService(
         return repository.findAllById(locationIds)
     }
 
-    suspend fun updateNumberOfReports(loveSpotId: Long, request: LoveSpotReportRequest): LoveSpot {
-        val loveSpot = getById(loveSpotId)
-        loveSpot.numberOfReports += 1
-        return repository.save(loveSpot)
-    }
-
     suspend fun deleteLoveSpot(loveSpot: LoveSpot) {
         loverPointService.subtractPointsForSpotDeleted(loveSpot)
         repository.delete(loveSpot)
@@ -166,12 +159,6 @@ class LoveSpotService(
 
     suspend fun save(loveSpot: LoveSpot): LoveSpot {
         return repository.save(loveSpot)
-    }
-
-    suspend fun decrementNumberOfPhotos(loveSpotId: Long) {
-        repository.findById(loveSpotId)?.let {
-            repository.save(it.apply { numberOfPhotos = it.numberOfPhotos - 1 })
-        }
     }
 
     fun getLoveSpotsFrom(generateFrom: Instant): Flow<LoveSpot> {
