@@ -19,6 +19,7 @@ class LoveSpotPhotoNewsFeedResponseConverter : TypeBasedNewsFeedResponseDecorato
                     uploadedBy = newsFeedData.uploadedBy,
                     uploadedAt = newsFeedData.uploadedAt,
                     fileName = newsFeedData.fileName,
+                    url = newsFeedData.url ?: NewsFeedItem.MISSING_PHOTO_URL,
                     loveSpotReviewId = newsFeedData.loveSpotReviewId,
                     likes = newsFeedData.likes,
                     dislikes = newsFeedData.dislikes

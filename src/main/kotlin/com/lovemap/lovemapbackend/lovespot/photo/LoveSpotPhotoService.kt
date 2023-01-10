@@ -1,5 +1,7 @@
 package com.lovemap.lovemapbackend.lovespot.photo
 
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
@@ -20,6 +22,7 @@ import org.springframework.http.codec.multipart.FilePart
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
 import java.time.Instant
+import kotlin.math.max
 
 @Service
 class LoveSpotPhotoService(
@@ -33,6 +36,32 @@ class LoveSpotPhotoService(
     private val photoStore: PhotoStore
 ) {
     private val logger = KotlinLogging.logger {}
+
+    private val photoCache: Cache<Long, LoveSpotPhoto> = CacheBuilder.newBuilder()
+        .initialCapacity(200)
+        .concurrencyLevel(max(Runtime.getRuntime().availableProcessors() / 2, 2))
+        .maximumSize(500)
+        .build()
+
+    suspend fun getCachedPhoto(photoId: Long): LoveSpotPhoto? {
+        logger.info { "Getting cached Photo '$photoId'" }
+        val cachedPhoto = photoCache.getIfPresent(photoId)
+        return if (cachedPhoto == null) {
+            logger.info { "Cached Photo '$photoId' NOT found in cache" }
+            val photo = repository.findById(photoId)
+            if (photo != null) {
+                logger.info { "Cached Photo '$photoId' found in DB. Inserting into cache." }
+                photoCache.put(photoId, photo)
+                photo
+            } else {
+                logger.info { "Cached Photo '$photoId' NOT found in DB. Returning null." }
+                null
+            }
+        } else {
+            logger.info { "Cached Photo '$photoId' found in cache." }
+            cachedPhoto
+        }
+    }
 
     suspend fun getPhoto(loveSpotId: Long, photoId: Long): LoveSpotPhoto {
         return repository.findById(photoId)?.let { photo ->

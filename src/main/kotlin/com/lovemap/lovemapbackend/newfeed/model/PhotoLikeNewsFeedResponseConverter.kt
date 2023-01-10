@@ -17,9 +17,10 @@ class PhotoLikeNewsFeedResponseConverter : TypeBasedNewsFeedResponseDecorator {
                     id = newsFeedData.id,
                     loveSpotId = newsFeedData.loveSpotId,
                     loveSpotPhotoId = newsFeedData.loveSpotPhotoId,
+                    url = newsFeedData.url ?: NewsFeedItem.MISSING_PHOTO_URL,
                     happenedAt = newsFeedData.happenedAt,
                     loverId = newsFeedData.loverId,
-                    likeOrDislike = newsFeedData.likeOrDislike
+                    likeOrDislike = newsFeedData.likeOrDislike,
                 )
             )
         } else {

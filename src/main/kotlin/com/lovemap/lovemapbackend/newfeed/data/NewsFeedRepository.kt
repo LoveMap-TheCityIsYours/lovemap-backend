@@ -38,4 +38,6 @@ interface NewsFeedRepository : CoroutineSortingRepository<NewsFeedItem, Long>,
         """
     )
     fun findLastLimit(limit: Int): Flow<NewsFeedItem>
+
+    fun findAllByType(type: NewsFeedItem.Type): Flow<NewsFeedItem>
 }

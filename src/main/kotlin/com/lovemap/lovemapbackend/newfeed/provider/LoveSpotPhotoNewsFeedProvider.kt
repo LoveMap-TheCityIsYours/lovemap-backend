@@ -39,6 +39,7 @@ class LoveSpotPhotoNewsFeedProvider(
             uploadedBy = loveSpotPhoto.uploadedBy,
             uploadedAt = loveSpotPhoto.uploadedAt.toInstant(),
             fileName = loveSpotPhoto.fileName,
+            url = loveSpotPhoto.url,
             loveSpotReviewId = loveSpotPhoto.loveSpotReviewId,
             likes = loveSpotPhoto.likes,
             dislikes = loveSpotPhoto.dislikes,

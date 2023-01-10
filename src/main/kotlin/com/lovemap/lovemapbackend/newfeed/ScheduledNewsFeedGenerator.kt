@@ -1,7 +1,6 @@
 package com.lovemap.lovemapbackend.newfeed
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.lovemap.lovemapbackend.geolocation.CachedGeoLocationProvider
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedGeneration
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedGenerationRepository
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
@@ -30,8 +29,7 @@ class ScheduledNewsFeedGenerator(
     private val objectMapper: ObjectMapper,
     private val newsFeedService: NewsFeedService,
     private val newsFeedRepository: NewsFeedRepository,
-    private val generationRepository: NewsFeedGenerationRepository,
-    private val cachedGeoLocationProvider: CachedGeoLocationProvider
+    private val generationRepository: NewsFeedGenerationRepository
 ) {
     private val logger = KotlinLogging.logger {}
 

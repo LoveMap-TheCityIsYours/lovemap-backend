@@ -90,6 +90,7 @@ data class LoveSpotPhotoNewsFeedData(
     val uploadedBy: Long,
     val uploadedAt: Instant,
     val fileName: String,
+    val url: String?,
     val loveSpotReviewId: Long?,
     val likes: Int,
     val dislikes: Int,
@@ -102,6 +103,7 @@ data class PhotoLikeNewsFeedData(
     val id: Long,
     val loveSpotId: Long,
     val loveSpotPhotoId: Long,
+    val url: String?,
     val happenedAt: Instant,
     val loverId: Long,
     val likeOrDislike: Int

@@ -40,5 +40,6 @@ data class NewsFeedItem(
 
     companion object {
         const val DEFAULT_COUNTRY = "GLOBAL"
+        const val MISSING_PHOTO_URL = "https://not-found.not"
     }
 }

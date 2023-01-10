@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend.newfeed.provider
 
+import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoService
 import com.lovemap.lovemapbackend.lovespot.photo.like.PhotoLike
 import com.lovemap.lovemapbackend.lovespot.photo.like.PhotoLikeService
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
@@ -14,6 +15,7 @@ import java.time.Instant
 @Component
 class PhotoLikeNewsFeedProvider(
     private val photoLikeService: PhotoLikeService,
+    private val photoService: LoveSpotPhotoService,
     private val cachedLoveSpotService: CachedLoveSpotService,
 ) : NewsFeedProvider {
     private val logger = KotlinLogging.logger {}
@@ -39,6 +41,7 @@ class PhotoLikeNewsFeedProvider(
             loverId = photoLike.loverId,
             happenedAt = photoLike.happenedAt.toInstant(),
             loveSpotPhotoId = photoLike.photoId,
+            url = photoService.getCachedPhoto(photoLike.photoId)?.url ?: NewsFeedItem.MISSING_PHOTO_URL,
             likeOrDislike = photoLike.likeOrDislike
         )
     }
