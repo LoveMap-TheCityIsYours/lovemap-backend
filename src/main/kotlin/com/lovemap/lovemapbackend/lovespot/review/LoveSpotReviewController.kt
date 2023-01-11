@@ -11,6 +11,12 @@ import org.springframework.web.bind.annotation.*
 class LoveSpotReviewController(
     private val loveSpotReviewService: LoveSpotReviewService,
 ) {
+    @GetMapping("{reviewId}")
+    suspend fun getById(@PathVariable reviewId: Long): ResponseEntity<LoveSpotReviewResponse> {
+        val review = loveSpotReviewService.getById(reviewId)
+        return ResponseEntity.ok(LoveSpotReviewResponse.of(review))
+    }
+
     @PutMapping
     suspend fun reviewSpot(@RequestBody request: LoveSpotReviewRequest): ResponseEntity<LoveSpotResponse> {
         val loveSpot = loveSpotReviewService.addOrUpdateReview(request)

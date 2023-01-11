@@ -39,7 +39,16 @@ class LoveSpotReviewService(
     }
 
     suspend fun authorizedGetById(loveSpotId: Long, reviewId: Long): LoveSpotReview {
-        val review = (repository.findById(reviewId)
+        val review = getById(reviewId)
+        if (review.loveSpotId != loveSpotId) {
+            throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.NotFoundById)
+        }
+        authorizationService.checkAccessFor(review.reviewerId)
+        return review
+    }
+
+    suspend fun getById(reviewId: Long): LoveSpotReview {
+        return repository.findById(reviewId)
             ?: throw LoveMapException(
                 HttpStatus.NOT_FOUND,
                 ErrorMessage(
@@ -47,13 +56,7 @@ class LoveSpotReviewService(
                     reviewId.toString(),
                     "LoveSpotReview not found by ID '$reviewId'."
                 )
-            ))
-
-        if (review.loveSpotId != loveSpotId) {
-            throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.NotFoundById)
-        }
-        authorizationService.checkAccessFor(review.reviewerId)
-        return review
+            )
     }
 
     suspend fun addOrUpdateReview(request: LoveSpotReviewRequest): LoveSpot {

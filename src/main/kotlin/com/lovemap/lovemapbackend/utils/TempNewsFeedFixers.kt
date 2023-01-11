@@ -9,9 +9,14 @@ import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemConverter
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto
 import com.lovemap.lovemapbackend.newfeed.model.PhotoLikeNewsFeedData
 import com.lovemap.lovemapbackend.newfeed.provider.CachedLoveSpotService
+import com.lovemap.lovemapbackend.newfeed.provider.LoveSpotReviewNewsFeedProvider
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactor.mono
+import mu.KotlinLogging
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
+import java.time.Duration
+import java.time.Instant
 
 // disabled
 class NewsFeedCountryPopulator(
@@ -54,7 +59,7 @@ class NewsFeedPhotoFixer(
                 }
             }
 
-            newsFeedRepository.findAllByType(NewsFeedItem.Type.LOVE_SPOT_PHOTO_LIKE).collect {newsFeedItem ->
+            newsFeedRepository.findAllByType(NewsFeedItem.Type.LOVE_SPOT_PHOTO_LIKE).collect { newsFeedItem ->
                 val newsFeedDto = newsFeedItemConverter.dtoFromItem(newsFeedItem)
                 val likeData = newsFeedDto.newsFeedData as PhotoLikeNewsFeedData
                 photoService.getCachedPhoto(likeData.loveSpotPhotoId)?.let { photo ->
@@ -66,4 +71,32 @@ class NewsFeedPhotoFixer(
 
         }.subscribe()
     }
+}
+
+// disabled
+class NewsFeedReviewFixer(
+    private val loveSpotReviewNewsFeedProvider: LoveSpotReviewNewsFeedProvider,
+    private val newsFeedRepository: NewsFeedRepository,
+    private val objectMapper: ObjectMapper,
+) : ApplicationRunner {
+    private val logger = KotlinLogging.logger {  }
+
+    override fun run(args: ApplicationArguments?) {
+        mono {
+            val newsFeed: List<NewsFeedItemDto> = loveSpotReviewNewsFeedProvider.getNewsFeedFrom(
+                Instant.now().minusSeconds(3600),
+                Instant.now().minus(Duration.ofDays(3000))
+            ).toList()
+            logger.info { "Collected LoveSpotReviewNewsFeed size: ${newsFeed.size}" }
+            val saved = newsFeed.map { it.toNewsFeedItem(objectMapper) }
+                .map { runCatching {
+                    logger.info { "Saving $it" }
+                    newsFeedRepository.save(it)
+                }.getOrNull() }
+                .toList()
+                .filterNotNull()
+            logger.info { "Saved LoveSpotReviewNewsFeed size: ${saved.size}" }
+        }.subscribe()
+    }
+
 }

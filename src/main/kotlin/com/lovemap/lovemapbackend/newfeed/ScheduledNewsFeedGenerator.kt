@@ -90,11 +90,11 @@ class ScheduledNewsFeedGenerator(
         }.flatMapTo(TreeSet()) { it.toList() }
 
         newsFeedService.updateCache(completeFeed)
-        val newsFeedItemList: List<NewsFeedItem> = completeFeed.map {
-            it.toNewsFeedItem(objectMapper)
-        }
+        val newsFeedItemList: List<NewsFeedItem> = completeFeed.map { it.toNewsFeedItem(objectMapper) }
         logger.info { "Generated '${newsFeedItemList.size}' NewsFeedItems" }
-        newsFeedRepository.saveAll(newsFeedItemList).collect()
+
+        val saved = newsFeedItemList.mapNotNull { runCatching { newsFeedRepository.save(it) }.getOrNull() }
+        logger.info { "Saved '${saved.size}' NewsFeedItems" }
         return newsFeedItemList
     }
 

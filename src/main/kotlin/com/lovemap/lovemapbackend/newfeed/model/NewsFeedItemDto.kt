@@ -36,7 +36,6 @@ data class NewsFeedItemDto(
 
         other as NewsFeedItemDto
 
-        if (id != other.id) return false
         if (type != other.type) return false
         if (newsFeedData.happenedAt() != other.newsFeedData.happenedAt()) return false
         if (referenceId != other.referenceId) return false
@@ -45,8 +44,7 @@ data class NewsFeedItemDto(
     }
 
     override fun hashCode(): Int {
-        var result = id?.hashCode() ?: 0
-        result = 31 * result + type.hashCode()
+        var result = type.hashCode()
         result = 31 * result + newsFeedData.happenedAt().hashCode()
         result = 31 * result + referenceId.hashCode()
         return result
