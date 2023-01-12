@@ -1,6 +1,7 @@
 package com.lovemap.lovemapbackend.lovespot.query.strategy.geolocation
 
 import com.javadocmd.simplelatlng.LatLng
+import com.lovemap.lovemapbackend.geolocation.GeoLocation
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotRepository
 import com.lovemap.lovemapbackend.lovespot.query.ListLocationType
@@ -43,13 +44,24 @@ class ClosestInLocationStrategy(
                 typeFilter = listDto.typeFilter,
                 limit = listDto.limit
             )
-            COUNTRY -> repository.findByCountryOrderByClosest(
-                centerLat = listDto.latitude!!,
-                centerLong = listDto.longitude!!,
-                country = listDto.locationName!!,
-                typeFilter = listDto.typeFilter,
-                limit = listDto.limit
-            )
+            COUNTRY -> {
+                if (GeoLocation.GLOBAL_LOCATION.equals(listDto.locationName, true)) {
+                    repository.findAllOrderByClosest(
+                        centerLat = listDto.latitude!!,
+                        centerLong = listDto.longitude!!,
+                        typeFilter = listDto.typeFilter,
+                        limit = listDto.limit
+                    )
+                } else {
+                    repository.findByCountryOrderByClosest(
+                        centerLat = listDto.latitude!!,
+                        centerLong = listDto.longitude!!,
+                        country = listDto.locationName!!,
+                        typeFilter = listDto.typeFilter,
+                        limit = listDto.limit
+                    )
+                }
+            }
         }
 
         return loveSpotFlow.toList().let {

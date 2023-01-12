@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend.lovespot.query.strategy.geolocation
 
+import com.lovemap.lovemapbackend.geolocation.GeoLocation
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotRepository
 import com.lovemap.lovemapbackend.lovespot.query.ListLocationType
@@ -36,11 +37,20 @@ class PopularInLocationStrategy(private val repository: LoveSpotRepository) : Lo
                 typeFilter = listDto.typeFilter,
                 limit = listDto.limit
             )
-            COUNTRY -> repository.findByCountryOrderByPopularity(
-                country = listDto.locationName!!,
-                typeFilter = listDto.typeFilter,
-                limit = listDto.limit
-            )
+            COUNTRY -> {
+                if (GeoLocation.GLOBAL_LOCATION.equals(listDto.locationName, true)) {
+                    repository.findAllOrderByPopularity(
+                        typeFilter = listDto.typeFilter,
+                        limit = listDto.limit
+                    )
+                } else {
+                    repository.findByCountryOrderByPopularity(
+                        country = listDto.locationName!!,
+                        typeFilter = listDto.typeFilter,
+                        limit = listDto.limit
+                    )
+                }
+            }
         }
 
         return loveSpotFlow.toList()

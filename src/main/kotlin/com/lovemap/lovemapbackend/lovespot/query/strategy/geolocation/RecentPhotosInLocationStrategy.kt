@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend.lovespot.query.strategy.geolocation
 
+import com.lovemap.lovemapbackend.geolocation.GeoLocation
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotRepository
 import com.lovemap.lovemapbackend.lovespot.query.ListLocationType
@@ -38,11 +39,20 @@ class RecentPhotosInLocationStrategy(
                 typeFilter = listDto.typeFilter,
                 limit = listDto.limit
             )
-            COUNTRY -> repository.findByCountryOrderByRecentPhoto(
-                country = listDto.locationName!!,
-                typeFilter = listDto.typeFilter,
-                limit = listDto.limit
-            )
+            COUNTRY -> {
+                if (GeoLocation.GLOBAL_LOCATION.equals(listDto.locationName, true)) {
+                    repository.findAllOrderByRecentPhoto(
+                        typeFilter = listDto.typeFilter,
+                        limit = listDto.limit
+                    )
+                } else {
+                    repository.findByCountryOrderByRecentPhoto(
+                        country = listDto.locationName!!,
+                        typeFilter = listDto.typeFilter,
+                        limit = listDto.limit
+                    )
+                }
+            }
         }
 
         return loveSpotFlow.toList()

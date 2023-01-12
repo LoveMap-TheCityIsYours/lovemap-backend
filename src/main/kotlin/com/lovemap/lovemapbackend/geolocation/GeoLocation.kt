@@ -21,4 +21,8 @@ data class GeoLocation(
 ) {
     fun isUnknown() =
         postalCode == null && city == null && county == null && country == null
+
+    companion object {
+        const val GLOBAL_LOCATION = "GLOBAL"
+    }
 }

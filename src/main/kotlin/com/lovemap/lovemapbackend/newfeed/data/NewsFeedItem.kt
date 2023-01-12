@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend.newfeed.data
 
+import com.lovemap.lovemapbackend.geolocation.GeoLocation
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
@@ -39,7 +40,7 @@ data class NewsFeedItem(
     }
 
     companion object {
-        const val DEFAULT_COUNTRY = "GLOBAL"
+        const val DEFAULT_COUNTRY = GeoLocation.GLOBAL_LOCATION
         const val MISSING_PHOTO_URL = "https://not-found.not"
     }
 }

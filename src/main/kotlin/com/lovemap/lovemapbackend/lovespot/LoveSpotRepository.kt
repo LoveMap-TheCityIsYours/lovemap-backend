@@ -187,6 +187,21 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long>, Corou
     @Query(
         """
             SELECT * FROM love_location 
+            WHERE type IN (:typeFilter)
+            ORDER BY 
+                average_rating DESC NULLS LAST, 
+                popularity DESC NULLS LAST 
+            LIMIT :limit
+        """
+    )
+    fun findAllOrderByRating(
+        typeFilter: Set<LoveSpot.Type>,
+        limit: Int
+    ): Flow<LoveSpot>
+
+    @Query(
+        """
+            SELECT * FROM love_location 
             WHERE geo_location_id IN 
             (
                 SELECT id FROM geo_location 
@@ -220,6 +235,20 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long>, Corou
         centerLat: Double,
         centerLong: Double,
         country: String,
+        typeFilter: Set<LoveSpot.Type>,
+        limit: Int
+    ): Flow<LoveSpot>
+
+    @Query(
+        """
+            SELECT * FROM love_location 
+            WHERE type IN (:typeFilter)
+            ORDER BY |/((latitude-:centerLat)^2 + (longitude-:centerLong)^2) ASC LIMIT :limit
+        """
+    )
+    fun findAllOrderByClosest(
+        centerLat: Double,
+        centerLong: Double,
         typeFilter: Set<LoveSpot.Type>,
         limit: Int
     ): Flow<LoveSpot>
@@ -263,6 +292,18 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long>, Corou
     @Query(
         """
             SELECT * FROM love_location 
+            WHERE type IN (:typeFilter)
+            ORDER BY last_active_at DESC NULLS LAST LIMIT :limit
+        """
+    )
+    fun findAllOrderByRecentlyActive(
+        typeFilter: Set<LoveSpot.Type>,
+        limit: Int
+    ): Flow<LoveSpot>
+
+    @Query(
+        """
+            SELECT * FROM love_location 
             WHERE geo_location_id IN 
             (
                 SELECT id FROM geo_location 
@@ -292,6 +333,18 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long>, Corou
     )
     fun findByCountryOrderByPopularity(
         country: String,
+        typeFilter: Set<LoveSpot.Type>,
+        limit: Int
+    ): Flow<LoveSpot>
+
+    @Query(
+        """
+            SELECT * FROM love_location 
+            WHERE type IN (:typeFilter)
+            ORDER BY popularity DESC LIMIT :limit
+        """
+    )
+    fun findAllOrderByPopularity(
         typeFilter: Set<LoveSpot.Type>,
         limit: Int
     ): Flow<LoveSpot>
@@ -328,6 +381,18 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long>, Corou
     )
     fun findByCountryOrderByNewest(
         country: String,
+        typeFilter: Set<LoveSpot.Type>,
+        limit: Int
+    ): Flow<LoveSpot>
+
+    @Query(
+        """
+            SELECT * FROM love_location 
+            WHERE type IN (:typeFilter)
+            ORDER BY id DESC LIMIT :limit
+        """
+    )
+    fun findAllOrderByNewest(
         typeFilter: Set<LoveSpot.Type>,
         limit: Int
     ): Flow<LoveSpot>
@@ -369,6 +434,20 @@ interface LoveSpotRepository : CoroutineSortingRepository<LoveSpot, Long>, Corou
     )
     fun findByCountryOrderByRecentPhoto(
         country: String,
+        typeFilter: Set<LoveSpot.Type>,
+        limit: Int
+    ): Flow<LoveSpot>
+
+    @Query(
+        """
+            SELECT * FROM love_location 
+            WHERE type IN (:typeFilter)
+            AND last_photo_added_at IS NOT NULL
+            AND number_of_photos > 0 
+            ORDER BY last_photo_added_at DESC LIMIT :limit
+        """
+    )
+    fun findAllOrderByRecentPhoto(
         typeFilter: Set<LoveSpot.Type>,
         limit: Int
     ): Flow<LoveSpot>

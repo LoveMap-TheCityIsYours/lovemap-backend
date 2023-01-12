@@ -37,7 +37,10 @@ class CachedGeoLocationProvider(
             Countries(countryCache.keys().toList())
         } else {
             withContext(Dispatchers.IO) {
-                val countries = repository.findAllCountries().toList()
+                val countries = repository.findAllCountries()
+                    .toList()
+                    .filter { it.isNotEmpty() }
+                    .toMutableList()
                 repository.findAllDistinctCountries().collect {
                     if (it.country != null) {
                         countriesByGeoLocationId[it.id] = it.country!!
@@ -45,6 +48,7 @@ class CachedGeoLocationProvider(
                 }
                 synchronized(countryCache) {
                     if (countryCache.isEmpty()) {
+                        countries.add(GeoLocation.GLOBAL_LOCATION)
                         countryCache.putAll(countries.map { Pair(it, Unit) })
                     }
                 }
