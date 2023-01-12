@@ -1,6 +1,7 @@
 package com.lovemap.lovemapbackend.lover
 
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
+import com.lovemap.lovemapbackend.newfeed.LoverNewsFeedUpdater
 import com.lovemap.lovemapbackend.utils.ErrorCode.*
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException
@@ -16,6 +17,8 @@ import java.util.*
 @Transactional
 class LoverService(
     private val authorizationService: AuthorizationService,
+    private val converter: LoverConverter,
+    private val loverNewsFeedUpdater: LoverNewsFeedUpdater,
     private val loverRepository: LoverRepository,
 ) {
     companion object {
@@ -24,7 +27,6 @@ class LoverService(
     }
 
     suspend fun unAuthorizedExists(id: Long): Boolean {
-        authorizationService.checkAccessFor(id)
         return loverRepository.existsById(id)
     }
 
@@ -137,5 +139,17 @@ class LoverService(
 
     fun getLoversFrom(generateFrom: Instant): Flow<Lover> {
         return loverRepository.findAllAfterCreatedAt(Timestamp.from(generateFrom))
+    }
+
+    suspend fun updateLover(loverId: Long, update: UpdateLoverRequest): LoverResponse {
+        val lover = getById(loverId)
+        update.email?.let {
+            checkUserNameAndEmail(lover.userName, it)
+            lover.email = it
+        }
+        update.displayName?.let { lover.displayName = it }
+        val savedLover = save(lover)
+        update.displayName?.let { loverNewsFeedUpdater.updateLoverNameChange(loverId, it) }
+        return converter.toResponse(savedLover)
     }
 }

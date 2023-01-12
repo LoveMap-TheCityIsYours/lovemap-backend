@@ -97,7 +97,8 @@ data class WishlistNewsFeedResponse(
 
 data class LoverNewsFeedResponse(
     val id: Long,
-    val userName: String,
+    val userName: String, // keeping for backward compatibility
+    val displayName: String,
     val publicProfile: Boolean,
     val joinedAt: Instant,
     val rank: Int,

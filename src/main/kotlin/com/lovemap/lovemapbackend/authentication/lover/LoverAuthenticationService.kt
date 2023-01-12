@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend.authentication.lover
 
+import com.lovemap.lovemapbackend.geolocation.GeoLocation
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
@@ -126,4 +127,15 @@ class LoverAuthenticationService(
             )
         )
     }
+
+    suspend fun getDisplayName(userName: String, email: String): String {
+        return if (userName == email) {
+            email.substringBefore("@")
+        } else {
+            userName
+        }
+    }
+
+    suspend fun getRegistrationCountry(registrationCountry: String?): String =
+        registrationCountry?.ifEmpty { GeoLocation.GLOBAL_LOCATION } ?: GeoLocation.GLOBAL_LOCATION
 }

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.toList
 data class LoverResponse(
     val id: Long,
     val userName: String,
+    val displayName: String,
     val email: String,
     val rank: Int,
     val points: Int,
@@ -32,6 +33,7 @@ data class LoverResponse(
             return LoverResponse(
                 id = lover.id,
                 userName = lover.userName,
+                displayName = lover.displayName,
                 email = lover.email,
                 rank = lover.rank,
                 points = lover.points,
@@ -60,6 +62,7 @@ data class LoverRelationsResponse(
     val id: Long,
     val relations: List<LoverViewResponse>,
     val userName: String,
+    val displayName: String,
     val email: String,
     val rank: Int,
     val points: Int,
@@ -79,6 +82,7 @@ data class LoverRelationsResponse(
             return LoverRelationsResponse(
                 id = lover.id,
                 userName = lover.userName,
+                displayName = lover.displayName,
                 email = lover.email,
                 rank = lover.rank,
                 points = lover.points,
@@ -95,7 +99,8 @@ data class LoverRelationsResponse(
                 relations = loverRelations.relations.map { entry ->
                     LoverViewResponse(
                         id = entry.loverView.id,
-                        userName = entry.loverView.userName,
+                        userName = lover.displayName,
+                        displayName = entry.loverView.userName,
                         points = lover.points,
                         rank = entry.rank,
                         createdAt = entry.loverView.createdAt.toInstant().toApiString(),
@@ -110,7 +115,8 @@ data class LoverRelationsResponse(
 
 data class LoverViewResponse(
     val id: Long,
-    val userName: String,
+    val userName: String, // keeping for backward compatibility
+    val displayName: String,
     val points: Int,
     val rank: Int,
     val createdAt: String,
@@ -121,7 +127,8 @@ data class LoverViewResponse(
         fun of(lover: Lover, relationStatus: Relation.Status): LoverViewResponse {
             return LoverViewResponse(
                 id = lover.id,
-                userName = lover.userName,
+                userName = lover.displayName,
+                displayName = lover.displayName,
                 points = lover.points,
                 rank = lover.rank,
                 createdAt = lover.createdAt.toInstant().toApiString(),
@@ -133,7 +140,8 @@ data class LoverViewResponse(
         fun of(lover: Lover, relationStatus: RelationStatusDto): LoverViewResponse {
             return LoverViewResponse(
                 id = lover.id,
-                userName = lover.userName,
+                userName = lover.displayName,
+                displayName = lover.displayName,
                 points = lover.points,
                 rank = lover.rank,
                 createdAt = lover.createdAt.toInstant().toApiString(),
@@ -143,3 +151,8 @@ data class LoverViewResponse(
         }
     }
 }
+
+data class UpdateLoverRequest(
+    val email: String?,
+    val displayName: String?
+)

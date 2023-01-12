@@ -24,28 +24,30 @@ class LoverController(
         return ResponseEntity.ok(loverRelationService.getWithRelations(loverId))
     }
 
+    @PutMapping("/{loverId}")
+    suspend fun updateLover(@PathVariable loverId: Long, updateLoverRequest: UpdateLoverRequest): LoverResponse {
+        return loverService.updateLover(loverId, updateLoverRequest)
+    }
+
     @GetMapping("/view/{loverId}")
     suspend fun getLoverView(@PathVariable loverId: Long): ResponseEntity<LoverViewResponse> {
         return ResponseEntity.ok(loverRelationService.getById(loverId))
     }
 
     @GetMapping
-    suspend fun getLoverByUuid(@RequestParam uuid: String)
-            : ResponseEntity<LoverViewResponse> {
+    suspend fun getLoverByUuid(@RequestParam uuid: String): ResponseEntity<LoverViewResponse> {
         val loverViewDto = loverRelationService.getByUuid(uuid)
         return ResponseEntity.ok(loverViewDto)
     }
 
     @PostMapping("/{loverId}/shareableLink")
-    suspend fun generateLoverLink(@PathVariable loverId: Long)
-            : ResponseEntity<LoverResponse> {
+    suspend fun generateLoverLink(@PathVariable loverId: Long): ResponseEntity<LoverResponse> {
         val lover = loverService.generateLoverUuid(loverId)
         return ResponseEntity.ok(loverConverter.toResponse(lover))
     }
 
     @DeleteMapping("/{loverId}/shareableLink")
-    suspend fun deleteLoverLink(@PathVariable loverId: Long)
-            : ResponseEntity<LoverResponse> {
+    suspend fun deleteLoverLink(@PathVariable loverId: Long): ResponseEntity<LoverResponse> {
         val lover = loverService.deleteLoverLink(loverId)
         return ResponseEntity.ok(loverConverter.toResponse(lover))
     }

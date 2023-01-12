@@ -16,6 +16,7 @@ class LoverNewsFeedResponseConverter : TypeBasedNewsFeedResponseDecorator {
                 lover = LoverNewsFeedResponse(
                     id = newsFeedData.id,
                     userName = newsFeedData.userName,
+                    displayName = newsFeedData.userName,
                     publicProfile = newsFeedData.publicProfile,
                     joinedAt = newsFeedData.joinedAt,
                     rank = newsFeedData.rank,

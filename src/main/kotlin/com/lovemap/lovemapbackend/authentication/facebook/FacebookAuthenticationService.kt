@@ -78,7 +78,7 @@ class FacebookAuthenticationService(
             connectExistingLoverWithFacebook(request)
         } else {
             // new user registration
-            createNewLover(request.email, request.facebookId)
+            createNewLover(request)
         }
         val token = facebookAuthenticationToken(lover, request)
         return authenticateAndLogin(lover, token)
@@ -95,15 +95,18 @@ class FacebookAuthenticationService(
         return existingLover
     }
 
-    suspend fun createNewLover(email: String, facebookId: String): Lover {
+    suspend fun createNewLover(request: FacebookAuthenticationRequest): Lover {
+        val email = request.email
         loverService.checkUserNameAndEmail(email, email)
         var lover = Lover(
             userName = email,
+            displayName = loverAuthenticationService.getDisplayName(email, email),
+            registrationCountry = loverAuthenticationService.getRegistrationCountry(request.registrationCountry),
             email = email,
             createdAt = Timestamp.from(Instant.now())
         )
         lover = loverService.save(lover)
-        loverAuthenticationService.createFacebookAuth(lover, facebookId)
+        loverAuthenticationService.createFacebookAuth(lover, request.facebookId)
         return lover
     }
 }

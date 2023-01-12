@@ -1,10 +1,7 @@
 package com.lovemap.lovemapbackend.authentication
 
 import com.lovemap.lovemapbackend.lover.LoverResponse
-import com.lovemap.lovemapbackend.utils.INVALID_EMAIL
-import com.lovemap.lovemapbackend.utils.INVALID_PASSWORD
-import com.lovemap.lovemapbackend.utils.INVALID_PW_RESET_CODE
-import com.lovemap.lovemapbackend.utils.INVALID_USERNAME
+import com.lovemap.lovemapbackend.utils.*
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.NotNull
@@ -17,7 +14,8 @@ data class CreateLoverRequest(
     val password: String,
     @field:NotEmpty(message = INVALID_EMAIL)
     @field:Email(message = INVALID_EMAIL)
-    val email: String
+    val email: String,
+    val registrationCountry: String?
 )
 
 data class LoginLoverRequest(
@@ -57,6 +55,7 @@ data class FacebookAuthenticationRequest(
     val facebookId: String,
     @field:NotNull
     val accessToken: String,
+    val registrationCountry: String?
 )
 
 data class LoverAuthenticationResult(

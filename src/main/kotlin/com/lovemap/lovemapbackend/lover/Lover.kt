@@ -14,6 +14,12 @@ data class Lover(
     @Column("email")
     var email: String,
 
+    @Column("display_name")
+    var displayName: String,
+
+    @Column("registration_country")
+    var registrationCountry: String,
+
     @Column("created_at")
     var createdAt: Timestamp,
 

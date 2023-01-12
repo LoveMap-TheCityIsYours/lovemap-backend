@@ -36,6 +36,7 @@ class LoveService(
     suspend fun findAllInvolvedLovesFor(loverId: Long): List<LoveResponse> {
         val caller = authorizationService.checkAccessFor(loverId)
         val loves = loveRepository.findDistinctByLoverIdOrLoverPartnerIdOrderByHappenedAtDesc(loverId, loverId)
+        // TODO: optimize this
         return loves.map { love -> loveConverter.toDto(caller, love) }.toList()
     }
 

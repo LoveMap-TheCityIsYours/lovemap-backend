@@ -54,6 +54,7 @@ data class NewsFeedItemDto(
 interface NewsFeedData {
     fun happenedAt(): Instant
     fun loveSpotId(): Long?
+    fun loverId(): Long
 }
 
 data class LoveSpotNewsFeedData(
@@ -67,6 +68,7 @@ data class LoveSpotNewsFeedData(
 ) : NewsFeedData {
     override fun happenedAt(): Instant = createdAt
     override fun loveSpotId(): Long = id
+    override fun loverId(): Long = addedBy
 }
 
 data class LoveSpotReviewNewsFeedData(
@@ -80,6 +82,7 @@ data class LoveSpotReviewNewsFeedData(
 ) : NewsFeedData {
     override fun happenedAt(): Instant = submittedAt
     override fun loveSpotId(): Long = loveSpotId
+    override fun loverId(): Long = reviewerId
 }
 
 data class LoveSpotPhotoNewsFeedData(
@@ -95,6 +98,7 @@ data class LoveSpotPhotoNewsFeedData(
 ) : NewsFeedData {
     override fun happenedAt(): Instant = uploadedAt
     override fun loveSpotId(): Long = loveSpotId
+    override fun loverId(): Long = uploadedBy
 }
 
 data class PhotoLikeNewsFeedData(
@@ -108,6 +112,7 @@ data class PhotoLikeNewsFeedData(
 ) : NewsFeedData {
     override fun happenedAt(): Instant = happenedAt
     override fun loveSpotId(): Long = loveSpotId
+    override fun loverId(): Long = loverId
 }
 
 data class LoveNewsFeedData(
@@ -120,6 +125,7 @@ data class LoveNewsFeedData(
 ) : NewsFeedData {
     override fun happenedAt(): Instant = happenedAt
     override fun loveSpotId(): Long = loveSpotId
+    override fun loverId(): Long = loverId
 }
 
 data class WishlistNewsFeedData(
@@ -130,11 +136,12 @@ data class WishlistNewsFeedData(
 ) : NewsFeedData {
     override fun happenedAt(): Instant = addedAt
     override fun loveSpotId(): Long = loveSpotId
+    override fun loverId(): Long = loverId
 }
 
 data class LoverNewsFeedData(
     val id: Long,
-    val userName: String,
+    val userName: String, // actually stores displayName
     val publicProfile: Boolean,
     val joinedAt: Instant,
     val rank: Int,
@@ -143,4 +150,5 @@ data class LoverNewsFeedData(
 ) : NewsFeedData {
     override fun happenedAt(): Instant = joinedAt
     override fun loveSpotId(): Long? = null
+    override fun loverId(): Long = id
 }

@@ -35,7 +35,7 @@ class LoverNewsFeedProvider(
         return LoverNewsFeedData(
             id = lover.id,
             joinedAt = lover.createdAt.toInstant(),
-            userName = lover.userName,
+            userName = lover.displayName,
             publicProfile = false,
             rank = lover.rank,
             points = lover.points,

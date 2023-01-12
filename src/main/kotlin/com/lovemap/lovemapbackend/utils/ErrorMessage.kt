@@ -78,5 +78,6 @@ enum class ErrorCode {
     UploadedPhotoFileEmpty,
     NewsFeedPageNotFound,
     InvalidPageRequest,
+    InvalidCredentialsCountry,
 
 }

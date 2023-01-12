@@ -4,6 +4,7 @@ import com.lovemap.lovemapbackend.authentication.CreateLoverRequest
 import com.lovemap.lovemapbackend.authentication.LoginLoverRequest
 import com.lovemap.lovemapbackend.authentication.lover.LoverAuthenticationService
 import com.lovemap.lovemapbackend.authentication.security.JwtService
+import com.lovemap.lovemapbackend.geolocation.GeoLocation.Companion.GLOBAL_LOCATION
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.LoverRelationService
 import com.lovemap.lovemapbackend.lover.LoverRelationsResponse
@@ -32,6 +33,8 @@ class PasswordAuthenticationService(
         var lover = Lover(
             userName = request.userName,
             email = request.email,
+            displayName = loverAuthenticationService.getDisplayName(request.userName, request.email),
+            registrationCountry = loverAuthenticationService.getRegistrationCountry(request.registrationCountry),
             createdAt = Timestamp.from(Instant.now())
         )
         lover = loverService.save(lover)
