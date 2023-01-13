@@ -135,4 +135,8 @@ data class RecommendationsResponse(
     val popularSpots: List<LoveSpotResponse>,
     val newestSpots: List<LoveSpotResponse>,
     val recentPhotoSpots: List<LoveSpotResponse>,
-)
+) {
+    fun size() = topRatedSpots.size + closestSpots.size +
+            recentlyActiveSpots.size + popularSpots.size +
+            newestSpots.size + recentPhotoSpots.size
+}

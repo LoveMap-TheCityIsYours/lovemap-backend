@@ -8,7 +8,7 @@ import com.lovemap.lovemapbackend.utils.LoveMapException
 import com.lovemap.lovemapbackend.utils.ValidatorService
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import kotlin.math.max
+import kotlin.math.min
 
 const val MAX_LIMIT_LIST: Int = 1000
 const val MAX_LIMIT_SEARCH: Int = 100
@@ -26,7 +26,7 @@ class LoveSpotSearchConverter(
         validateOrdering(listOrdering, request)
         validateLocation(listLocation, request)
         return LoveSpotSearchDto(
-            limit = max(request.limit, MAX_LIMIT_SEARCH),
+            limit = min(request.limit, MAX_LIMIT_SEARCH),
             typeFilter = convertTypeFilter(request.typeFilter),
             listOrdering = listOrdering.toDto(),
             listLocation = listLocation.toDto(),

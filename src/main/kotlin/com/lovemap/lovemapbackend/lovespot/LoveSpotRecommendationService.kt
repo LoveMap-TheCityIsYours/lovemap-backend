@@ -4,22 +4,26 @@ import com.lovemap.lovemapbackend.lovespot.query.ListLocationRequest.COUNTRY
 import com.lovemap.lovemapbackend.lovespot.query.ListOrderingRequest.*
 import com.lovemap.lovemapbackend.lovespot.query.LoveSpotQueryService
 import com.lovemap.lovemapbackend.lovespot.query.LoveSpotSearchRequest
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
 
 @Service
 class LoveSpotRecommendationService(
     private val loveSpotListService: LoveSpotQueryService
 ) {
+    private val logger = KotlinLogging.logger {}
+
+    private val recommendationSize = 5
 
     suspend fun getRecommendations(request: RecommendationsRequest): RecommendationsResponse {
         val listRequest = LoveSpotSearchRequest(
-            limit = 2,
+            limit = recommendationSize,
             latitude = request.latitude,
             longitude = request.longitude,
             locationName = request.country,
             typeFilter = request.typeFilter
         )
-        return RecommendationsResponse(
+        val response = RecommendationsResponse(
             topRatedSpots = getTopRatedSpots(listRequest),
             closestSpots = getClosestSpots(request, listRequest),
             recentlyActiveSpots = getRecentlyActiveSpots(listRequest),
@@ -27,6 +31,16 @@ class LoveSpotRecommendationService(
             newestSpots = getNewestSpots(listRequest),
             recentPhotoSpots = getRecentPhotoSpots(listRequest)
         )
+//        logger.info { "RecommendationsResponse size: ${response.size()} \n" +
+//                "topRatedSpots size: ${response.topRatedSpots.size} \n" +
+//                "closestSpots size: ${response.closestSpots.size} \n" +
+//                "recentlyActiveSpots size: ${response.recentlyActiveSpots.size} \n" +
+//                "popularSpots size: ${response.popularSpots.size} \n" +
+//                "newestSpots size: ${response.newestSpots.size} \n" +
+//                "recentPhotoSpots size: ${response.recentPhotoSpots.size}"
+//        }
+
+        return response
     }
 
     private suspend fun getTopRatedSpots(listRequest: LoveSpotSearchRequest) =
