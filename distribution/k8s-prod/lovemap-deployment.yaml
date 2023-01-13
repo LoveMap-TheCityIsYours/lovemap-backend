@@ -25,12 +25,20 @@ spec:
         - env:
             - name: spring_profiles_active
               value: prod
-          image: us-east1-docker.pkg.dev/smackmap/lovemap-docker/lovemap-backend:1.12.1
+          image: us-east1-docker.pkg.dev/smackmap/lovemap-docker/lovemap-backend:1.12.3
           imagePullPolicy: Always
           name: lovemap
           ports:
             - containerPort: 8090
           readinessProbe:
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            httpGet:
+              path: /join-us.html
+              port: 8090
+          lovenessProbe:
+            initialDelaySeconds: 60
+            periodSeconds: 15
             httpGet:
               path: /join-us.html
               port: 8090

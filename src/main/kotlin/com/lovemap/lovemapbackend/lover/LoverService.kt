@@ -6,6 +6,7 @@ import com.lovemap.lovemapbackend.utils.ErrorCode.*
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.toSet
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -151,5 +152,9 @@ class LoverService(
         val savedLover = save(lover)
         update.displayName?.let { loverNewsFeedUpdater.updateLoverNameChange(loverId, it) }
         return converter.toResponse(savedLover)
+    }
+
+    suspend fun getAllByIds(loverIds: Set<Long>): Map<Long, Lover> {
+        return loverRepository.findAllById(loverIds).toSet().associateBy { it.id }
     }
 }

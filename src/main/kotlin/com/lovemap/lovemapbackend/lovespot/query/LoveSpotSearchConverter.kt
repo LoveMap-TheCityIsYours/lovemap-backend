@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import kotlin.math.min
 
-const val MAX_LIMIT_LIST: Int = 1000
+const val MAX_LIMIT_LIST: Int = 200
 const val MAX_LIMIT_SEARCH: Int = 100
 
 @Service

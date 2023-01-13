@@ -6,6 +6,7 @@ import com.lovemap.lovemapbackend.lovespot.query.strategy.LoveSpotSearchStrategy
 import com.lovemap.lovemapbackend.utils.ValidatorService
 import kotlinx.coroutines.flow.Flow
 import org.springframework.stereotype.Service
+import kotlin.math.min
 
 @Service
 class LoveSpotQueryService(
@@ -33,7 +34,7 @@ class LoveSpotQueryService(
             latFrom = request.latFrom,
             latTo = request.latTo,
             typeFilter = LoveSpot.Type.values().toSet(),
-            limit = if (request.limit <= maxListLimit) request.limit else maxListLimit
+            limit = min(request.limit, maxListLimit)
 //            limit = maxListLimit
         )
     }
