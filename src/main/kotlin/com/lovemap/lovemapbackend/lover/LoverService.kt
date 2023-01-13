@@ -7,6 +7,7 @@ import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toSet
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -26,6 +27,8 @@ class LoverService(
         const val linkPrefixApiCall = "https://api.lovemap.app/lover?uuid="
         const val linkPrefixVisible = "https://api.lovemap.app/join-us/lover?uuid="
     }
+
+    private val logger = KotlinLogging.logger {}
 
     suspend fun unAuthorizedExists(id: Long): Boolean {
         return loverRepository.existsById(id)
@@ -143,6 +146,7 @@ class LoverService(
     }
 
     suspend fun updateLover(loverId: Long, update: UpdateLoverRequest): LoverResponse {
+        logger.info { "Received UpdateLoverRequest $update" }
         val lover = getById(loverId)
         update.email?.let {
             checkUserNameAndEmail(lover.userName, it)
@@ -150,6 +154,7 @@ class LoverService(
         }
         update.displayName?.let { lover.displayName = it }
         val savedLover = save(lover)
+        logger.info { "Updated Lover $savedLover" }
         update.displayName?.let { loverNewsFeedUpdater.updateLoverNameChange(loverId, it) }
         return converter.toResponse(savedLover)
     }

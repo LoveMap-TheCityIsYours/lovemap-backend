@@ -27,14 +27,7 @@ class RelationService(
                 Relation.Status.BLOCKED
             )
         ) {
-            throw LoveMapException(
-                HttpStatus.BAD_REQUEST,
-                ErrorMessage(
-                    ErrorCode.YouBlockedHimUnblockFirst,
-                    respondentId.toString(),
-                    "User '$initiatorId' blocked '$respondentId', first need to unblock."
-                )
-            )
+            logger.info { "User '$initiatorId' blocked '$respondentId'" }
         }
         if (relationRepository.existsBySourceIdAndTargetIdAndStatus(
                 respondentId,

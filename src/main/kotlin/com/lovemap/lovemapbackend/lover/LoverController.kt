@@ -25,7 +25,10 @@ class LoverController(
     }
 
     @PutMapping("/{loverId}")
-    suspend fun updateLover(@PathVariable loverId: Long, updateLoverRequest: UpdateLoverRequest): LoverResponse {
+    suspend fun updateLover(
+        @PathVariable loverId: Long,
+        @RequestBody updateLoverRequest: UpdateLoverRequest
+    ): LoverResponse {
         return loverService.updateLover(loverId, updateLoverRequest)
     }
 
