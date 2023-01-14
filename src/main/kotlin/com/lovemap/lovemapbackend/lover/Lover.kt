@@ -58,9 +58,13 @@ data class Lover(
 
     @Column("photo_dislikes_received")
     var photoDislikesReceived: Int = 0,
+
+    @Column("partner_id")
+    var partnerId: Long? = null
 ) {
     fun toView() = LoverView(
         id = id,
+        partnerId = partnerId,
         displayName = displayName,
         points = points,
         rank = rank,
@@ -71,6 +75,7 @@ data class Lover(
 data class LoverView(
     val id: Long,
     val displayName: String,
+    val partnerId: Long?,
     val points: Int,
     val rank: Int,
     val createdAt: Timestamp,

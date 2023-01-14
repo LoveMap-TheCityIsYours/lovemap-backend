@@ -13,7 +13,7 @@ class PartnershipV2Controller(
 
     @GetMapping
     suspend fun getLoverPartnership(@PathVariable("loverId") loverId: Long): LoverPartnershipV2Response {
-        val loverPartnerships: LoverPartnerships = partnershipService.getLoverPartnerships(loverId)
+        val loverPartnerships: LoverPartnership = partnershipService.getLoverPartnership(loverId)
         return LoverPartnershipV2Response.of(loverPartnerships)
     }
 
@@ -37,7 +37,7 @@ class PartnershipV2Controller(
         if (loverId != request.respondentId) {
             throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.Forbidden)
         }
-        val loverPartnerships: LoverPartnerships = partnershipService.respondToPartnershipRequest(request)
+        val loverPartnerships: LoverPartnership = partnershipService.respondToPartnershipRequest(request)
         return LoverPartnershipV2Response.of(loverPartnerships)
     }
 
@@ -49,7 +49,7 @@ class PartnershipV2Controller(
         if (loverId != request.initiatorId) {
             throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.Forbidden)
         }
-        val loverPartnerships: LoverPartnerships = partnershipService.cancelPartnershipRequest(loverId, request)
+        val loverPartnerships: LoverPartnership = partnershipService.cancelPartnershipRequest(loverId, request)
         return LoverPartnershipV2Response.of(loverPartnerships)
     }
 
@@ -58,7 +58,7 @@ class PartnershipV2Controller(
         @PathVariable("loverId") loverId: Long,
         @PathVariable("partnerLoverId") partnerLoverId: Long
     ): LoverPartnershipV2Response {
-        val loverPartnerships: LoverPartnerships = partnershipService.endPartnership(loverId, partnerLoverId)
+        val loverPartnerships: LoverPartnership = partnershipService.endPartnership(loverId, partnerLoverId)
         return LoverPartnershipV2Response.of(loverPartnerships)
     }
 }

@@ -12,7 +12,7 @@ class PartnershipController(
     @GetMapping("/{loverId}")
     suspend fun getLoverPartnerships(@PathVariable("loverId") loverId: Long)
             : ResponseEntity<LoverPartnershipsResponse> {
-        val loverPartnerships: LoverPartnerships = partnershipService.getLoverPartnerships(loverId)
+        val loverPartnerships: LoverPartnership = partnershipService.getLoverPartnership(loverId)
         return ResponseEntity.ok(LoverPartnershipsResponse.of(loverPartnerships))
     }
 
@@ -26,7 +26,7 @@ class PartnershipController(
     @PutMapping("respondPartnership")
     suspend fun respondPartnership(@RequestBody request: RespondPartnershipRequest)
             : ResponseEntity<LoverPartnershipsResponse> {
-        val loverPartnerships: LoverPartnerships = partnershipService.respondToPartnershipRequest(request)
+        val loverPartnerships: LoverPartnership = partnershipService.respondToPartnershipRequest(request)
         return ResponseEntity.ok(LoverPartnershipsResponse.of(loverPartnerships))
     }
 }

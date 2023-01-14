@@ -27,6 +27,7 @@ data class LoverResponse(
     val publicProfile: Boolean,
     val shareableLink: String? = null,
     val isAdmin: Boolean = false,
+    val partnerId: Long?
 ) {
     companion object {
         fun of(lover: Lover, isAdmin: Boolean = false): LoverResponse {
@@ -46,7 +47,8 @@ data class LoverResponse(
                 createdAt = lover.createdAt.toInstant().toApiString(),
                 publicProfile = false,
                 shareableLink = lover.uuid?.let { LoverService.linkPrefixVisible + lover.uuid },
-                isAdmin = isAdmin
+                isAdmin = isAdmin,
+                partnerId = lover.partnerId
             )
         }
     }
@@ -76,6 +78,7 @@ data class LoverRelationsResponse(
     val publicProfile: Boolean,
     val shareableLink: String? = null,
     val isAdmin: Boolean = false,
+    val partnerId: Long?
 ) {
     companion object {
         suspend fun of(lover: Lover, loverRelations: LoverRelations, isAdmin: Boolean = false): LoverRelationsResponse {
@@ -96,6 +99,7 @@ data class LoverRelationsResponse(
                 publicProfile = false,
                 shareableLink = lover.uuid?.let { LoverService.linkPrefixVisible + lover.uuid },
                 isAdmin = isAdmin,
+                partnerId = lover.partnerId,
                 relations = loverRelations.relations.map { entry ->
                     LoverViewResponse(
                         id = entry.loverView.id,
@@ -105,7 +109,8 @@ data class LoverRelationsResponse(
                         rank = entry.rank,
                         createdAt = entry.loverView.createdAt.toInstant().toApiString(),
                         relation = RelationStatusDto.of(entry.relationStatus),
-                        publicProfile = false
+                        publicProfile = false,
+                        partnerId = entry.loverView.partnerId
                     )
                 }.toList()
             )
@@ -122,6 +127,7 @@ data class LoverViewResponse(
     val createdAt: String,
     val relation: RelationStatusDto,
     val publicProfile: Boolean,
+    val partnerId: Long?,
 ) {
     companion object {
         fun of(lover: Lover, relationStatus: Relation.Status): LoverViewResponse {
@@ -133,7 +139,8 @@ data class LoverViewResponse(
                 rank = lover.rank,
                 createdAt = lover.createdAt.toInstant().toApiString(),
                 relation = RelationStatusDto.of(relationStatus),
-                publicProfile = false
+                publicProfile = false,
+                partnerId = lover.partnerId
             )
         }
 
@@ -146,7 +153,8 @@ data class LoverViewResponse(
                 rank = lover.rank,
                 createdAt = lover.createdAt.toInstant().toApiString(),
                 relation = relationStatus,
-                publicProfile = false
+                publicProfile = false,
+                partnerId = lover.partnerId
             )
         }
     }

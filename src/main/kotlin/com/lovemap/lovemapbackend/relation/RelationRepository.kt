@@ -25,6 +25,12 @@ interface RelationRepository : CoroutineCrudRepository<Relation, Long> {
         targetId: Long
     ): Relation?
 
+
+    suspend fun deleteBySourceIdAndTargetId(
+        sourceId: Long,
+        targetId: Long
+    )
+
     suspend fun existsBySourceIdAndTargetIdAndStatus(
         sourceId: Long,
         targetId: Long,

@@ -48,7 +48,7 @@ data class Partnership(
     }
 }
 
-data class LoverPartnerships(
+data class LoverPartnership(
     val loverId: Long,
-    val partnerships: Set<Partnership>
+    val partnership: Partnership?
 )

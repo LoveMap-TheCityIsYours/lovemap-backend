@@ -162,4 +162,24 @@ class LoverService(
     suspend fun getAllByIds(loverIds: Set<Long>): Map<Long, Lover> {
         return loverRepository.findAllById(loverIds).toSet().associateBy { it.id }
     }
+
+    suspend fun setPartnershipBetween(initiatorId: Long, respondentId: Long) {
+        val initiator = unAuthorizedGetById(initiatorId)
+        initiator.partnerId = respondentId
+        save(initiator)
+
+        val respondent = unAuthorizedGetById(respondentId)
+        respondent.partnerId = initiatorId
+        save(respondent)
+    }
+
+    suspend fun removePartnershipBetween(loverId: Long, partnerLoverId: Long) {
+        val lover = unAuthorizedGetById(loverId)
+        lover.partnerId = null
+        save(lover)
+
+        val partner = unAuthorizedGetById(partnerLoverId)
+        partner.partnerId = null
+        save(partner)
+    }
 }

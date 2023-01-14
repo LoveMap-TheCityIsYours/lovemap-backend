@@ -11,7 +11,8 @@ import com.lovemap.lovemapbackend.relation.RelationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.toSet
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -33,19 +34,18 @@ class PartnershipService(
     private val logger = KotlinLogging.logger {}
 
     suspend fun getPartnerOf(loverId: Long): Lover? {
-        val partnership = getLoverPartnerships(loverId)
-            .partnerships.firstOrNull { it.status == PARTNER }
-
+        val partnership: Partnership? = getLoverPartnership(loverId).partnership?.takeIf {
+            it.status == PARTNER
+        }
         return partnership?.partnerOf(loverId)
             ?.let { partnerId -> loverService.unAuthorizedGetById(partnerId) }
     }
 
-    suspend fun getLoverPartnerships(loverId: Long): LoverPartnerships {
-        authorizationService.checkAccessFor(loverId)
+    suspend fun getLoverPartnership(loverId: Long): LoverPartnership {
         if (loverService.unAuthorizedExists(loverId)) {
-            return LoverPartnerships(
+            return LoverPartnership(
                 loverId = loverId,
-                partnerships = getPartnerships(loverId)
+                partnership = getPartnership(loverId)
             )
         } else {
             throw LoveMapException(
@@ -62,11 +62,14 @@ class PartnershipService(
     suspend fun requestPartnership(request: RequestPartnershipRequest): Partnership {
         val initiatorId = request.initiatorId
         val respondentId = request.respondentId
-        if (getLoverPartnerships(request.initiatorId).partnerships.isNotEmpty()) {
-            throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.AlreadyHavePartner)
-        }
         authorizationService.checkAccessFor(initiatorId)
-        validateInitiatorRespondentIds(initiatorId, respondentId)
+        if (getLoverPartnership(request.initiatorId).partnership != null) {
+            throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.AlreadyHasPartner)
+        }
+        if (getLoverPartnership(request.respondentId).partnership != null) {
+            throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.RespondentAlreadyHasPartner)
+        }
+        validateInitiatorRespondentNotTheSame(initiatorId, respondentId)
         relationService.checkBlockingBetweenLovers(initiatorId, respondentId)
         val initiatorPartnership: Partnership? = getInitiatorPartnership(initiatorId, respondentId)
         return if (initiatorPartnership != null) {
@@ -82,22 +85,31 @@ class PartnershipService(
         }
     }
 
-    suspend fun cancelPartnershipRequest(loverId: Long, request: CancelPartnershipRequest): LoverPartnerships {
+    suspend fun cancelPartnershipRequest(loverId: Long, request: CancelPartnershipRequest): LoverPartnership {
         val initiatorId = request.initiatorId
+        authorizationService.checkAccessFor(initiatorId)
         val respondentId = request.respondentId
-        getLoverPartnerships(loverId).partnerships
-            .firstOrNull { it.initiatorId == initiatorId && it.respondentId == respondentId }
+        getLoverPartnership(loverId).partnership
+            ?.takeIf { it.initiatorId == initiatorId && it.respondentId == respondentId }
             ?.let { partnership ->
                 partnershipRepository.delete(partnership)
             } ?: throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.PartnershipNotFound)
-        return getLoverPartnerships(loverId)
+        return getLoverPartnership(loverId)
     }
 
-    fun endPartnership(loverId: Long, partnerLoverId: Long): LoverPartnerships {
-        TODO()
+    suspend fun endPartnership(loverId: Long, partnerLoverId: Long): LoverPartnership {
+        authorizationService.checkAccessFor(loverId)
+        getLoverPartnership(loverId).partnership
+            ?.takeIf { it.partnerOf(loverId) == partnerLoverId }
+            ?.let { partnership ->
+                partnershipRepository.delete(partnership)
+                loverService.removePartnershipBetween(loverId, partnerLoverId)
+                relationService.removePartnershipBetween(loverId, partnerLoverId)
+            } ?: throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.PartnershipNotFound)
+        return getLoverPartnership(loverId)
     }
 
-    suspend fun respondToPartnershipRequest(request: RespondPartnershipRequest): LoverPartnerships {
+    suspend fun respondToPartnershipRequest(request: RespondPartnershipRequest): LoverPartnership {
         val initiatorId = request.initiatorId
         val respondentId = request.respondentId
         authorizationService.checkAccessFor(respondentId)
@@ -121,7 +133,7 @@ class PartnershipService(
         initiatorId: Long,
         respondentId: Long
     ): Partnership {
-        validateInitiatorRespondentIds(initiatorId, respondentId)
+        validateInitiatorRespondentNotTheSame(initiatorId, respondentId)
         try {
             relationService.checkBlockingBetweenLovers(initiatorId, respondentId)
         } catch (e: ResponseStatusException) {
@@ -144,7 +156,7 @@ class PartnershipService(
         request: RespondPartnershipRequest,
         partnership: Partnership,
         respondentId: Long
-    ): LoverPartnerships {
+    ): LoverPartnership {
         return when (request.response) {
             ACCEPT -> {
                 partnership.status = PARTNER
@@ -154,12 +166,16 @@ class PartnershipService(
                     partnership.initiatorId,
                     partnership.respondentId
                 )
+                loverService.setPartnershipBetween(
+                    partnership.initiatorId,
+                    partnership.respondentId
+                )
                 sendPushNotification(partnership)
-                getLoverPartnerships(respondentId)
+                getLoverPartnership(respondentId)
             }
             DENY -> {
                 partnershipRepository.delete(partnership)
-                getLoverPartnerships(respondentId)
+                getLoverPartnership(respondentId)
             }
         }
     }
@@ -268,9 +284,9 @@ class PartnershipService(
         // TODO: implement
     }
 
-    private suspend fun getPartnerships(loverId: Long): Set<Partnership> {
-        return initiatorPartnershipsOfLover(loverId).toSet() +
-                respondentPartnershipsOfLover(loverId).toSet()
+    private suspend fun getPartnership(loverId: Long): Partnership? {
+        return (initiatorPartnershipsOfLover(loverId).toSet() +
+                respondentPartnershipsOfLover(loverId).toSet()).firstOrNull()
 
     }
 
@@ -282,7 +298,7 @@ class PartnershipService(
         return partnershipRepository.findByRespondentId(loverId)
     }
 
-    private fun validateInitiatorRespondentIds(initiatorId: Long, respondentId: Long) {
+    private fun validateInitiatorRespondentNotTheSame(initiatorId: Long, respondentId: Long) {
         if (initiatorId == respondentId) {
             throw LoveMapException(
                 HttpStatus.BAD_REQUEST,

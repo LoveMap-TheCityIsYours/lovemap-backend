@@ -28,10 +28,11 @@ data class LoverPartnershipsResponse(
     val partnerships: List<PartnershipResponse>
 ) {
     companion object {
-        fun of(loverPartnerShips: LoverPartnerships): LoverPartnershipsResponse {
+        fun of(loverPartnerShips: LoverPartnership): LoverPartnershipsResponse {
             return LoverPartnershipsResponse(
                 loverId = loverPartnerShips.loverId,
-                partnerships = loverPartnerShips.partnerships.map { PartnershipResponse.of(it) }.toList()
+                partnerships = loverPartnerShips.partnership
+                    ?.let { listOf(PartnershipResponse.of(it)) } ?: emptyList()
             )
         }
     }

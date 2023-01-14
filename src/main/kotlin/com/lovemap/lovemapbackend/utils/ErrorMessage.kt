@@ -79,6 +79,7 @@ enum class ErrorCode {
     NewsFeedPageNotFound,
     InvalidPageRequest,
     InvalidCredentialsCountry,
-    AlreadyHavePartner,
+    AlreadyHasPartner,
+    RespondentAlreadyHasPartner,
 
 }

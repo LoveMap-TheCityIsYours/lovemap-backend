@@ -68,6 +68,11 @@ class RelationService(
         relationRepository.save(relation21)
     }
 
+    suspend fun removePartnershipBetween(loverId: Long, partnerLoverId: Long) {
+        relationRepository.deleteBySourceIdAndTargetId(loverId, partnerLoverId)
+        relationRepository.deleteBySourceIdAndTargetId(partnerLoverId, loverId)
+    }
+
     suspend fun getRelation(fromId: Long, toId: Long): Relation {
         return relationRepository.findBySourceIdAndTargetId(fromId, toId)
             ?: throw LoveMapException(

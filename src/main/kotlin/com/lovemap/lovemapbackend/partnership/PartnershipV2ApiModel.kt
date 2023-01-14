@@ -5,11 +5,10 @@ data class LoverPartnershipV2Response(
     val partnership: PartnershipResponse?
 ) {
     companion object {
-        fun of(loverPartnerShips: LoverPartnerships): LoverPartnershipV2Response {
+        fun of(loverPartnerShips: LoverPartnership): LoverPartnershipV2Response {
             return LoverPartnershipV2Response(
                 loverId = loverPartnerShips.loverId,
-                partnership = loverPartnerShips.partnerships.firstOrNull()
-                    ?.let { PartnershipResponse.of(it) }
+                partnership = loverPartnerShips.partnership?.let { PartnershipResponse.of(it) }
             )
         }
     }
