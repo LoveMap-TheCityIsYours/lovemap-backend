@@ -2,7 +2,6 @@ package com.lovemap.lovemapbackend.partnership
 
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException
-import kotlinx.coroutines.flow.Flow
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.http.HttpStatus
@@ -36,14 +35,20 @@ data class Partnership(
 
     fun partnerOf(loverId: Long): Long {
         return when (loverId) {
-            initiatorId -> { respondentId }
-            respondentId -> { initiatorId }
-            else -> { throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.PartnershipNotFound) }
+            initiatorId -> {
+                respondentId
+            }
+            respondentId -> {
+                initiatorId
+            }
+            else -> {
+                throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.PartnershipNotFound)
+            }
         }
     }
 }
 
 data class LoverPartnerships(
     val loverId: Long,
-    val relations: Flow<Partnership>
+    val partnerships: Set<Partnership>
 )

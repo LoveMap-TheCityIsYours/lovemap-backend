@@ -3,6 +3,7 @@ package com.lovemap.lovemapbackend.partnership
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
+@Deprecated("Not very nice REST API")
 @RestController
 @RequestMapping("/partnerships")
 class PartnershipController(

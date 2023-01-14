@@ -1,10 +1,14 @@
 package com.lovemap.lovemapbackend.partnership
 
 import com.lovemap.lovemapbackend.utils.InstantConverterUtils.toApiString
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
 
 data class RequestPartnershipRequest(
+    val initiatorId: Long,
+    val respondentId: Long,
+)
+
+
+data class CancelPartnershipRequest(
     val initiatorId: Long,
     val respondentId: Long,
 )
@@ -24,10 +28,10 @@ data class LoverPartnershipsResponse(
     val partnerships: List<PartnershipResponse>
 ) {
     companion object {
-        suspend fun of(loverPartnerShips: LoverPartnerships): LoverPartnershipsResponse {
+        fun of(loverPartnerShips: LoverPartnerships): LoverPartnershipsResponse {
             return LoverPartnershipsResponse(
                 loverId = loverPartnerShips.loverId,
-                partnerships = loverPartnerShips.relations.map { PartnershipResponse.of(it) }.toList()
+                partnerships = loverPartnerShips.partnerships.map { PartnershipResponse.of(it) }.toList()
             )
         }
     }

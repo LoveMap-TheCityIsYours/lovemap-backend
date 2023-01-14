@@ -61,7 +61,7 @@ data class Lover(
 ) {
     fun toView() = LoverView(
         id = id,
-        userName = userName,
+        displayName = displayName,
         points = points,
         rank = rank,
         createdAt = createdAt,
@@ -70,7 +70,7 @@ data class Lover(
 
 data class LoverView(
     val id: Long,
-    val userName: String,
+    val displayName: String,
     val points: Int,
     val rank: Int,
     val createdAt: Timestamp,

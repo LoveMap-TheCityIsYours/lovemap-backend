@@ -100,7 +100,7 @@ data class LoverRelationsResponse(
                     LoverViewResponse(
                         id = entry.loverView.id,
                         userName = lover.displayName,
-                        displayName = entry.loverView.userName,
+                        displayName = entry.loverView.displayName,
                         points = lover.points,
                         rank = entry.rank,
                         createdAt = entry.loverView.createdAt.toInstant().toApiString(),
