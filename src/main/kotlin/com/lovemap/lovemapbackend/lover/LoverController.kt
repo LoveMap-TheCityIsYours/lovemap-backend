@@ -1,6 +1,7 @@
 package com.lovemap.lovemapbackend.lover
 
 import com.lovemap.lovemapbackend.lover.ranks.LoverRanks
+import com.lovemap.lovemapbackend.utils.ValidatorService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -12,6 +13,7 @@ class LoverController(
     private val loverContributionsService: LoverContributionsService,
     private val loverConverter: LoverConverter,
     private val loverRanks: LoverRanks,
+    private val validatorService: ValidatorService
 ) {
     @GetMapping("/contributions/{loverId}")
     suspend fun contributions(@PathVariable loverId: Long): ResponseEntity<LoverContributionsResponse> {
@@ -29,6 +31,7 @@ class LoverController(
         @PathVariable loverId: Long,
         @RequestBody updateLoverRequest: UpdateLoverRequest
     ): LoverResponse {
+        validatorService.validate(updateLoverRequest)
         return loverService.updateLover(loverId, updateLoverRequest)
     }
 

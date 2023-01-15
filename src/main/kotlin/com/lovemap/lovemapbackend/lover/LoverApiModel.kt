@@ -6,7 +6,9 @@ import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewResponse
 import com.lovemap.lovemapbackend.relation.LoverRelations
 import com.lovemap.lovemapbackend.relation.Relation
 import com.lovemap.lovemapbackend.relation.RelationStatusDto
+import com.lovemap.lovemapbackend.utils.INVALID_USERNAME
 import com.lovemap.lovemapbackend.utils.InstantConverterUtils.toApiString
+import jakarta.validation.constraints.Size
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 
@@ -162,5 +164,6 @@ data class LoverViewResponse(
 
 data class UpdateLoverRequest(
     val email: String?,
+    @field:Size(min = 3, max = 32, message = INVALID_USERNAME)
     val displayName: String?
 )

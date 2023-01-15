@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 
 data class CreateLoverRequest(
-    @field:Size(min = 3, max = 25, message = INVALID_USERNAME)
+    @field:Size(min = 3, max = 32, message = INVALID_USERNAME)
     val userName: String,
     @field:Size(min = 6, max = 100, message = INVALID_PASSWORD)
     val password: String,
@@ -19,7 +19,7 @@ data class CreateLoverRequest(
 )
 
 data class LoginLoverRequest(
-    @field:Size(min = 3, max = 25, message = INVALID_USERNAME)
+    @field:Size(min = 3, max = 32, message = INVALID_USERNAME)
     val userName: String? = null,
     @field:Email(message = INVALID_EMAIL)
     val email: String?,

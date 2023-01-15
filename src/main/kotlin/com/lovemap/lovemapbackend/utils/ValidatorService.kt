@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 const val INVALID_EMAIL = "Invalid email address"
-const val INVALID_USERNAME = "Length of username must be between 3 and 25 characters."
+const val INVALID_USERNAME = "Length of name must be between 3 and 32 characters."
 const val INVALID_PASSWORD = "Length of password must be between 6 and 100 characters."
 const val INVALID_LOVE_SPOT_NAME = "Name must be between 3 and 50 characters."
 const val INVALID_LOVE_DESCRIPTION = "Description must be between 5 and 1000 characters."
