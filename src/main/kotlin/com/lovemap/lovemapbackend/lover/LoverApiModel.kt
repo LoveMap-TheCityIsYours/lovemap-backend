@@ -47,7 +47,7 @@ data class LoverResponse(
                 loveSpotsAdded = lover.loveSpotsAdded,
                 numberOfFollowers = lover.numberOfFollowers,
                 createdAt = lover.createdAt.toInstant().toApiString(),
-                publicProfile = false,
+                publicProfile = lover.publicProfile,
                 shareableLink = lover.uuid?.let { LoverService.linkPrefixVisible + lover.uuid },
                 isAdmin = isAdmin,
                 partnerId = lover.partnerId
@@ -98,7 +98,7 @@ data class LoverRelationsResponse(
                 loveSpotsAdded = lover.loveSpotsAdded,
                 numberOfFollowers = lover.numberOfFollowers,
                 createdAt = lover.createdAt.toInstant().toApiString(),
-                publicProfile = false,
+                publicProfile = lover.publicProfile,
                 shareableLink = lover.uuid?.let { LoverService.linkPrefixVisible + lover.uuid },
                 isAdmin = isAdmin,
                 partnerId = lover.partnerId,
@@ -141,7 +141,7 @@ data class LoverViewResponse(
                 rank = lover.rank,
                 createdAt = lover.createdAt.toInstant().toApiString(),
                 relation = RelationStatusDto.of(relationStatus),
-                publicProfile = false,
+                publicProfile = lover.publicProfile,
                 partnerId = lover.partnerId
             )
         }
@@ -155,7 +155,7 @@ data class LoverViewResponse(
                 rank = lover.rank,
                 createdAt = lover.createdAt.toInstant().toApiString(),
                 relation = relationStatus,
-                publicProfile = false,
+                publicProfile = lover.publicProfile,
                 partnerId = lover.partnerId
             )
         }
@@ -164,6 +164,9 @@ data class LoverViewResponse(
 
 data class UpdateLoverRequest(
     val email: String?,
+
     @field:Size(min = 3, max = 32, message = INVALID_USERNAME)
-    val displayName: String?
+    val displayName: String?,
+
+    val publicProfile: Boolean? = null
 )

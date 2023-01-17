@@ -25,6 +25,7 @@ data class NewsFeedItemDto(
             happenedAt = Timestamp.from(newsFeedData.happenedAt()),
             type = type,
             referenceId = referenceId,
+            loverId = newsFeedData.loverId(),
             country = country,
             data = objectMapper.writeValueAsString(newsFeedData)
         )

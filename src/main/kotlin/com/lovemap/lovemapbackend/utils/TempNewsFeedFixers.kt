@@ -2,19 +2,17 @@ package com.lovemap.lovemapbackend.utils
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.lovemap.lovemapbackend.lover.LoverRepository
-import com.lovemap.lovemapbackend.lover.LoverService
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoService
 import com.lovemap.lovemapbackend.newfeed.LoverNewsFeedUpdater
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedRepository
-import com.lovemap.lovemapbackend.newfeed.model.LoveSpotPhotoNewsFeedData
-import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemConverter
-import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto
-import com.lovemap.lovemapbackend.newfeed.model.PhotoLikeNewsFeedData
+import com.lovemap.lovemapbackend.newfeed.dataparser.NewsFeedDataParser
+import com.lovemap.lovemapbackend.newfeed.model.*
 import com.lovemap.lovemapbackend.newfeed.provider.CachedLoveSpotService
 import com.lovemap.lovemapbackend.newfeed.provider.LoveSpotReviewNewsFeedProvider
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactor.mono
 import mu.KotlinLogging
@@ -41,6 +39,7 @@ class NewsFeedCountryPopulator(
                 newsFeedItem.country = country
                 newsFeedRepository.save(newsFeedItem)
             }
+
         }.subscribe()
     }
 }
@@ -104,9 +103,9 @@ class NewsFeedReviewFixer(
                 .toList()
                 .filterNotNull()
             logger.info { "Saved LoveSpotReviewNewsFeed size: ${saved.size}" }
+
         }.subscribe()
     }
-
 }
 
 // disabled
@@ -128,10 +127,56 @@ class LoverDisplayNameUpdater(
                 val saved = loverRepository.save(it)
                 logger.info { "Saved $saved" }
             }
+
+        }.subscribe()
+    }
+}
+
+// disabled
+class LoverCountryNameUpdater(
+    private val loverRepository: LoverRepository,
+    private val newsFeedRepository: NewsFeedRepository,
+) : ApplicationRunner {
+    private val logger = KotlinLogging.logger { }
+
+    override fun run(args: ApplicationArguments?) {
+        mono {
+            val loverNewsFeedItems = newsFeedRepository.findAllByType(NewsFeedItem.Type.LOVER).toList()
+            loverNewsFeedItems.forEach { newsFeedItem ->
+                loverRepository.findById(newsFeedItem.referenceId)?.let { lover ->
+                    if (newsFeedItem.country != lover.registrationCountry) {
+                        newsFeedItem.country = lover.registrationCountry
+                        val saved = newsFeedRepository.save(newsFeedItem)
+                        logger.info { "Saved lover country '${lover.registrationCountry}' for loverNewsFeedItem '$saved'" }
+                    }
+                }
+            }
+
+        }.subscribe()
+    }
+}
+
+// disabled
+class NewsFeedItemLoverIdFixer(
+    private val newsFeedRepository: NewsFeedRepository,
+    private val newsFeedDataParser: NewsFeedDataParser,
+) : ApplicationRunner {
+    private val logger = KotlinLogging.logger { }
+
+    override fun run(args: ApplicationArguments?) {
+        mono {
+            newsFeedRepository.findAll().map { newsFeedItem: NewsFeedItem ->
+                val newsFeedData: NewsFeedData = newsFeedDataParser.parse(newsFeedItem.type, newsFeedItem.data)
+                newsFeedItem.loverId = newsFeedData.loverId()
+                val saved = newsFeedRepository.save(newsFeedItem)
+                logger.info { "Set loverId '${saved.loverId}' for NewsFeedItem $saved" }
+                saved
+            }.collect()
         }.subscribe()
     }
 
 }
+
 
 
 

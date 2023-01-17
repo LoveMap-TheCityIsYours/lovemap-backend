@@ -147,12 +147,13 @@ class LoverService(
 
     suspend fun updateLover(loverId: Long, update: UpdateLoverRequest): LoverResponse {
         logger.info { "Received UpdateLoverRequest $update" }
-        val lover = getById(loverId)
+        val lover: Lover = getById(loverId)
         update.email?.let {
             checkUserNameAndEmail(lover.userName, it)
             lover.email = it
         }
         update.displayName?.let { lover.displayName = it }
+        update.publicProfile?.let { lover.publicProfile = it }
         val savedLover = save(lover)
         logger.info { "Updated Lover $savedLover" }
         update.displayName?.let { loverNewsFeedUpdater.updateLoverNameChange(loverId, it) }

@@ -40,6 +40,7 @@ class NewsFeedItemConverter(
             happenedAt = dto.newsFeedData.happenedAt(),
             happenedAtFormatted = dateTimeFormatter.format(dto.newsFeedData.happenedAt()),
             referenceId = dto.referenceId,
+            loverId = dto.newsFeedData.loverId(),
             country = dto.country
         )
         return responseDecoratorMap[dto.type]?.decorate(initializedResponse, dto.newsFeedData)

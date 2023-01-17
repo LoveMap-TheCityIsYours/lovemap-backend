@@ -60,7 +60,10 @@ data class Lover(
     var photoDislikesReceived: Int = 0,
 
     @Column("partner_id")
-    var partnerId: Long? = null
+    var partnerId: Long? = null,
+
+    @Column("public_profile")
+    var publicProfile: Boolean = false
 ) {
     fun toView() = LoverView(
         id = id,

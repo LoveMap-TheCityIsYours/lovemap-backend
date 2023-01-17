@@ -23,6 +23,9 @@ data class NewsFeedItem(
     @Column("reference_id")
     var referenceId: Long,
 
+    @Column("lover_id")
+    var loverId: Long,
+
     @Column("country")
     var country: String = DEFAULT_COUNTRY,
 
