@@ -28,6 +28,7 @@ class LoveSpotService(
     private val loverPointService: LoverPointService,
     private val geoLocationService: GeoLocationService,
     private val asyncTaskService: AsyncTaskService,
+    private val cachedLoveSpotService: CachedLoveSpotService,
     private val repository: LoveSpotRepository
 ) {
 
@@ -47,6 +48,8 @@ class LoveSpotService(
                 setGeoLocation(loveSpot)
             }
         }
+
+        cachedLoveSpotService.put(loveSpot)
 
         return loveSpot
     }

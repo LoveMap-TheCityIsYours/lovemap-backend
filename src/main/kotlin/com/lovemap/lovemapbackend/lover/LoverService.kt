@@ -21,6 +21,7 @@ class LoverService(
     private val authorizationService: AuthorizationService,
     private val converter: LoverConverter,
     private val loverNewsFeedUpdater: LoverNewsFeedUpdater,
+    private val cachedLoverService: CachedLoverService,
     private val loverRepository: LoverRepository,
 ) {
     companion object {
@@ -35,8 +36,10 @@ class LoverService(
     }
 
     suspend fun getById(id: Long): Lover {
-        return loverRepository.findById(id)?.also {
-            authorizationService.checkAccessFor(it)
+        return loverRepository.findById(id)?.let { lover ->
+            authorizationService.checkAccessFor(lover)
+            cachedLoverService.put(lover)
+            lover
         } ?: throw LoveMapException(
             HttpStatus.NOT_FOUND,
             ErrorMessage(
@@ -48,15 +51,17 @@ class LoverService(
     }
 
     suspend fun unAuthorizedGetById(id: Long): Lover {
-        return loverRepository.findById(id)
-            ?: throw LoveMapException(
-                HttpStatus.NOT_FOUND,
-                ErrorMessage(
-                    NotFoundById,
-                    id.toString(),
-                    "Lover not found by id: '$id'."
-                )
+        return loverRepository.findById(id)?.let { lover ->
+            cachedLoverService.put(lover)
+            lover
+        } ?: throw LoveMapException(
+            HttpStatus.NOT_FOUND,
+            ErrorMessage(
+                NotFoundById,
+                id.toString(),
+                "Lover not found by id: '$id'."
             )
+        )
     }
 
     suspend fun unAuthorizedGetByUserName(userName: String): Lover {

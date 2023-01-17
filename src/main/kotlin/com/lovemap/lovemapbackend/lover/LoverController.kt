@@ -1,8 +1,10 @@
 package com.lovemap.lovemapbackend.lover
 
 import com.lovemap.lovemapbackend.lover.ranks.LoverRanks
+import com.lovemap.lovemapbackend.utils.ErrorCode
+import com.lovemap.lovemapbackend.utils.LoveMapException
 import com.lovemap.lovemapbackend.utils.ValidatorService
-import org.springframework.http.ResponseEntity
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -10,20 +12,20 @@ import org.springframework.web.bind.annotation.*
 class LoverController(
     private val loverRelationService: LoverRelationService,
     private val loverService: LoverService,
+    private val cachedLoverService: CachedLoverService,
     private val loverContributionsService: LoverContributionsService,
     private val loverConverter: LoverConverter,
     private val loverRanks: LoverRanks,
     private val validatorService: ValidatorService
 ) {
     @GetMapping("/contributions/{loverId}")
-    suspend fun contributions(@PathVariable loverId: Long): ResponseEntity<LoverContributionsResponse> {
-        val loveListDto = loverContributionsService.list(loverId)
-        return ResponseEntity.ok(loveListDto)
+    suspend fun contributions(@PathVariable loverId: Long): LoverContributionsResponse {
+        return loverContributionsService.list(loverId)
     }
 
     @GetMapping("/{loverId}")
-    suspend fun getLover(@PathVariable loverId: Long): ResponseEntity<LoverRelationsResponse> {
-        return ResponseEntity.ok(loverRelationService.getWithRelations(loverId))
+    suspend fun getLover(@PathVariable loverId: Long): LoverRelationsResponse {
+        return loverRelationService.getWithRelations(loverId)
     }
 
     @PutMapping("/{loverId}")
@@ -36,30 +38,37 @@ class LoverController(
     }
 
     @GetMapping("/view/{loverId}")
-    suspend fun getLoverView(@PathVariable loverId: Long): ResponseEntity<LoverViewResponse> {
-        return ResponseEntity.ok(loverRelationService.getById(loverId))
+    suspend fun getLoverView(@PathVariable loverId: Long): LoverViewResponse {
+        return loverRelationService.getById(loverId)
+    }
+
+    @GetMapping("/cachedView/{loverId}")
+    suspend fun getCachedLoverView(@PathVariable loverId: Long): LoverViewWithoutRelationResponse {
+        return cachedLoverService.getCachedLoverById(loverId) ?: throw LoveMapException(
+            HttpStatus.NOT_FOUND,
+            ErrorCode.LoverNotFound
+        )
     }
 
     @GetMapping
-    suspend fun getLoverByUuid(@RequestParam uuid: String): ResponseEntity<LoverViewResponse> {
-        val loverViewDto = loverRelationService.getByUuid(uuid)
-        return ResponseEntity.ok(loverViewDto)
+    suspend fun getLoverByUuid(@RequestParam uuid: String): LoverViewResponse {
+        return loverRelationService.getByUuid(uuid)
     }
 
     @PostMapping("/{loverId}/shareableLink")
-    suspend fun generateLoverLink(@PathVariable loverId: Long): ResponseEntity<LoverResponse> {
+    suspend fun generateLoverLink(@PathVariable loverId: Long): LoverResponse {
         val lover = loverService.generateLoverUuid(loverId)
-        return ResponseEntity.ok(loverConverter.toResponse(lover))
+        return loverConverter.toResponse(lover)
     }
 
     @DeleteMapping("/{loverId}/shareableLink")
-    suspend fun deleteLoverLink(@PathVariable loverId: Long): ResponseEntity<LoverResponse> {
+    suspend fun deleteLoverLink(@PathVariable loverId: Long): LoverResponse {
         val lover = loverService.deleteLoverLink(loverId)
-        return ResponseEntity.ok(loverConverter.toResponse(lover))
+        return loverConverter.toResponse(lover)
     }
 
     @GetMapping("ranks")
-    suspend fun getRanks(): ResponseEntity<LoverRanks> {
-        return ResponseEntity.ok(loverRanks)
+    suspend fun getRanks(): LoverRanks {
+        return loverRanks
     }
 }

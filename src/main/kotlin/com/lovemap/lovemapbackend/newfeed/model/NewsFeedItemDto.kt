@@ -1,6 +1,7 @@
 package com.lovemap.lovemapbackend.newfeed.model
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.lovemap.lovemapbackend.lover.LoverViewWithoutRelationResponse
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import java.sql.Timestamp
@@ -10,6 +11,7 @@ data class NewsFeedItemDto(
     val id: Long? = null,
     val type: NewsFeedItem.Type,
     val generatedAt: Instant,
+    val publicLover: LoverViewWithoutRelationResponse?,
     val country: String,
     val referenceId: Long,
     val newsFeedData: NewsFeedData

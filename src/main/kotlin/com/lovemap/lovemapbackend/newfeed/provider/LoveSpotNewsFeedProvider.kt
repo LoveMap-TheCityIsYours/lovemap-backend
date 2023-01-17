@@ -1,5 +1,7 @@
 package com.lovemap.lovemapbackend.newfeed.provider
 
+import com.lovemap.lovemapbackend.lover.CachedLoverService
+import com.lovemap.lovemapbackend.lovespot.CachedLoveSpotService
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
@@ -15,6 +17,7 @@ import java.time.Instant
 class LoveSpotNewsFeedProvider(
     private val loveSpotService: LoveSpotService,
     private val cachedLoveSpotService: CachedLoveSpotService,
+    private val cachedLoverService: CachedLoverService,
 ) : NewsFeedProvider {
     private val logger = KotlinLogging.logger {}
 
@@ -28,6 +31,7 @@ class LoveSpotNewsFeedProvider(
                 generatedAt = generationTime,
                 referenceId = it.id,
                 newsFeedData = loveSpotNewsFeedData,
+                publicLover = cachedLoverService.getIfProfileIsPublic(it.addedBy),
                 country = loveSpotNewsFeedData.country ?: NewsFeedItem.DEFAULT_COUNTRY
             )
         }

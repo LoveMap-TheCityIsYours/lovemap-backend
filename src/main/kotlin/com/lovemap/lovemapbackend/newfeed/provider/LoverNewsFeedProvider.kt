@@ -1,7 +1,9 @@
 package com.lovemap.lovemapbackend.newfeed.provider
 
+import com.lovemap.lovemapbackend.lover.CachedLoverService
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.LoverService
+import com.lovemap.lovemapbackend.lover.LoverViewWithoutRelationResponse
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newfeed.model.LoverNewsFeedData
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto
@@ -13,20 +15,25 @@ import java.time.Instant
 
 @Component
 class LoverNewsFeedProvider(
-    private val loverService: LoverService
+    private val loverService: LoverService,
+    private val cachedLoverService: CachedLoverService,
 ) : NewsFeedProvider {
-    private val logger = KotlinLogging.logger{}
+    private val logger = KotlinLogging.logger {}
 
     override suspend fun getNewsFeedFrom(generationTime: Instant, generateFrom: Instant): Flow<NewsFeedItemDto> {
         logger.info { "Getting NewsFeed for Lovers from $generateFrom" }
         val lovers = loverService.getLoversFrom(generateFrom)
-        return lovers.map {
+        return lovers.map { lover ->
+            cachedLoverService.put(lover)
             NewsFeedItemDto(
                 type = NewsFeedItem.Type.LOVER,
                 generatedAt = generationTime,
-                referenceId = it.id,
-                newsFeedData = loverToNewsFeedData(it),
-                country = it.registrationCountry
+                referenceId = lover.id,
+                newsFeedData = loverToNewsFeedData(lover),
+                publicLover = lover.takeIf { it.publicProfile }?.let {
+                    LoverViewWithoutRelationResponse.of(it)
+                },
+                country = lover.registrationCountry
             )
         }
     }

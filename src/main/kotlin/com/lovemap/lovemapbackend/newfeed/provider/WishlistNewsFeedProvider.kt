@@ -1,7 +1,9 @@
 package com.lovemap.lovemapbackend.newfeed.provider
 
+import com.lovemap.lovemapbackend.lover.CachedLoverService
 import com.lovemap.lovemapbackend.lover.wishlist.WishlistItem
 import com.lovemap.lovemapbackend.lover.wishlist.WishlistService
+import com.lovemap.lovemapbackend.lovespot.CachedLoveSpotService
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto
 import com.lovemap.lovemapbackend.newfeed.model.WishlistNewsFeedData
@@ -15,8 +17,9 @@ import java.time.Instant
 class WishlistNewsFeedProvider(
     private val wishlistService: WishlistService,
     private val cachedLoveSpotService: CachedLoveSpotService,
+    private val cachedLoverService: CachedLoverService,
 ) : NewsFeedProvider {
-    private val logger = KotlinLogging.logger{}
+    private val logger = KotlinLogging.logger {}
 
     override suspend fun getNewsFeedFrom(generationTime: Instant, generateFrom: Instant): Flow<NewsFeedItemDto> {
         logger.info { "Getting NewsFeed for Wishlists from $generateFrom" }
@@ -27,6 +30,7 @@ class WishlistNewsFeedProvider(
                 generatedAt = generationTime,
                 referenceId = it.id,
                 country = cachedLoveSpotService.getCountryByLoveSpotId(it.loveSpotId),
+                publicLover = cachedLoverService.getIfProfileIsPublic(it.loverId),
                 newsFeedData = wishlistToNewsFeedData(it)
             )
         }

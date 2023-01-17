@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend.newfeed.model
 
+import com.lovemap.lovemapbackend.lover.CachedLoverService
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newfeed.dataparser.NewsFeedDataParser
 import com.lovemap.lovemapbackend.utils.ErrorCode
@@ -13,6 +14,7 @@ import java.time.format.DateTimeFormatter
 @Component
 class NewsFeedItemConverter(
     private val newsFeedDataParser: NewsFeedDataParser,
+    private val cachedLoverService: CachedLoverService,
     responseDecorators: List<TypeBasedNewsFeedResponseDecorator>
 ) {
     private val responseDecoratorMap: Map<NewsFeedItem.Type, TypeBasedNewsFeedResponseDecorator> =
@@ -21,18 +23,19 @@ class NewsFeedItemConverter(
     private val dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
         .withZone(ZoneId.from(ZoneOffset.UTC))
 
-    fun dtoFromItem(item: NewsFeedItem): NewsFeedItemDto {
+    suspend fun dtoFromItem(item: NewsFeedItem): NewsFeedItemDto {
         return NewsFeedItemDto(
             id = item.id,
             type = item.type,
             generatedAt = item.generatedAt.toInstant(),
             referenceId = item.referenceId,
+            publicLover = cachedLoverService.getIfProfileIsPublic(item.loverId),
             country = item.country,
             newsFeedData = newsFeedDataParser.parse(item.type, item.data)
         )
     }
 
-    fun dtoToResponse(dto: NewsFeedItemDto): NewsFeedItemResponse {
+    suspend fun dtoToResponse(dto: NewsFeedItemDto): NewsFeedItemResponse {
         val initializedResponse = NewsFeedItemResponse(
             type = NewsFeedItemType.ofType(dto.type),
             generatedAt = dto.generatedAt,
@@ -41,6 +44,7 @@ class NewsFeedItemConverter(
             happenedAtFormatted = dateTimeFormatter.format(dto.newsFeedData.happenedAt()),
             referenceId = dto.referenceId,
             loverId = dto.newsFeedData.loverId(),
+            publicLover = dto.publicLover,
             country = dto.country
         )
         return responseDecoratorMap[dto.type]?.decorate(initializedResponse, dto.newsFeedData)

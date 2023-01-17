@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend.newfeed.model
 
+import com.lovemap.lovemapbackend.lover.LoverViewWithoutRelationResponse
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import java.time.Instant
@@ -12,6 +13,7 @@ data class NewsFeedItemResponse(
     val happenedAtFormatted: String,
     val referenceId: Long,
     val loverId: Long,
+    val publicLover: LoverViewWithoutRelationResponse?,
     val country: String,
     val loveSpot: LoveSpotNewsFeedResponse? = null,
     val love: LoveNewsFeedResponse? = null,

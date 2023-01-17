@@ -1,18 +1,17 @@
-package com.lovemap.lovemapbackend.newfeed.provider
+package com.lovemap.lovemapbackend.lovespot
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.lovemap.lovemapbackend.geolocation.GeoLocationService
-import com.lovemap.lovemapbackend.lovespot.LoveSpot
-import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
+import kotlin.math.log
 import kotlin.math.max
 
 @Service
 class CachedLoveSpotService(
-    private val loveSpotService: LoveSpotService,
+    private val loveSpotRepository: LoveSpotRepository,
     private val geoLocationService: GeoLocationService,
 ) {
     private val logger = KotlinLogging.logger {}
@@ -29,35 +28,44 @@ class CachedLoveSpotService(
         .maximumSize(10000)
         .build()
 
+    suspend fun put(loveSpot: LoveSpot) {
+        loveSpotCache.put(loveSpot.id, loveSpot)
+        logger.info { "LoveSpot was put into the cache '${loveSpot.id}'" }
+        val country = getCountryByLoveSpotId(loveSpot.id)
+        logger.info { "Country was put into the cache '$country'." }
+    }
+
     suspend fun findById(loveSpotId: Long): LoveSpot? {
-        logger.info { "Getting LoveSpot '$loveSpotId' from Cache." }
+        logger.info { "Getting LoveSpot from Cache '$loveSpotId'." }
         return loveSpotCache.getIfPresent(loveSpotId)?.let { loveSpot ->
-            logger.info { "LoveSpot '$loveSpotId' found in Cache." }
+            logger.info { "LoveSpot found in Cache '$loveSpotId'." }
             loveSpot
-        } ?: runCatching {
-            logger.info { "LoveSpot '$loveSpotId' not found in Cache. Getting from DB." }
-            loveSpotService.getById(loveSpotId)
-        }.onSuccess { loveSpot ->
-            logger.info { "LoveSpot '$loveSpotId' found in DB. Inserting into Cache." }
-            loveSpotCache.put(loveSpotId, loveSpot)
-        }.onFailure {
-            logger.info { "LoveSpot '$loveSpotId' not found in DB. Returning null." }
-        }.getOrNull()
+        } ?: run {
+            logger.info { "LoveSpot not found in Cache '$loveSpotId'. Getting from DB." }
+            val loveSpot = loveSpotRepository.findById(loveSpotId)
+            loveSpot?.let {
+                logger.info { "LoveSpot found in DB '$loveSpotId'. Inserting into Cache." }
+                loveSpotCache.put(loveSpotId, loveSpot)
+            } ?: run {
+                logger.info { "LoveSpot not found in DB '$loveSpotId'. Returning null." }
+            }
+            loveSpot
+        }
     }
 
     suspend fun getCountryByLoveSpotId(loveSpotId: Long): String {
-        logger.info { "Getting Country for LoveSpot '$loveSpotId' from Cache." }
+        logger.info { "Getting Country for LoveSpot from Cache '$loveSpotId'." }
         val cachedCountry = loveSpotCountryCache.getIfPresent(loveSpotId)
         return if (cachedCountry == null) {
-            logger.info { "Country for LoveSpot '$loveSpotId' not found in Cache. Getting from DB." }
+            logger.info { "Country for LoveSpot not found in Cache '$loveSpotId'. Getting from DB." }
             val country: String = findById(loveSpotId)?.geoLocationId
                 ?.let { geoLocationService.findGeoLocationById(it) }?.country
                 ?: NewsFeedItem.DEFAULT_COUNTRY
-            logger.info { "Resolved '$country' Country for LoveSpot '$loveSpotId' from DB. Inserting into Cache." }
+            logger.info { "Resolved Country for LoveSpot from DB: '$country', '$loveSpotId'. Inserting into Cache." }
             loveSpotCountryCache.put(loveSpotId, country)
             country
         } else {
-            logger.info { "Found '$cachedCountry' Country for LoveSpot '$loveSpotId' in Cache." }
+            logger.info { "Found Country for LoveSpot in Cache: '$cachedCountry', '$loveSpotId'." }
             cachedCountry
         }
     }

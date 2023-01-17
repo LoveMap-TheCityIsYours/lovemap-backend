@@ -8,7 +8,7 @@ import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedRepository
 import com.lovemap.lovemapbackend.newfeed.dataparser.NewsFeedDataParser
 import com.lovemap.lovemapbackend.newfeed.model.*
-import com.lovemap.lovemapbackend.newfeed.provider.CachedLoveSpotService
+import com.lovemap.lovemapbackend.lovespot.CachedLoveSpotService
 import com.lovemap.lovemapbackend.newfeed.provider.LoveSpotReviewNewsFeedProvider
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
@@ -18,7 +18,6 @@ import kotlinx.coroutines.reactor.mono
 import mu.KotlinLogging
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
-import org.springframework.stereotype.Component
 import java.time.Duration
 import java.time.Instant
 
@@ -172,9 +171,9 @@ class NewsFeedItemLoverIdFixer(
                 logger.info { "Set loverId '${saved.loverId}' for NewsFeedItem $saved" }
                 saved
             }.collect()
+
         }.subscribe()
     }
-
 }
 
 

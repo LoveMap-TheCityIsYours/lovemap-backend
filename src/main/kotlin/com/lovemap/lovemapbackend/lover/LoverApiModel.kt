@@ -120,6 +120,30 @@ data class LoverRelationsResponse(
     }
 }
 
+data class LoverViewWithoutRelationResponse(
+    val id: Long,
+    val displayName: String,
+    val points: Int,
+    val rank: Int,
+    val createdAt: String,
+    val publicProfile: Boolean,
+    val partnerId: Long?,
+) {
+    companion object {
+        fun of(lover: Lover): LoverViewWithoutRelationResponse {
+            return LoverViewWithoutRelationResponse(
+                id = lover.id,
+                displayName = lover.displayName,
+                points = lover.points,
+                rank = lover.rank,
+                createdAt = lover.createdAt.toInstant().toApiString(),
+                publicProfile = lover.publicProfile,
+                partnerId = lover.partnerId
+            )
+        }
+    }
+}
+
 data class LoverViewResponse(
     val id: Long,
     val userName: String, // keeping for backward compatibility

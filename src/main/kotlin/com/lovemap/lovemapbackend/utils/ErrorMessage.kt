@@ -81,5 +81,6 @@ enum class ErrorCode {
     InvalidCredentialsCountry,
     AlreadyHasPartner,
     RespondentAlreadyHasPartner,
+    LoverNotFound,
 
 }
