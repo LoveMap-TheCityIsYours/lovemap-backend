@@ -19,7 +19,8 @@ class LoveNewsFeedResponseConverter : TypeBasedNewsFeedResponseDecorator {
                     loveSpotId = newsFeedData.loveSpotId,
                     loverId = newsFeedData.loverId,
                     happenedAt = newsFeedData.happenedAt,
-                    loverPartnerId = newsFeedData.loverPartnerId
+                    loverPartnerId = newsFeedData.loverPartnerId,
+                    publicLoverPartner = newsFeedData.publicLoverPartner
                 )
             )
         } else {

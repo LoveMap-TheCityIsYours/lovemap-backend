@@ -18,7 +18,15 @@ data class NewsFeedItemDto(
 ) : Comparable<NewsFeedItemDto> {
 
     override fun compareTo(other: NewsFeedItemDto): Int {
-        return other.newsFeedData.happenedAt().compareTo(newsFeedData.happenedAt())
+        val timeDiff = other.newsFeedData.happenedAt().compareTo(newsFeedData.happenedAt())
+        if (timeDiff != 0) {
+            return timeDiff
+        }
+        val typeDiff = other.type.compareTo(type)
+        if (typeDiff != 0) {
+            return typeDiff
+        }
+        return other.referenceId.compareTo(referenceId)
     }
 
     fun toNewsFeedItem(objectMapper: ObjectMapper): NewsFeedItem {
@@ -125,6 +133,7 @@ data class LoveNewsFeedData(
     val loverId: Long,
     val happenedAt: Instant,
     val loverPartnerId: Long?,
+    val publicLoverPartner: LoverViewWithoutRelationResponse?
 ) : NewsFeedData {
     override fun happenedAt(): Instant = happenedAt
     override fun loveSpotId(): Long = loveSpotId

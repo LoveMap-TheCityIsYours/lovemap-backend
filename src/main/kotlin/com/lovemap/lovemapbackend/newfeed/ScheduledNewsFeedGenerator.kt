@@ -93,7 +93,12 @@ class ScheduledNewsFeedGenerator(
         val newsFeedItemList: List<NewsFeedItem> = completeFeed.map { it.toNewsFeedItem(objectMapper) }
         logger.info { "Generated '${newsFeedItemList.size}' NewsFeedItems" }
 
-        val saved = newsFeedItemList.mapNotNull { runCatching { newsFeedRepository.save(it) }.getOrNull() }
+        val saved = newsFeedItemList.mapNotNull {
+            runCatching { newsFeedRepository.save(it) }
+                .onFailure { e ->
+                    logger.warn(e) { "Failed to save NewsFeedItem" }
+                }
+                .getOrNull() }
         logger.info { "Saved '${saved.size}' NewsFeedItems" }
         return newsFeedItemList
     }

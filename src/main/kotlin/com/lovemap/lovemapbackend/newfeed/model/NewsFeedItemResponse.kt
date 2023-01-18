@@ -57,6 +57,7 @@ data class LoveNewsFeedResponse(
     val loverId: Long,
     val happenedAt: Instant,
     val loverPartnerId: Long?,
+    val publicLoverPartner: LoverViewWithoutRelationResponse?
 )
 
 data class LoveSpotReviewNewsFeedResponse(

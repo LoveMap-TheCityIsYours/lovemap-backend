@@ -43,7 +43,8 @@ class LoveNewsFeedProvider(
             loveSpotId = love.loveSpotId,
             loverId = love.loverId,
             happenedAt = love.happenedAt.toInstant(),
-            loverPartnerId = love.loverPartnerId
+            loverPartnerId = love.loverPartnerId,
+            publicLoverPartner = love.loverPartnerId?.let { cachedLoverService.getIfProfileIsPublic(it) }
         )
     }
 

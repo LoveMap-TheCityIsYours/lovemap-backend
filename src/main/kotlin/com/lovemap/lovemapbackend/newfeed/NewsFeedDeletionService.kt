@@ -11,6 +11,7 @@ class NewsFeedDeletionService(
     private val newsFeedRepository: NewsFeedRepository
 ) {
     private val logger = KotlinLogging.logger {}
+
     suspend fun deleteByTypeAndReferenceId(type: NewsFeedItem.Type, referenceId: Long) {
         logger.info { "Deleting [$type] Type with [$referenceId] referenceId." }
         newsFeedRepository.deleteByTypeAndReferenceId(type, referenceId)
