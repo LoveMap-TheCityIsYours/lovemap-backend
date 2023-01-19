@@ -26,7 +26,7 @@ class WishlistNewsFeedProvider(
         val wishlistItems = wishlistService.getWishlistItemsFrom(generateFrom)
         return wishlistItems.map {
             NewsFeedItemDto(
-                type = NewsFeedItem.Type.WISHLIST_ITEM,
+                type = NewsFeedItemDto.Type.WISHLIST_ITEM,
                 generatedAt = generationTime,
                 referenceId = it.id,
                 country = cachedLoveSpotService.getCountryByLoveSpotId(it.loveSpotId),

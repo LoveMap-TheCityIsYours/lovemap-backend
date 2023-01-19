@@ -26,7 +26,7 @@ class LoverNewsFeedProvider(
         return lovers.map { lover ->
             cachedLoverService.put(lover)
             NewsFeedItemDto(
-                type = NewsFeedItem.Type.LOVER,
+                type = NewsFeedItemDto.Type.LOVER,
                 generatedAt = generationTime,
                 referenceId = lover.id,
                 newsFeedData = loverToNewsFeedData(lover),

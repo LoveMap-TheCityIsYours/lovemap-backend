@@ -28,7 +28,7 @@ class PhotoLikeNewsFeedProvider(
         val photoLikes = photoLikeService.getPhotoLikesFrom(generateFrom)
         return photoLikes.map {
             NewsFeedItemDto(
-                type = NewsFeedItem.Type.LOVE_SPOT_PHOTO_LIKE,
+                type = NewsFeedItemDto.Type.LOVE_SPOT_PHOTO_LIKE,
                 generatedAt = generationTime,
                 referenceId = it.id,
                 country = cachedLoveSpotService.getCountryByLoveSpotId(it.loveSpotId),

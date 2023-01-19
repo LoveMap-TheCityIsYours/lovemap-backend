@@ -3,6 +3,9 @@ package com.lovemap.lovemapbackend.newfeed.model
 import com.lovemap.lovemapbackend.lover.CachedLoverService
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newfeed.dataparser.NewsFeedDataParser
+import com.lovemap.lovemapbackend.newfeed.model.response.NewsFeedItemResponse
+import com.lovemap.lovemapbackend.newfeed.model.response.NewsFeedItemType
+import com.lovemap.lovemapbackend.newfeed.model.response.decorators.TypeBasedNewsFeedResponseDecorator
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import org.springframework.http.HttpStatus
@@ -17,7 +20,7 @@ class NewsFeedItemConverter(
     private val cachedLoverService: CachedLoverService,
     responseDecorators: List<TypeBasedNewsFeedResponseDecorator>
 ) {
-    private val responseDecoratorMap: Map<NewsFeedItem.Type, TypeBasedNewsFeedResponseDecorator> =
+    private val responseDecoratorMap: Map<NewsFeedItemDto.Type, TypeBasedNewsFeedResponseDecorator> =
         responseDecorators.associateBy { it.supportedType() }
 
     private val dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
@@ -26,7 +29,7 @@ class NewsFeedItemConverter(
     suspend fun dtoFromItem(item: NewsFeedItem): NewsFeedItemDto {
         return NewsFeedItemDto(
             id = item.id,
-            type = item.type,
+            type = NewsFeedItemDto.Type.of(item.type),
             generatedAt = item.generatedAt.toInstant(),
             referenceId = item.referenceId,
             publicLover = cachedLoverService.getIfProfileIsPublic(item.loverId),

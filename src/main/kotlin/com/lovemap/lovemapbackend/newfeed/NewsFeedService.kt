@@ -1,16 +1,11 @@
 package com.lovemap.lovemapbackend.newfeed
 
-import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
-import com.lovemap.lovemapbackend.newfeed.data.NewsFeedRepository
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemConverter
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto
-import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemResponse
+import com.lovemap.lovemapbackend.newfeed.model.response.NewsFeedItemResponse
 import com.lovemap.lovemapbackend.utils.ValidatorService
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toSet
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
-import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.math.min
 
@@ -18,24 +13,15 @@ import kotlin.math.min
 class NewsFeedService(
     private val newsFeedItemConverter: NewsFeedItemConverter,
     private val validatorService: ValidatorService,
-    private val repository: NewsFeedRepository
+    private val newsFeedProcessor: NewsFeedProcessor
 ) {
     private val logger = KotlinLogging.logger {}
-    private val limit = 200
     private val cache = CopyOnWriteArrayList<NewsFeedItemDto>()
 
-    suspend fun updateCache(freshFeed: SortedSet<NewsFeedItemDto>) {
-        logger.info { "Updating Cache with fresh NewsFeed data with size: ${freshFeed.size}" }
-
-        val itemDtoList = repository.findLastLimit(limit)
-            .map { newsFeedItemConverter.dtoFromItem(it) }
-            .toSet(TreeSet()) as TreeSet
-        logger.info { "Fetched last NewsFeedItems from DB with size: ${itemDtoList.size}" }
-
-        val mergedFeed = itemDtoList.apply { addAll(freshFeed) }.take(limit)
+    suspend fun updateCache(freshFeed: List<NewsFeedItemDto>) {
         cache.clear()
-        cache.addAll(mergedFeed)
-        logger.info { "Merged fresh + last stored NewsFeed data for a combined cache with size of: ${mergedFeed.size}" }
+        cache.addAll(freshFeed)
+        logger.info { "Updated cache with fresh NewsFeed: ${freshFeed.size}" }
     }
 
     suspend fun getWholeFeed(): List<NewsFeedItemResponse> {
@@ -59,16 +45,13 @@ class NewsFeedService(
 
     private suspend fun fillCacheFromDatabase(): List<NewsFeedItemDto> {
         logger.info { "Updating Cache because it's empty" }
-        val lastStoredFeed = repository.findLastLimit(limit)
-            .map { newsFeedItemConverter.dtoFromItem(it) }
-            .toSet(TreeSet())
-        logger.info { "Fetched last stored feed with size: ${lastStoredFeed.size}" }
+        val processedFeed = newsFeedProcessor.getProcessedFeed()
         cache.clear()
-        cache.addAll(lastStoredFeed)
-        return lastStoredFeed.toList()
+        cache.addAll(processedFeed)
+        return processedFeed
     }
 
-    fun removeFromCache(type: NewsFeedItem.Type, referenceId: Long) {
+    fun removeFromCache(type: NewsFeedItemDto.Type, referenceId: Long) {
         cache.removeIf { it.referenceId == referenceId && it.type == type }
     }
 }

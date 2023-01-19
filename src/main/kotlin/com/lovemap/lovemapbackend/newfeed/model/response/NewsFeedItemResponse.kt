@@ -1,8 +1,8 @@
-package com.lovemap.lovemapbackend.newfeed.model
+package com.lovemap.lovemapbackend.newfeed.model.response
 
 import com.lovemap.lovemapbackend.lover.LoverViewWithoutRelationResponse
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
-import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
+import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto
 import java.time.Instant
 
 data class NewsFeedItemResponse(
@@ -21,7 +21,8 @@ data class NewsFeedItemResponse(
     val loveSpotPhoto: LoveSpotPhotoNewsFeedResponse? = null,
     val photoLike: PhotoLikeNewsFeedResponse? = null,
     val wishlist: WishlistNewsFeedResponse? = null,
-    val lover: LoverNewsFeedResponse? = null
+    val lover: LoverNewsFeedResponse? = null,
+    val multiLover: MultiLoverNewsFeedResponse? = null
 )
 
 enum class NewsFeedItemType {
@@ -31,10 +32,11 @@ enum class NewsFeedItemType {
     LOVE_SPOT_PHOTO_LIKE,
     LOVE,
     WISHLIST_ITEM,
-    LOVER;
+    LOVER,
+    MULTI_LOVER;
 
     companion object {
-        fun ofType(type: NewsFeedItem.Type): NewsFeedItemType {
+        fun ofType(type: NewsFeedItemDto.Type): NewsFeedItemType {
             return valueOf(type.name)
         }
     }
@@ -108,4 +110,8 @@ data class LoverNewsFeedResponse(
     val rank: Int,
     val points: Int,
     val uuid: String?
+)
+
+data class MultiLoverNewsFeedResponse(
+    val lovers: List<LoverNewsFeedResponse>
 )

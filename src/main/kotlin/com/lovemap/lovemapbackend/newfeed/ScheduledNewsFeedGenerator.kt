@@ -7,7 +7,6 @@ import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedRepository
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto
 import com.lovemap.lovemapbackend.newfeed.provider.NewsFeedProvider
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactor.mono
 import mu.KotlinLogging
@@ -28,6 +27,7 @@ class ScheduledNewsFeedGenerator(
     private val newsFeedProviders: List<NewsFeedProvider>,
     private val objectMapper: ObjectMapper,
     private val newsFeedService: NewsFeedService,
+    private val newsFeedProcessor: NewsFeedProcessor,
     private val newsFeedRepository: NewsFeedRepository,
     private val generationRepository: NewsFeedGenerationRepository
 ) {
@@ -85,20 +85,29 @@ class ScheduledNewsFeedGenerator(
         generationTime: Instant,
         generateFrom: Instant
     ): List<NewsFeedItem> {
-        val completeFeed: SortedSet<NewsFeedItemDto> = newsFeedProviders.map {
+        val newlyGeneratedFeed: SortedSet<NewsFeedItemDto> = newsFeedProviders.map {
             it.getNewsFeedFrom(generationTime, generateFrom)
         }.flatMapTo(TreeSet()) { it.toList() }
 
-        newsFeedService.updateCache(completeFeed)
-        val newsFeedItemList: List<NewsFeedItem> = completeFeed.map { it.toNewsFeedItem(objectMapper) }
-        logger.info { "Generated '${newsFeedItemList.size}' NewsFeedItems" }
+        // must not be called after processing, only before
+        val savedNewItems: List<NewsFeedItem> = saveNewlyGeneratedFeed(newlyGeneratedFeed)
 
+        val processedNewsFeed = newsFeedProcessor.processNewlyGeneratedFeed(newlyGeneratedFeed)
+        newsFeedService.updateCache(processedNewsFeed)
+
+        return savedNewItems
+    }
+
+    private suspend fun saveNewlyGeneratedFeed(newlyGeneratedFeed: SortedSet<NewsFeedItemDto>): List<NewsFeedItem> {
+        val newsFeedItemList: List<NewsFeedItem> = newlyGeneratedFeed.map { it.toNewsFeedItem(objectMapper) }
+        logger.info { "Generated '${newsFeedItemList.size}' NewsFeedItems" }
         val saved = newsFeedItemList.mapNotNull {
             runCatching { newsFeedRepository.save(it) }
                 .onFailure { e ->
                     logger.warn(e) { "Failed to save NewsFeedItem" }
                 }
-                .getOrNull() }
+                .getOrNull()
+        }
         logger.info { "Saved '${saved.size}' NewsFeedItems" }
         return newsFeedItemList
     }

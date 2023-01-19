@@ -26,7 +26,7 @@ class LoveNewsFeedProvider(
         val loves = loveService.getLovesFrom(generateFrom)
         return loves.map {
             NewsFeedItemDto(
-                type = NewsFeedItem.Type.LOVE,
+                type = NewsFeedItemDto.Type.LOVE,
                 generatedAt = generationTime,
                 referenceId = it.id,
                 newsFeedData = loveToNewsFeedData(it),

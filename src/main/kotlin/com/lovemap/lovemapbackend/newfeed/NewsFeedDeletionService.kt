@@ -2,6 +2,7 @@ package com.lovemap.lovemapbackend.newfeed
 
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedRepository
+import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 
@@ -15,6 +16,6 @@ class NewsFeedDeletionService(
     suspend fun deleteByTypeAndReferenceId(type: NewsFeedItem.Type, referenceId: Long) {
         logger.info { "Deleting [$type] Type with [$referenceId] referenceId." }
         newsFeedRepository.deleteByTypeAndReferenceId(type, referenceId)
-        newsFeedService.removeFromCache(type, referenceId)
+        newsFeedService.removeFromCache(NewsFeedItemDto.Type.of(type), referenceId)
     }
 }

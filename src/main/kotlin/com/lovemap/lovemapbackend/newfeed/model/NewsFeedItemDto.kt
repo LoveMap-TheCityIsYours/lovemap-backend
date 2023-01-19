@@ -6,16 +6,39 @@ import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import java.sql.Timestamp
 import java.time.Instant
+import java.util.*
 
 data class NewsFeedItemDto(
     val id: Long? = null,
-    val type: NewsFeedItem.Type,
+    val type: Type,
     val generatedAt: Instant,
     val publicLover: LoverViewWithoutRelationResponse?,
     val country: String,
     val referenceId: Long,
     val newsFeedData: NewsFeedData
 ) : Comparable<NewsFeedItemDto> {
+
+    enum class Type {
+        LOVE_SPOT,
+        LOVE_SPOT_REVIEW,
+        LOVE_SPOT_PHOTO,
+        LOVE_SPOT_PHOTO_LIKE,
+        LOVE,
+        WISHLIST_ITEM,
+        LOVER,
+        // this type is not stored in the DB, it's merged from Lovers by the NewsFeedProcessor
+        MULTI_LOVER;
+
+        companion object {
+            fun of(type: NewsFeedItem.Type): Type {
+                return valueOf(type.name)
+            }
+        }
+
+        fun toNewsFeedItemType(): NewsFeedItem.Type {
+            return NewsFeedItem.Type.valueOf(name)
+        }
+    }
 
     override fun compareTo(other: NewsFeedItemDto): Int {
         val timeDiff = other.newsFeedData.happenedAt().compareTo(newsFeedData.happenedAt())
@@ -33,7 +56,7 @@ data class NewsFeedItemDto(
         return NewsFeedItem(
             generatedAt = Timestamp.from(generatedAt),
             happenedAt = Timestamp.from(newsFeedData.happenedAt()),
-            type = type,
+            type = type.toNewsFeedItemType(),
             referenceId = referenceId,
             loverId = newsFeedData.loverId(),
             country = country,
@@ -159,8 +182,42 @@ data class LoverNewsFeedData(
     val rank: Int,
     val points: Int,
     val uuid: String?
-) : NewsFeedData {
+) : NewsFeedData, Comparable<LoverNewsFeedData> {
     override fun happenedAt(): Instant = joinedAt
     override fun loveSpotId(): Long? = null
     override fun loverId(): Long = id
+
+    override fun compareTo(other: LoverNewsFeedData): Int {
+        val timeDiff = other.joinedAt.compareTo(joinedAt)
+        if (timeDiff != 0) {
+            return timeDiff
+        }
+        return other.id.compareTo(id)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as LoverNewsFeedData
+
+        if (joinedAt != other.joinedAt) return false
+        if (id != other.id) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = joinedAt.hashCode()
+        result = 31 * result + id.hashCode()
+        return result
+    }
+}
+
+data class MultiLoverNewsFeedData(
+    val lovers: TreeSet<LoverNewsFeedData>
+) : NewsFeedData {
+    override fun happenedAt(): Instant = lovers.last().joinedAt
+    override fun loveSpotId(): Long? = null
+    override fun loverId(): Long = lovers.last().id
 }

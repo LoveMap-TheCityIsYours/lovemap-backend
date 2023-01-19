@@ -26,7 +26,7 @@ class LoveSpotReviewNewsFeedProvider(
         val reviews = reviewService.getPhotosFrom(generateFrom)
         return reviews.map {
             NewsFeedItemDto(
-                type = NewsFeedItem.Type.LOVE_SPOT_REVIEW,
+                type = NewsFeedItemDto.Type.LOVE_SPOT_REVIEW,
                 generatedAt = generationTime,
                 referenceId = it.id,
                 country = cachedLoveSpotService.getCountryByLoveSpotId(it.loveSpotId),

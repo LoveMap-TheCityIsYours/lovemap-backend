@@ -160,6 +160,7 @@ class LoverService(
         update.displayName?.let { lover.displayName = it }
         update.publicProfile?.let { lover.publicProfile = it }
         val savedLover = save(lover)
+        cachedLoverService.put(savedLover)
         logger.info { "Updated Lover $savedLover" }
         update.displayName?.let { loverNewsFeedUpdater.updateLoverNameChange(loverId, it) }
         return converter.toResponse(savedLover)
