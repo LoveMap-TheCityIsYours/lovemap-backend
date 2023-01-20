@@ -89,12 +89,8 @@ class ScheduledNewsFeedGenerator(
             it.getNewsFeedFrom(generationTime, generateFrom)
         }.flatMapTo(TreeSet()) { it.toList() }
 
-        // must not be called after processing, only before
         val savedNewItems: List<NewsFeedItem> = saveNewlyGeneratedFeed(newlyGeneratedFeed)
-
-        val processedNewsFeed = newsFeedProcessor.processNewlyGeneratedFeed(newlyGeneratedFeed)
-        newsFeedService.updateCache(processedNewsFeed)
-
+        newsFeedService.reloadCache()
         return savedNewItems
     }
 

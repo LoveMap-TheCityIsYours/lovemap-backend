@@ -39,6 +39,26 @@ interface NewsFeedRepository : CoroutineSortingRepository<NewsFeedItem, Long>,
     )
     fun findLastLimit(limit: Int): Flow<NewsFeedItem>
 
+    @Query(
+        """
+            SELECT * FROM news_feed_item
+            WHERE type <> 'LOVER'
+            ORDER BY happened_at DESC
+            LIMIT :limit
+        """
+    )
+    fun findLastLimitNotLovers(limit: Int): Flow<NewsFeedItem>
+
+    @Query(
+        """
+            SELECT * FROM news_feed_item
+            WHERE type = 'LOVER'
+            ORDER BY happened_at DESC
+            LIMIT :limit
+        """
+    )
+    fun findLastLimitOnlyLovers(limit: Int): Flow<NewsFeedItem>
+
     fun findAllByType(type: NewsFeedItem.Type): Flow<NewsFeedItem>
 
     suspend fun findByTypeAndReferenceId(type: NewsFeedItem.Type, referenceId: Long): NewsFeedItem?

@@ -19,4 +19,6 @@ interface LoverRepository : CoroutineCrudRepository<Lover, Long> {
         """
     )
     fun findAllAfterCreatedAt(createdAt: Timestamp): Flow<Lover>
+
+    fun findAllByIdInAndPublicProfile(ids: Collection<Long>, publicProfile: Boolean): Flow<Lover>
 }

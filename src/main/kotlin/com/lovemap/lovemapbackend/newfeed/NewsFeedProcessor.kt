@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend.newfeed
 
+import com.lovemap.lovemapbackend.lover.LoverRepository
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedRepository
 import com.lovemap.lovemapbackend.newfeed.model.LoverNewsFeedData
 import com.lovemap.lovemapbackend.newfeed.model.MultiLoverNewsFeedData
@@ -8,6 +9,7 @@ import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto.Type.LOVER
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto.Type.MULTI_LOVER
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.toSet
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
@@ -16,31 +18,68 @@ import java.util.*
 @Service
 class NewsFeedProcessor(
     private val newsFeedItemConverter: NewsFeedItemConverter,
-    private val repository: NewsFeedRepository
+    private val loverRepository: LoverRepository,
+    private val repository: NewsFeedRepository,
 ) {
     private val logger = KotlinLogging.logger {}
-    private val limit = 200
-
-    suspend fun processNewlyGeneratedFeed(newlyGenerated: SortedSet<NewsFeedItemDto>): List<NewsFeedItemDto> {
-        logger.info { "Processing newly generated NewsFeed of size: '${newlyGenerated.size}'" }
-
-        val feedFromDatabase = repository.findLastLimit(limit)
-            .map { newsFeedItemConverter.dtoFromItem(it) }
-            .toSet(TreeSet<NewsFeedItemDto>()) as TreeSet<NewsFeedItemDto>
-        logger.info { "Read NewsFeed from Database with size: '${feedFromDatabase.size}'" }
-
-        val mergedFeed = feedFromDatabase.apply { addAll(newlyGenerated) }.take(limit)
-        logger.info { "Merged NewsFeed from Database with newly generated NewsFeed with size: '${mergedFeed.size}'" }
-
-        return processFeed(mergedFeed)
-    }
+    private val limitNotLovers = 200
+    private val limitLovers = 200
+    private val limitTotal = 300
 
     suspend fun getProcessedFeed(): List<NewsFeedItemDto> {
-        val lastStoredFeed = repository.findLastLimit(limit)
+        logger.info { "Starting NewsFeed processing" }
+
+        val loversFeed: Map<Long, NewsFeedItemDto> = fetchOnlyLoversFeed()
+        logger.info { "Fetched Lover NewsFeedItems: ${loversFeed.size}" }
+
+        val publicLoverIds: Set<Long> = filterPublicLoverIdsFromIds(loversFeed.keys)
+        logger.info { "Fetched Public Lovers: ${publicLoverIds.size}" }
+
+        val privateLoverIds: Set<Long> = loversFeed.keys.subtract(publicLoverIds)
+        logger.info { "Fetched Private Lovers: ${privateLoverIds.size}" }
+
+        val publicLoversFeed: Map<Long, NewsFeedItemDto> =
+            loversFeed.filter { publicLoverIds.contains(it.key) }
+
+        // TODO: later create new NewsFeedResponse Type: PRIVATE_LOVERS
+        // TODO: and collect them like in MULTI_LOVER, but only the number of them, not the names
+        // TODO: so this separation wont be needed, it's only temporary and for debugging
+        val privateLoversFeed: Map<Long, NewsFeedItemDto> =
+            loversFeed.filter { privateLoverIds.contains(it.key) }
+
+        val notLoversFeed = fetchNotLoversFeed()
+        logger.info { "Fetched Not-Lover NewsFeedItems: ${notLoversFeed.size}" }
+
+        val mergedFeed: TreeSet<NewsFeedItemDto> =
+            notLoversFeed.apply { addAll(publicLoversFeed.values) }
+
+        logger.info { "Merged Not-Lover + Public Lover NewsFeedItems: ${mergedFeed.size}" }
+
+        // for now we do not process the feed, just return it (waiting for more android rollout)
+//        return processFeed(mergedFeed)
+        return mergedFeed.toList().take(limitTotal)
+    }
+
+    private suspend fun fetchNotLoversFeed(): TreeSet<NewsFeedItemDto> {
+        return repository
+            .findLastLimitNotLovers(limitNotLovers)
             .map { newsFeedItemConverter.dtoFromItem(it) }
-            .toSet(TreeSet())
-        logger.info { "Fetched last stored feed with size: ${lastStoredFeed.size}" }
-        return processFeed(lastStoredFeed)
+            .toSet(TreeSet()) as TreeSet<NewsFeedItemDto>
+    }
+
+    private suspend fun fetchOnlyLoversFeed(): Map<Long, NewsFeedItemDto> {
+        return repository
+            .findLastLimitOnlyLovers(limitLovers)
+            .map { newsFeedItemConverter.dtoFromItem(it) }
+            .toList()
+            .associateBy { it.referenceId }
+    }
+
+    private suspend fun filterPublicLoverIdsFromIds(loverIds: Set<Long>): Set<Long> {
+        return loverRepository
+            .findAllByIdInAndPublicProfile(loverIds, true)
+            .map { it.id }
+            .toSet()
     }
 
     private suspend fun processFeed(unprocessedFeed: Collection<NewsFeedItemDto>): List<NewsFeedItemDto> {

@@ -18,10 +18,8 @@ class NewsFeedService(
     private val logger = KotlinLogging.logger {}
     private val cache = CopyOnWriteArrayList<NewsFeedItemDto>()
 
-    suspend fun updateCache(freshFeed: List<NewsFeedItemDto>) {
-        cache.clear()
-        cache.addAll(freshFeed)
-        logger.info { "Updated cache with fresh NewsFeed: ${freshFeed.size}" }
+    suspend fun reloadCache() {
+        fillCacheFromDatabase()
     }
 
     suspend fun getWholeFeed(): List<NewsFeedItemResponse> {
@@ -44,7 +42,7 @@ class NewsFeedService(
     }
 
     private suspend fun fillCacheFromDatabase(): List<NewsFeedItemDto> {
-        logger.info { "Updating Cache because it's empty" }
+        logger.info { "Updating Cache" }
         val processedFeed = newsFeedProcessor.getProcessedFeed()
         cache.clear()
         cache.addAll(processedFeed)
