@@ -90,7 +90,9 @@ class ScheduledNewsFeedGenerator(
         }.flatMapTo(TreeSet()) { it.toList() }
 
         val savedNewItems: List<NewsFeedItem> = saveNewlyGeneratedFeed(newlyGeneratedFeed)
+
         newsFeedService.reloadCache()
+
         return savedNewItems
     }
 

@@ -37,7 +37,7 @@ class FacebookAuthenticationService(
         loverAuthentication: LoverAuthentication,
     ): LoverAuthenticationResult {
         // user already registered with facebook.
-        val lover = loverService.unAuthorizedGetById(loverAuthentication.id)
+        val lover = loverService.unAuthorizedGetById(loverAuthentication.loverId)
         val token = facebookAuthenticationToken(lover, request)
         return authenticateAndLogin(lover, token)
     }
