@@ -15,7 +15,8 @@ data class CreateLoverRequest(
     @field:NotEmpty(message = INVALID_EMAIL)
     @field:Email(message = INVALID_EMAIL)
     val email: String,
-    val registrationCountry: String?
+    val registrationCountry: String?,
+    val publicProfile: Boolean = false
 )
 
 data class LoginLoverRequest(

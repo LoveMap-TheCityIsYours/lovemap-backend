@@ -35,6 +35,7 @@ class PasswordAuthenticationService(
             email = request.email,
             displayName = loverAuthenticationService.getDisplayName(request.userName, request.email),
             registrationCountry = loverAuthenticationService.getRegistrationCountry(request.registrationCountry),
+            publicProfile = request.publicProfile,
             createdAt = Timestamp.from(Instant.now())
         )
         lover = loverService.save(lover)
