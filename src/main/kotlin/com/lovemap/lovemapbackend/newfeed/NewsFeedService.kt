@@ -3,6 +3,7 @@ package com.lovemap.lovemapbackend.newfeed
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemConverter
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto
 import com.lovemap.lovemapbackend.newfeed.model.response.NewsFeedItemResponse
+import com.lovemap.lovemapbackend.newfeed.processor.NewsFeedProcessor
 import com.lovemap.lovemapbackend.utils.ValidatorService
 import mu.KotlinLogging
 import org.springframework.stereotype.Service

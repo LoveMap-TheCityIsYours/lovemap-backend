@@ -6,6 +6,7 @@ import com.lovemap.lovemapbackend.newfeed.data.NewsFeedGenerationRepository
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedRepository
 import com.lovemap.lovemapbackend.newfeed.model.NewsFeedItemDto
+import com.lovemap.lovemapbackend.newfeed.processor.NewsFeedProcessor
 import com.lovemap.lovemapbackend.newfeed.provider.NewsFeedProvider
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactor.mono

@@ -22,7 +22,8 @@ data class NewsFeedItemResponse(
     val photoLike: PhotoLikeNewsFeedResponse? = null,
     val wishlist: WishlistNewsFeedResponse? = null,
     val lover: LoverNewsFeedResponse? = null,
-    val multiLover: MultiLoverNewsFeedResponse? = null
+    val multiLover: MultiLoverNewsFeedResponse? = null,
+    val privateLovers: PrivateLoversNewsFeedResponse? = null,
 )
 
 enum class NewsFeedItemType {
@@ -33,7 +34,8 @@ enum class NewsFeedItemType {
     LOVE,
     WISHLIST_ITEM,
     LOVER,
-    MULTI_LOVER;
+    MULTI_LOVER,
+    PRIVATE_LOVERS;
 
     companion object {
         fun ofType(type: NewsFeedItemDto.Type): NewsFeedItemType {
@@ -113,5 +115,9 @@ data class LoverNewsFeedResponse(
 )
 
 data class MultiLoverNewsFeedResponse(
+    val lovers: List<LoverNewsFeedResponse>
+)
+
+data class PrivateLoversNewsFeedResponse(
     val lovers: List<LoverNewsFeedResponse>
 )

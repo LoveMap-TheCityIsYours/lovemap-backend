@@ -47,9 +47,9 @@ class LoveSpotService(
             asyncTaskService.runAsync {
                 setGeoLocation(loveSpot)
             }
+        } else {
+            cachedLoveSpotService.put(loveSpot)
         }
-
-        cachedLoveSpotService.put(loveSpot)
 
         return loveSpot
     }

@@ -26,8 +26,9 @@ data class NewsFeedItemDto(
         LOVE,
         WISHLIST_ITEM,
         LOVER,
-        // this type is not stored in the DB, it's merged from Lovers by the NewsFeedProcessor
-        MULTI_LOVER;
+        // these types are not stored in the DB, it's merged from Lovers by the NewsFeedProcessor
+        MULTI_LOVER,
+        PRIVATE_LOVERS;
 
         companion object {
             fun of(type: NewsFeedItem.Type): Type {
@@ -215,6 +216,14 @@ data class LoverNewsFeedData(
 }
 
 data class MultiLoverNewsFeedData(
+    val lovers: TreeSet<LoverNewsFeedData>
+) : NewsFeedData {
+    override fun happenedAt(): Instant = lovers.last().joinedAt
+    override fun loveSpotId(): Long? = null
+    override fun loverId(): Long = lovers.last().id
+}
+
+data class PrivateLoversNewsFeedData(
     val lovers: TreeSet<LoverNewsFeedData>
 ) : NewsFeedData {
     override fun happenedAt(): Instant = lovers.last().joinedAt

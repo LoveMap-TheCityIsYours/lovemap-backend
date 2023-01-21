@@ -2,11 +2,11 @@ package com.lovemap.lovemapbackend.lovespot
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import com.lovemap.lovemapbackend.geolocation.GeoLocation
 import com.lovemap.lovemapbackend.geolocation.GeoLocationService
 import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
-import kotlin.math.log
 import kotlin.math.max
 
 @Service
@@ -58,15 +58,27 @@ class CachedLoveSpotService(
         val cachedCountry = loveSpotCountryCache.getIfPresent(loveSpotId)
         return if (cachedCountry == null) {
             logger.info { "Country for LoveSpot not found in Cache '$loveSpotId'. Getting from DB." }
-            val country: String = findById(loveSpotId)?.geoLocationId
-                ?.let { geoLocationService.findGeoLocationById(it) }?.country
-                ?: NewsFeedItem.DEFAULT_COUNTRY
-            logger.info { "Resolved Country for LoveSpot from DB: '$country', '$loveSpotId'. Inserting into Cache." }
-            loveSpotCountryCache.put(loveSpotId, country)
-            country
+            getCountryFromGeoLocationDb(loveSpotId)
         } else {
             logger.info { "Found Country for LoveSpot in Cache: '$cachedCountry', '$loveSpotId'." }
-            cachedCountry
+            if (cachedCountry == GeoLocation.GLOBAL_LOCATION) {
+                getCountryFromGeoLocationDb(loveSpotId)
+            } else {
+                cachedCountry
+            }
+
         }
+    }
+
+    private suspend fun getCountryFromGeoLocationDb(loveSpotId: Long): String {
+        return findById(loveSpotId)?.geoLocationId
+            ?.let { geoLocationService.findGeoLocationById(it) }
+            ?.country
+            ?.let {
+                logger.info { "Resolved Country for LoveSpot from DB: '$it', '$loveSpotId'. Inserting into Cache." }
+                loveSpotCountryCache.put(loveSpotId, it)
+                it
+            }
+            ?: NewsFeedItem.DEFAULT_COUNTRY
     }
 }
