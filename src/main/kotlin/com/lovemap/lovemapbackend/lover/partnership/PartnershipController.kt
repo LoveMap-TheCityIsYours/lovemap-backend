@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.partnership
+package com.lovemap.lovemapbackend.lover.partnership
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

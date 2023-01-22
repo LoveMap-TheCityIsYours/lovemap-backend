@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.partnership
+package com.lovemap.lovemapbackend.lover.partnership
 
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository

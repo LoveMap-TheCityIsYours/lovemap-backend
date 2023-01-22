@@ -1,7 +1,8 @@
 package com.lovemap.lovemapbackend.lover
 
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
-import com.lovemap.lovemapbackend.relation.RelationService
+import com.lovemap.lovemapbackend.lover.relation.LoverRelationsResponse
+import com.lovemap.lovemapbackend.lover.relation.RelationService
 import org.springframework.stereotype.Service
 
 @Service

@@ -6,7 +6,6 @@ import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedGenerationRepository
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedRepository
 import com.lovemap.lovemapbackend.newsfeed.model.NewsFeedItemDto
-import com.lovemap.lovemapbackend.newsfeed.processor.NewsFeedProcessor
 import com.lovemap.lovemapbackend.newsfeed.provider.NewsFeedProvider
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactor.mono
@@ -28,7 +27,6 @@ class ScheduledNewsFeedGenerator(
     private val newsFeedProviders: List<NewsFeedProvider>,
     private val objectMapper: ObjectMapper,
     private val newsFeedService: NewsFeedService,
-    private val newsFeedProcessor: NewsFeedProcessor,
     private val newsFeedRepository: NewsFeedRepository,
     private val generationRepository: NewsFeedGenerationRepository
 ) {
@@ -42,6 +40,8 @@ class ScheduledNewsFeedGenerator(
             generationRepository.getLastGeneration()?.let { last ->
                 if (isItTimeToGenerate(generationTime, last.generatedAt.toInstant())) {
                     generateBatchFrom(generationTime, last.generatedAt.toInstant())
+                } else {
+                    newsFeedService.reloadCache()
                 }
             } ?: run {
                 generateBatchFrom(generationTime, generationTime.minus(Duration.ofDays(90)))

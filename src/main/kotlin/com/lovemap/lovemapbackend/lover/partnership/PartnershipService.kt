@@ -1,13 +1,13 @@
-package com.lovemap.lovemapbackend.partnership
+package com.lovemap.lovemapbackend.lover.partnership
 
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.LoverService
-import com.lovemap.lovemapbackend.partnership.Partnership.Status.PARTNER
-import com.lovemap.lovemapbackend.partnership.Partnership.Status.PARTNERSHIP_REQUESTED
-import com.lovemap.lovemapbackend.partnership.PartnershipReaction.ACCEPT
-import com.lovemap.lovemapbackend.partnership.PartnershipReaction.DENY
-import com.lovemap.lovemapbackend.relation.RelationService
+import com.lovemap.lovemapbackend.lover.partnership.Partnership.Status.PARTNER
+import com.lovemap.lovemapbackend.lover.partnership.Partnership.Status.PARTNERSHIP_REQUESTED
+import com.lovemap.lovemapbackend.lover.partnership.PartnershipReaction.ACCEPT
+import com.lovemap.lovemapbackend.lover.partnership.PartnershipReaction.DENY
+import com.lovemap.lovemapbackend.lover.relation.RelationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException

@@ -48,6 +48,7 @@ lovemap:
       photoUploaded: 5
       photoLikeReceived: 1
       photoDislikeReceived: -1
+      pointsForFollower: 10
 
     ranks:
       rankList:

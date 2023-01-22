@@ -1,6 +1,8 @@
 package com.lovemap.lovemapbackend.lover
 
 import com.lovemap.lovemapbackend.lover.ranks.LoverRanks
+import com.lovemap.lovemapbackend.lover.relation.LoverRelationsResponse
+import com.lovemap.lovemapbackend.newsfeed.model.response.NewsFeedItemResponse
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import com.lovemap.lovemapbackend.utils.ValidatorService
@@ -12,16 +14,12 @@ import org.springframework.web.bind.annotation.*
 class LoverController(
     private val loverRelationService: LoverRelationService,
     private val loverService: LoverService,
+    private val loverActivitiesService: LoverActivitiesService,
     private val cachedLoverService: CachedLoverService,
-    private val loverContributionsService: LoverContributionsService,
     private val loverConverter: LoverConverter,
     private val loverRanks: LoverRanks,
     private val validatorService: ValidatorService
 ) {
-    @GetMapping("/contributions/{loverId}")
-    suspend fun contributions(@PathVariable loverId: Long): LoverContributionsResponse {
-        return loverContributionsService.list(loverId)
-    }
 
     @GetMapping("/{loverId}")
     suspend fun getLover(@PathVariable loverId: Long): LoverRelationsResponse {
@@ -70,5 +68,10 @@ class LoverController(
     @GetMapping("ranks")
     suspend fun getRanks(): LoverRanks {
         return loverRanks
+    }
+
+    @GetMapping("{loverId}/activities")
+    suspend fun getLoverActivities(@PathVariable loverId: Long): List<NewsFeedItemResponse> {
+        return loverActivitiesService.getActivities(loverId)
     }
 }

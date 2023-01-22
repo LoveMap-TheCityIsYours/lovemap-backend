@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.partnership
+package com.lovemap.lovemapbackend.lover.partnership
 
 import com.lovemap.lovemapbackend.utils.InstantConverterUtils.toApiString
 

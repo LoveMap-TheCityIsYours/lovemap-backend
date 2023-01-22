@@ -25,7 +25,6 @@ class LoverService(
     private val loverRepository: LoverRepository,
 ) {
     companion object {
-        const val linkPrefixApiCall = "https://api.lovemap.app/lover?uuid="
         const val linkPrefixVisible = "https://api.lovemap.app/join-us/lover?uuid="
     }
 

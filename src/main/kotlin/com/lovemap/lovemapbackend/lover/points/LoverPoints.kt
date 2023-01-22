@@ -15,4 +15,5 @@ data class LoverPoints @ConstructorBinding constructor(
     val photoUploaded: Int,
     val photoLikeReceived: Int,
     val photoDislikeReceived: Int,
+    val pointsForFollower: Int,
 )

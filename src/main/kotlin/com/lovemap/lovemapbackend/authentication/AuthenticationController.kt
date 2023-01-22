@@ -4,8 +4,8 @@ import com.lovemap.lovemapbackend.authentication.facebook.FacebookAuthentication
 import com.lovemap.lovemapbackend.authentication.password.PasswordAuthenticationService
 import com.lovemap.lovemapbackend.authentication.password.PasswordResetService
 import com.lovemap.lovemapbackend.lover.LoverConverter
-import com.lovemap.lovemapbackend.lover.LoverRelationsResponse
 import com.lovemap.lovemapbackend.lover.LoverResponse
+import com.lovemap.lovemapbackend.lover.relation.LoverRelationsResponse
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException

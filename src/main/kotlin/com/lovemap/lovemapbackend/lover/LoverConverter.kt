@@ -1,6 +1,7 @@
 package com.lovemap.lovemapbackend.lover
 
-import com.lovemap.lovemapbackend.relation.LoverRelations
+import com.lovemap.lovemapbackend.lover.relation.LoverRelations
+import com.lovemap.lovemapbackend.lover.relation.LoverRelationsResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 

@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.relation
+package com.lovemap.lovemapbackend.lover.relation
 
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
@@ -9,9 +9,19 @@ interface RelationRepository : CoroutineCrudRepository<Relation, Long> {
         statusFilter: Set<Relation.Status>
     ): Flow<Relation>
 
+    fun findBySourceIdAndStatus(
+        sourceId: Long,
+        status: Relation.Status
+    ): Flow<Relation>
+
     fun findByTargetIdAndStatusIn(
         targetId: Long,
         statusFilter: Set<Relation.Status>
+    ): Flow<Relation>
+
+    fun findByTargetIdAndStatus(
+        targetId: Long,
+        status: Relation.Status
     ): Flow<Relation>
 
     suspend fun existsBySourceIdAndTargetIdAndStatusIn(

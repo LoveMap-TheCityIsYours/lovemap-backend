@@ -271,4 +271,17 @@ class LoverPointService(
             loverService.save(uploadedBy)
         }
     }
+
+    suspend fun incrementFollowers(targetLover: Lover) {
+        targetLover.numberOfFollowers += 1
+        targetLover.points += points.pointsForFollower
+        loverService.save(targetLover)
+    }
+
+    suspend fun decrementFollowers(loverId: Long) {
+        val lover = loverService.unAuthorizedGetById(loverId)
+        lover.numberOfFollowers -= 1
+        lover.points -= points.pointsForFollower
+        loverService.save(lover)
+    }
 }

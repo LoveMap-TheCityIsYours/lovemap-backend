@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.partnership
+package com.lovemap.lovemapbackend.lover.partnership
 
 data class LoverPartnershipV2Response(
     val loverId: Long,

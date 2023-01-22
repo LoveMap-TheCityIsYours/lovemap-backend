@@ -82,5 +82,6 @@ enum class ErrorCode {
     AlreadyHasPartner,
     RespondentAlreadyHasPartner,
     LoverNotFound,
+    LoverIsNotPublic,
 
 }

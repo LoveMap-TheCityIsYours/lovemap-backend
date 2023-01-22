@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.newsfeed.api
+package com.lovemap.lovemapbackend.newsfeed
 
 import com.lovemap.lovemapbackend.newsfeed.NewsFeedService
 import com.lovemap.lovemapbackend.newsfeed.model.response.NewsFeedItemResponse

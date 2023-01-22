@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.relation
+package com.lovemap.lovemapbackend.lover.relation
 
 import com.lovemap.lovemapbackend.lover.LoverView
 import kotlinx.coroutines.flow.Flow
