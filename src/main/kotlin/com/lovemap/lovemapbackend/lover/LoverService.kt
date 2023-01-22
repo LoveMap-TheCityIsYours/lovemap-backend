@@ -1,7 +1,7 @@
 package com.lovemap.lovemapbackend.lover
 
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
-import com.lovemap.lovemapbackend.newfeed.LoverNewsFeedUpdater
+import com.lovemap.lovemapbackend.newsfeed.LoverNewsFeedUpdater
 import com.lovemap.lovemapbackend.utils.ErrorCode.*
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException

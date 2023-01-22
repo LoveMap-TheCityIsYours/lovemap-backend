@@ -7,8 +7,8 @@ import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.lovespot.LoveSpotStatisticsService
 import com.lovemap.lovemapbackend.lovespot.photo.like.PhotoLikeService
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewService
-import com.lovemap.lovemapbackend.newfeed.NewsFeedDeletionService
-import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
+import com.lovemap.lovemapbackend.newsfeed.NewsFeedDeletionService
+import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.utils.AsyncTaskService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException

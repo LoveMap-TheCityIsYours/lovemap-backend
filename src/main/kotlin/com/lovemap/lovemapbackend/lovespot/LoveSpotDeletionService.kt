@@ -4,8 +4,8 @@ import com.lovemap.lovemapbackend.love.LoveDeletionService
 import com.lovemap.lovemapbackend.lover.wishlist.WishlistService
 import com.lovemap.lovemapbackend.lovespot.photo.PhotoDeletionService
 import com.lovemap.lovemapbackend.lovespot.report.LoveSpotReportService
-import com.lovemap.lovemapbackend.newfeed.NewsFeedDeletionService
-import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
+import com.lovemap.lovemapbackend.newsfeed.NewsFeedDeletionService
+import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

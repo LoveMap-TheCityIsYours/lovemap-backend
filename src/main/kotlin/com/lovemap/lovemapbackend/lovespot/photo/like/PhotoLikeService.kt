@@ -7,8 +7,8 @@ import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhoto
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoResponse
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoService
 import com.lovemap.lovemapbackend.lovespot.photo.converter.LoveSpotPhotoConverter
-import com.lovemap.lovemapbackend.newfeed.NewsFeedDeletionService
-import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
+import com.lovemap.lovemapbackend.newsfeed.NewsFeedDeletionService
+import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem
 import kotlinx.coroutines.flow.Flow
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

@@ -4,7 +4,7 @@ import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.lovemap.lovemapbackend.geolocation.GeoLocation
 import com.lovemap.lovemapbackend.geolocation.GeoLocationService
-import com.lovemap.lovemapbackend.newfeed.data.NewsFeedItem
+import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import kotlin.math.max
