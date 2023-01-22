@@ -19,7 +19,13 @@ class NewsFeedController(
     }
 
     @GetMapping
+    @Deprecated("Will be removed when new app version 74 is distributed well enough")
     suspend fun getPage(@RequestParam("page") page: Int, @RequestParam("size") size: Int): List<NewsFeedItemResponse> {
         return cachedNewsFeedService.getNewsFeedPage(page, size)
+    }
+
+    @GetMapping("v2")
+    suspend fun getV2Page(@RequestParam("page") page: Int, @RequestParam("size") size: Int): List<NewsFeedItemResponse> {
+        return cachedNewsFeedService.getProcessedNewsFeedPage(page, size)
     }
 }

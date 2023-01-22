@@ -26,18 +26,42 @@ class NewsFeedProcessor(
     private val limitLovers = 200
     private val limitTotal = 300
 
-    suspend fun getProcessedFeed(): List<NewsFeedItemDto> {
-        val start = System.currentTimeMillis()
-        logger.info { "Starting NewsFeed processing" }
+    @Deprecated("Will be removed when new app version 74 is distributed well enough")
+    suspend fun getUnprocessedFeed(): List<NewsFeedItemDto> {
+        logger.info { "Starting NewsFeed processing v1" }
 
         val loversFeed: Map<Long, NewsFeedItemDto> = fetchOnlyLoversFeed()
         logger.info { "Fetched Lover NewsFeedItems: ${loversFeed.size}" }
 
-        val publicLoverIds: Set<Long> = filterPublicLoverIdsFromIds(loversFeed.keys)
+        val publicLoverIds: Map<Long, String> = filterPublicLoversFromIds(loversFeed.keys)
         logger.info { "Fetched Public Lovers: ${publicLoverIds.size}" }
 
-        val privateLoverIds: Set<Long> = loversFeed.keys.subtract(publicLoverIds)
-        logger.info { "Fetched Private Lovers: ${privateLoverIds.size}" }
+        val publicLoversFeed: Map<Long, NewsFeedItemDto> =
+            loversFeed.filter { publicLoverIds.contains(it.key) }
+
+        val notLoversFeed = fetchNotLoversFeed()
+        logger.info { "Fetched Not-Lover NewsFeedItems: ${notLoversFeed.size}" }
+
+        val mergedFeed: TreeSet<NewsFeedItemDto> =
+            notLoversFeed.apply { addAll(publicLoversFeed.values) }
+
+        logger.info { "Merged Not-Lover + Public Lover NewsFeedItems: ${mergedFeed.size}" }
+
+        return mergedFeed.toList().take(limitTotal)
+    }
+
+    suspend fun getProcessedFeed(): List<NewsFeedItemDto> {
+        val start = System.currentTimeMillis()
+        logger.info { "Starting NewsFeed processing v2" }
+
+        val loversFeed: Map<Long, NewsFeedItemDto> = fetchOnlyLoversFeed()
+        logger.info { "Fetched Lover NewsFeedItems: ${loversFeed.size}" }
+
+        val publicLovers: Map<Long, String> = filterPublicLoversFromIds(loversFeed.keys)
+        logger.info { "Fetched Public Lovers: ${publicLovers.size}" }
+
+        val privateLovers: Map<Long, String> = filterPrivateLoversFromIds(loversFeed.keys)
+        logger.info { "Fetched Private Lovers: ${privateLovers.size}" }
 
         val notLoversFeed = fetchNotLoversFeed()
         logger.info { "Fetched Not-Lover NewsFeedItems: ${notLoversFeed.size}" }
@@ -47,13 +71,13 @@ class NewsFeedProcessor(
         logger.info { "Merged Not-Lover + Lover NewsFeedItems: ${mergedFeed.size}" }
 
         var processedFeed: List<NewsFeedItemDto> =
-            publicLoverProcessor.processNewsFeed(mergedFeed, PublicLoverPostProcessor.Context(publicLoverIds))
+            publicLoverProcessor.processNewsFeed(mergedFeed, PublicLoverPostProcessor.Context(publicLovers))
 
         processedFeed =
-            privateLoverProcessor.processNewsFeed(processedFeed, PrivateLoverPostProcessor.Context(privateLoverIds))
+            privateLoverProcessor.processNewsFeed(processedFeed, PrivateLoverPostProcessor.Context(privateLovers))
 
         // for now we do not process the feed, just return it (waiting for more android rollout)
-        logger.info { "Finished NewsFeed processing in ${System.currentTimeMillis() - start} ms." }
+        logger.info { "Finished NewsFeed processing v2 in ${System.currentTimeMillis() - start} ms." }
         return processedFeed.take(limitTotal)
     }
 
@@ -67,6 +91,7 @@ class NewsFeedProcessor(
     private suspend fun fetchOnlyLoversFeed(): Map<Long, NewsFeedItemDto> {
         val newsFeedItems = repository.findLastLimitOnlyLovers(limitLovers).toList()
         val loverIds = newsFeedItems.map { it.loverId }.toSet()
+
         logger.info { "Storing '${loverIds.size}' Lovers in Lover Cache for faster processing" }
         loverRepository.findAllById(loverIds).collect {
             cachedLoverService.put(it)
@@ -78,10 +103,17 @@ class NewsFeedProcessor(
             .associateBy { it.referenceId }
     }
 
-    private suspend fun filterPublicLoverIdsFromIds(loverIds: Set<Long>): Set<Long> {
+    private suspend fun filterPublicLoversFromIds(loverIds: Set<Long>): Map<Long, String> {
         return loverRepository
             .findAllByIdInAndPublicProfile(loverIds, true)
-            .map { it.id }
-            .toSet()
+            .toList()
+            .associateBy({ it.id }, { it.displayName })
+    }
+
+    private suspend fun filterPrivateLoversFromIds(loverIds: Set<Long>): Map<Long, String> {
+        return loverRepository
+            .findAllByIdInAndPublicProfile(loverIds, false)
+            .toList()
+            .associateBy({ it.id }, { it.displayName })
     }
 }

@@ -27,10 +27,10 @@ class PublicLoverPostProcessor : NewsFeedPostProcessor<Context> {
                 } else if (bothArePublicLovers(context, current, next)) {
                     if (current.type == NewsFeedItemDto.Type.LOVER && next.type == NewsFeedItemDto.Type.LOVER) {
                         combined.removeLast()
-                        mergeTwoLovers(current, next)
+                        mergeTwoLovers(current, next, context)
                     } else if (current.type == NewsFeedItemDto.Type.MULTI_LOVER && next.type == NewsFeedItemDto.Type.LOVER) {
                         combined.removeLast()
-                        mergeMultiLoverAndLover(current, next)
+                        mergeMultiLoverAndLover(current, next, context)
                     } else {
                         next
                     }
@@ -52,7 +52,7 @@ class PublicLoverPostProcessor : NewsFeedPostProcessor<Context> {
         current: NewsFeedItemDto,
         next: NewsFeedItemDto
     ): Boolean {
-        return context.publicLoverIds.contains(current.referenceId) && context.publicLoverIds.contains(next.referenceId)
+        return context.publicLovers.containsKey(current.referenceId) && context.publicLovers.containsKey(next.referenceId)
     }
 
     private fun maximumMultiLoversReached(current: NewsFeedItemDto) =
@@ -61,11 +61,18 @@ class PublicLoverPostProcessor : NewsFeedPostProcessor<Context> {
 
     private fun mergeTwoLovers(
         current: NewsFeedItemDto,
-        next: NewsFeedItemDto
+        next: NewsFeedItemDto,
+        context: Context
     ): NewsFeedItemDto {
         logger.info { "Merging 2 Lovers into 1 MultiLover" }
-        val currentData = current.newsFeedData as LoverNewsFeedData
-        val nextData = next.newsFeedData as LoverNewsFeedData
+        val currentLover = current.newsFeedData as LoverNewsFeedData
+        val currentData = currentLover.copy(
+            userName = context.publicLovers[current.referenceId] ?: currentLover.userName
+        )
+        val nextLover = next.newsFeedData as LoverNewsFeedData
+        val nextData = nextLover.copy(
+            userName =  context.publicLovers[next.referenceId] ?: nextLover.userName
+        )
         return current.copy(
             type = NewsFeedItemDto.Type.MULTI_LOVER,
             newsFeedData = MultiLoverNewsFeedData(sortedSetOf(currentData, nextData))
@@ -74,11 +81,15 @@ class PublicLoverPostProcessor : NewsFeedPostProcessor<Context> {
 
     private fun mergeMultiLoverAndLover(
         current: NewsFeedItemDto,
-        next: NewsFeedItemDto
+        next: NewsFeedItemDto,
+        context: Context
     ): NewsFeedItemDto {
         logger.info { "Merging Lover into MultiLover" }
         val currentData = current.newsFeedData as MultiLoverNewsFeedData
-        val nextData = next.newsFeedData as LoverNewsFeedData
+        val nextLover = next.newsFeedData as LoverNewsFeedData
+        val nextData = nextLover.copy(
+            userName =  context.publicLovers[next.referenceId] ?: nextLover.userName
+        )
         return current.copy(
             type = NewsFeedItemDto.Type.MULTI_LOVER,
             newsFeedData = MultiLoverNewsFeedData(
@@ -92,6 +103,6 @@ class PublicLoverPostProcessor : NewsFeedPostProcessor<Context> {
     }
 
     data class Context(
-        val publicLoverIds: Set<Long>
+        val publicLovers: Map<Long, String>
     )
 }
