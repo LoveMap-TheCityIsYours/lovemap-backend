@@ -218,15 +218,15 @@ data class LoverNewsFeedData(
 data class MultiLoverNewsFeedData(
     val lovers: TreeSet<LoverNewsFeedData>
 ) : NewsFeedData {
-    override fun happenedAt(): Instant = lovers.last().joinedAt
+    override fun happenedAt(): Instant = lovers.first().joinedAt
     override fun loveSpotId(): Long? = null
-    override fun loverId(): Long = lovers.last().id
+    override fun loverId(): Long = lovers.first().id
 }
 
 data class PrivateLoversNewsFeedData(
     val lovers: TreeSet<LoverNewsFeedData>
 ) : NewsFeedData {
-    override fun happenedAt(): Instant = lovers.last().joinedAt
+    override fun happenedAt(): Instant = lovers.first().joinedAt
     override fun loveSpotId(): Long? = null
-    override fun loverId(): Long = lovers.last().id
+    override fun loverId(): Long = lovers.first().id
 }
