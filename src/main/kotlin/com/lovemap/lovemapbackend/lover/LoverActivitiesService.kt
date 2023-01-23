@@ -3,6 +3,9 @@ package com.lovemap.lovemapbackend.lover
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.newsfeed.NewsFeedService
 import com.lovemap.lovemapbackend.newsfeed.model.response.NewsFeedItemResponse
+import com.lovemap.lovemapbackend.utils.ErrorCode
+import com.lovemap.lovemapbackend.utils.LoveMapException
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 @Service
@@ -21,8 +24,10 @@ class LoverActivitiesService(
             if (caller.partnerId == loverId) {
                 newsFeedService.getActivitiesOfLover(loverId)
             } else {
-                authorizationService.checkAccessFor(loverId)
-                newsFeedService.getActivitiesOfLover(loverId)
+                runCatching {
+                    authorizationService.checkAccessFor(loverId)
+                    newsFeedService.getActivitiesOfLover(loverId)
+                }.getOrElse { throw LoveMapException(HttpStatus.BAD_REQUEST, ErrorCode.LoverIsNotPublic) }
             }
         }
     }
