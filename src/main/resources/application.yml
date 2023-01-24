@@ -134,5 +134,5 @@ logging:
     com.lovemap: DEBUG
     org.springframework.r2dbc: INFO
     org.springframework.security: INFO
-    org.springframework.web: DEBUG
+    org.springframework.web: INFO
     org.flywaydb: DEBUG
