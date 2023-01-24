@@ -2,13 +2,14 @@ package com.lovemap.lovemapbackend.utils
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.lovemap.lovemapbackend.lover.LoverRepository
+import com.lovemap.lovemapbackend.lovespot.CachedLoveSpotService
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoService
 import com.lovemap.lovemapbackend.newsfeed.LoverNewsFeedUpdater
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedRepository
 import com.lovemap.lovemapbackend.newsfeed.dataparser.NewsFeedDataParser
 import com.lovemap.lovemapbackend.newsfeed.model.*
-import com.lovemap.lovemapbackend.lovespot.CachedLoveSpotService
+import com.lovemap.lovemapbackend.newsfeed.provider.LoveSpotNewsFeedProvider
 import com.lovemap.lovemapbackend.newsfeed.provider.LoveSpotReviewNewsFeedProvider
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
@@ -18,6 +19,7 @@ import kotlinx.coroutines.reactor.mono
 import mu.KotlinLogging
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
+import org.springframework.stereotype.Component
 import java.time.Duration
 import java.time.Instant
 
@@ -177,6 +179,35 @@ class NewsFeedItemLoverIdFixer(
 }
 
 
+// disabled
+class NewsFeedLoveSpotFixer(
+    private val repository: NewsFeedRepository,
+    private val objectMapper: ObjectMapper,
+    private val loveSpotNewsFeedProvider: LoveSpotNewsFeedProvider,
+) : ApplicationRunner {
+    private val logger = KotlinLogging.logger { }
+
+    override fun run(args: ApplicationArguments?) {
+        mono {
+            val generationTime = Instant.now().minus(Duration.ofHours(2))
+            val newsFeedFrom = loveSpotNewsFeedProvider
+                .getNewsFeedFrom(generationTime, Instant.now().minus(Duration.ofDays(3650)))
+                .toList()
+
+            logger.info { "newsFeedFrom ${newsFeedFrom.size}" }
+
+            newsFeedFrom
+                .map { it.toNewsFeedItem(objectMapper) }
+                .forEach {
+                    runCatching { repository.save(it) }
+                        .onFailure { e -> logger.error(e) { "Failed to save" } }
+                        .onSuccess { logger.info { "saved $it" } }
+                        .getOrNull()
+                }
+
+        }.subscribe()
+    }
+}
 
 
 
