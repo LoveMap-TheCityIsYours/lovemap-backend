@@ -6,6 +6,8 @@ import com.lovemap.lovemapbackend.utils.ErrorCode.*
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.toSet
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
@@ -15,6 +17,8 @@ import java.sql.Timestamp
 import java.time.Instant
 import java.util.*
 
+private const val HALL_OF_FAME_SIZE = 100
+
 @Service
 @Transactional
 class LoverService(
@@ -22,7 +26,7 @@ class LoverService(
     private val converter: LoverConverter,
     private val loverNewsFeedUpdater: LoverNewsFeedUpdater,
     private val cachedLoverService: CachedLoverService,
-    private val loverRepository: LoverRepository,
+    private val repository: LoverRepository,
 ) {
     companion object {
         const val linkPrefixVisible = "https://api.lovemap.app/join-us/lover?uuid="
@@ -31,11 +35,11 @@ class LoverService(
     private val logger = KotlinLogging.logger {}
 
     suspend fun unAuthorizedExists(id: Long): Boolean {
-        return loverRepository.existsById(id)
+        return repository.existsById(id)
     }
 
     suspend fun getById(id: Long): Lover {
-        return loverRepository.findById(id)?.let { lover ->
+        return repository.findById(id)?.let { lover ->
             authorizationService.checkAccessFor(lover)
             cachedLoverService.put(lover)
             lover
@@ -50,7 +54,7 @@ class LoverService(
     }
 
     suspend fun unAuthorizedGetById(id: Long): Lover {
-        return loverRepository.findById(id)?.let { lover ->
+        return repository.findById(id)?.let { lover ->
             cachedLoverService.put(lover)
             lover
         } ?: throw LoveMapException(
@@ -64,7 +68,7 @@ class LoverService(
     }
 
     suspend fun unAuthorizedGetByUserName(userName: String): Lover {
-        return loverRepository.findByUserName(userName)
+        return repository.findByUserName(userName)
             ?: throw LoveMapException(
                 HttpStatus.FORBIDDEN,
                 ErrorMessage(
@@ -76,7 +80,7 @@ class LoverService(
     }
 
     suspend fun unAuthorizedGetByEmail(email: String): Lover {
-        return loverRepository.findByEmail(email)
+        return repository.findByEmail(email)
             ?: throw LoveMapException(
                 HttpStatus.FORBIDDEN,
                 ErrorMessage(
@@ -88,7 +92,7 @@ class LoverService(
     }
 
     suspend fun save(lover: Lover): Lover {
-        return loverRepository.save(lover)
+        return repository.save(lover)
     }
 
     suspend fun generateLoverUuid(loverId: Long): Lover {
@@ -101,7 +105,7 @@ class LoverService(
     }
 
     suspend fun getByUuid(uuid: String, caller: Lover): Lover {
-        return loverRepository.findByUuid(uuid)
+        return repository.findByUuid(uuid)
             ?: throw LoveMapException(
                 HttpStatus.NOT_FOUND,
                 ErrorMessage(
@@ -113,7 +117,7 @@ class LoverService(
     }
 
     suspend fun checkUserNameAndEmail(userName: String, email: String) {
-        if (loverRepository.findByUserName(userName) != null) {
+        if (repository.findByUserName(userName) != null) {
             throw LoveMapException(
                 HttpStatus.CONFLICT,
                 ErrorMessage(
@@ -123,7 +127,7 @@ class LoverService(
                 )
             )
         }
-        if (loverRepository.findByEmail(email) != null) {
+        if (repository.findByEmail(email) != null) {
             throw LoveMapException(
                 HttpStatus.CONFLICT,
                 ErrorMessage(
@@ -142,11 +146,11 @@ class LoverService(
     }
 
     suspend fun unAuthorizedExistsByEmail(email: String): Boolean {
-        return loverRepository.existsByEmail(email)
+        return repository.existsByEmail(email)
     }
 
     fun getLoversFrom(generateFrom: Instant): Flow<Lover> {
-        return loverRepository.findAllAfterCreatedAt(Timestamp.from(generateFrom))
+        return repository.findAllAfterCreatedAt(Timestamp.from(generateFrom))
     }
 
     suspend fun updateLover(loverId: Long, update: UpdateLoverRequest): LoverResponse {
@@ -166,7 +170,7 @@ class LoverService(
     }
 
     suspend fun getAllByIds(loverIds: Set<Long>): Map<Long, Lover> {
-        return loverRepository.findAllById(loverIds).toSet().associateBy { it.id }
+        return repository.findAllById(loverIds).toSet().associateBy { it.id }
     }
 
     suspend fun setPartnershipBetween(initiatorId: Long, respondentId: Long) {
@@ -187,5 +191,17 @@ class LoverService(
         val partner = unAuthorizedGetById(partnerLoverId)
         partner.partnerId = null
         save(partner)
+    }
+
+    suspend fun getHallOfFame(): List<LoverViewWithoutRelationResponse> {
+        return repository.findTopLimitOrderByPoints(HALL_OF_FAME_SIZE)
+            .map {
+                if (it.publicProfile) {
+                    LoverViewWithoutRelationResponse.of(it)
+                } else {
+                    LoverViewWithoutRelationResponse.of(it).copy(displayName = "")
+                }
+            }
+            .toList()
     }
 }

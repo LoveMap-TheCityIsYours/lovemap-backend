@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.lovemap"
-version = "1.14.3"
+version = "1.15.0"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {

@@ -74,4 +74,9 @@ class LoverController(
     suspend fun getLoverActivities(@PathVariable loverId: Long): List<NewsFeedItemResponse> {
         return loverActivitiesService.getActivities(loverId)
     }
+
+    @GetMapping("hallOfFame")
+    suspend fun getHallOfFame(): List<LoverViewWithoutRelationResponse> {
+        return loverService.getHallOfFame()
+    }
 }
