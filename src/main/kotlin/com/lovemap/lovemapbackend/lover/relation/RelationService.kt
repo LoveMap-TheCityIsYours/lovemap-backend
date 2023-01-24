@@ -256,8 +256,8 @@ class RelationService(
             .mapNotNull { cachedLoverService.getCachedLoverById(it.sourceId) }
             .toList()
 
-    private suspend fun doListFollowings(sourceLovereId: Long) =
-        repository.findBySourceIdAndStatusOrderByCreatedAtDesc(sourceLovereId, FOLLOWING)
+    private suspend fun doListFollowings(sourceLoverId: Long) =
+        repository.findBySourceIdAndStatusOrderByCreatedAtDesc(sourceLoverId, FOLLOWING)
             .mapNotNull { cachedLoverService.getCachedLoverById(it.sourceId) }
             .toList()
 }
