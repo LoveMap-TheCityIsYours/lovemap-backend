@@ -23,6 +23,9 @@ class JwtAuthenticationFilter(
     private val logger = KotlinLogging.logger {}
 
     private val exclusions = listOf(
+        "/actuator/info",
+        "/actuator/health",
+        "/actuator/metrics",
         "/privacy-policy.html",
         "/terms-of-use.html",
         "/.well-known/assetlinks.json",

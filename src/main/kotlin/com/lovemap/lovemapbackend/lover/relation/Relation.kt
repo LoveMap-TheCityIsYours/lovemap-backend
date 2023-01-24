@@ -4,6 +4,8 @@ import com.lovemap.lovemapbackend.lover.LoverView
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
+import java.sql.Timestamp
+import java.time.Instant
 
 data class Relation(
     @Id
@@ -17,6 +19,9 @@ data class Relation(
 
     @Column("target_id")
     var targetId: Long,
+
+    @Column("created_at")
+    var createdAt: Timestamp = Timestamp.from(Instant.now())
 ) {
     enum class Status {
         FOLLOWING, PARTNER, BLOCKED

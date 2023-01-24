@@ -37,6 +37,11 @@ class RelationController(
         return relationService.getFollowers(loverId)
     }
 
+    @GetMapping("followings")
+    suspend fun getFollowings(@PathVariable loverId: Long): List<LoverViewWithoutRelationResponse> {
+        return relationService.getFollowings(loverId)
+    }
+
     @DeleteMapping("/{targetLoverId}/removeFollower")
     suspend fun removeFollower(
         @PathVariable loverId: Long,

@@ -43,6 +43,9 @@ class SecurityConfiguration(
             .pathMatchers("/v3/api-docs/**").permitAll()
             .pathMatchers("/authentication/**").permitAll()
             .pathMatchers("/debug/**").permitAll()
+            .pathMatchers("/actuator/health/**").permitAll()
+            .pathMatchers("/actuator/info/**").permitAll()
+            .pathMatchers("/actuator/metrics/**").permitAll()
 
             .pathMatchers("/join-us/**").permitAll()
             .pathMatchers("/join-us.**").permitAll()
@@ -64,6 +67,7 @@ class SecurityConfiguration(
             .pathMatchers("/newsfeed/**").hasRole("USER")
 
             .pathMatchers("/admin/**").hasRole("ADMIN")
+            .pathMatchers("/actuator/**").hasRole("ADMIN")
             .anyExchange().authenticated()
             .and()
             .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.HTTP_BASIC)

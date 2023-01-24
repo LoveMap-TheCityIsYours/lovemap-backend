@@ -50,6 +50,12 @@ data class Lover(
     @Column("number_of_followers")
     var numberOfFollowers: Int = 0,
 
+    @Column("number_of_followings")
+    var numberOfFollowings: Int = 0,
+
+    @Column("hall_of_fame_position")
+    var hallOfFamePosition: Int? = null,
+
     @Column("photos_uploaded")
     var photosUploaded: Int = 0,
 
@@ -71,6 +77,9 @@ data class Lover(
         displayName = displayName,
         points = points,
         rank = rank,
+        numberOfFollowers = numberOfFollowers,
+        numberOfFollowings = numberOfFollowings,
+        hallOfFamePosition = hallOfFamePosition,
         createdAt = createdAt,
     )
 }
@@ -81,5 +90,8 @@ data class LoverView(
     val partnerId: Long?,
     val points: Int,
     val rank: Int,
+    val numberOfFollowers: Int,
+    val numberOfFollowings: Int,
+    val hallOfFamePosition: Int?,
     val createdAt: Timestamp,
 )

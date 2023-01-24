@@ -1,7 +1,7 @@
 package com.lovemap.lovemapbackend.lovespot.photo
 
 import com.lovemap.lovemapbackend.lover.Lover
-import com.lovemap.lovemapbackend.lover.LoverPointService
+import com.lovemap.lovemapbackend.lover.ranking.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.LoveSpotStatisticsService
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewService
 import com.lovemap.lovemapbackend.utils.AsyncTaskService

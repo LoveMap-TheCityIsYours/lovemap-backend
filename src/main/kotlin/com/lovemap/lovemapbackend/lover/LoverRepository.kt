@@ -3,9 +3,10 @@ package com.lovemap.lovemapbackend.lover
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
+import org.springframework.data.repository.kotlin.CoroutineSortingRepository
 import java.sql.Timestamp
 
-interface LoverRepository : CoroutineCrudRepository<Lover, Long> {
+interface LoverRepository : CoroutineCrudRepository<Lover, Long>, CoroutineSortingRepository<Lover, Long> {
     suspend fun findByUserName(userName: String): Lover?
     suspend fun findByEmail(email: String): Lover?
     suspend fun findByUuid(uuid: String): Lover?
@@ -21,4 +22,13 @@ interface LoverRepository : CoroutineCrudRepository<Lover, Long> {
     fun findAllAfterCreatedAt(createdAt: Timestamp): Flow<Lover>
 
     fun findAllByIdInAndPublicProfile(ids: Collection<Long>, publicProfile: Boolean): Flow<Lover>
+
+    @Query(
+        """
+            SELECT * FROM lover 
+            ORDER BY points DESC 
+            LIMIT :limit
+        """
+    )
+    fun findTopLimitOrderByPoints(limit: Int): Flow<Lover>
 }

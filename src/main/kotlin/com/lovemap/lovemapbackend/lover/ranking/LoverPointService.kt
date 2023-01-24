@@ -1,7 +1,8 @@
-package com.lovemap.lovemapbackend.lover
+package com.lovemap.lovemapbackend.lover.ranking
 
 import com.lovemap.lovemapbackend.love.Love
-import com.lovemap.lovemapbackend.lover.points.LoverPoints
+import com.lovemap.lovemapbackend.lover.Lover
+import com.lovemap.lovemapbackend.lover.LoverService
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhoto
 import com.lovemap.lovemapbackend.lovespot.report.LoveSpotReport
@@ -272,16 +273,27 @@ class LoverPointService(
         }
     }
 
-    suspend fun incrementFollowers(targetLover: Lover) {
+    suspend fun incrementFollowers(source: Lover, targetLover: Lover) {
+        source.numberOfFollowings += 1
+        loverService.save(source)
         targetLover.numberOfFollowers += 1
         targetLover.points += points.pointsForFollower
         loverService.save(targetLover)
     }
 
-    suspend fun decrementFollowers(loverId: Long) {
-        val lover = loverService.unAuthorizedGetById(loverId)
-        lover.numberOfFollowers -= 1
-        lover.points -= points.pointsForFollower
-        loverService.save(lover)
+    suspend fun decrementFollowers(source: Lover, targetLoverId: Long) {
+        doDecrementFollowers(source, loverService.unAuthorizedGetById(targetLoverId))
+    }
+
+    suspend fun decrementFollowers(sourceId: Long, targetLover: Lover) {
+        doDecrementFollowers(loverService.unAuthorizedGetById(sourceId), targetLover)
+    }
+
+    private suspend fun doDecrementFollowers(source: Lover, targetLover: Lover) {
+        source.numberOfFollowings -= 1
+        loverService.save(source)
+        targetLover.numberOfFollowers -= 1
+        targetLover.points -= points.pointsForFollower
+        loverService.save(targetLover)
     }
 }

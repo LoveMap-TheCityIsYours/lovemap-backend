@@ -2,7 +2,7 @@ package com.lovemap.lovemapbackend.love
 
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.lover.Lover
-import com.lovemap.lovemapbackend.lover.LoverPointService
+import com.lovemap.lovemapbackend.lover.ranking.LoverPointService
 import com.lovemap.lovemapbackend.lover.wishlist.WishlistService
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
@@ -13,7 +13,6 @@ import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.InstantConverterUtils
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service

@@ -1,6 +1,11 @@
 server:
   port: 8090
 
+management:
+  endpoints:
+    enabled-by-default: true
+    web.exposure.include: info, health, metrics
+
 lovemap:
   admins:
     emails: ""

@@ -17,7 +17,7 @@ class CachedLoverService(
         .initialCapacity(200)
         .expireAfterWrite(Duration.ofMinutes(60))
         .concurrencyLevel(max(Runtime.getRuntime().availableProcessors() / 2, 2))
-        .maximumSize(500)
+        .maximumSize(1000)
         .build()
 
     suspend fun getCachedLoverById(loverId: Long): LoverViewWithoutRelationResponse? {

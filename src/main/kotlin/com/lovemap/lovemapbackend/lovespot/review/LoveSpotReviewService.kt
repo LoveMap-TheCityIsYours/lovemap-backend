@@ -3,7 +3,7 @@ package com.lovemap.lovemapbackend.lovespot.review
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.love.Love
 import com.lovemap.lovemapbackend.love.LoveService
-import com.lovemap.lovemapbackend.lover.LoverPointService
+import com.lovemap.lovemapbackend.lover.ranking.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotStatisticsService
 import com.lovemap.lovemapbackend.newsfeed.NewsFeedDeletionService

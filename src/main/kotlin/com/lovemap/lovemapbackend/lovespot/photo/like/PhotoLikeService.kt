@@ -2,7 +2,7 @@ package com.lovemap.lovemapbackend.lovespot.photo.like
 
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.lover.Lover
-import com.lovemap.lovemapbackend.lover.LoverPointService
+import com.lovemap.lovemapbackend.lover.ranking.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhoto
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoResponse
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoService

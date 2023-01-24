@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.lover.points
+package com.lovemap.lovemapbackend.lover.ranking
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.bind.ConstructorBinding

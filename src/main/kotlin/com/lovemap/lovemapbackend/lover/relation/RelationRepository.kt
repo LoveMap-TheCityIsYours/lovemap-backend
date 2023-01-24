@@ -19,8 +19,13 @@ interface RelationRepository : CoroutineCrudRepository<Relation, Long> {
         statusFilter: Set<Relation.Status>
     ): Flow<Relation>
 
-    fun findByTargetIdAndStatus(
+    fun findByTargetIdAndStatusOrderByCreatedAtDesc(
         targetId: Long,
+        status: Relation.Status
+    ): Flow<Relation>
+
+    fun findBySourceIdAndStatusOrderByCreatedAtDesc(
+        sourceId: Long,
         status: Relation.Status
     ): Flow<Relation>
 

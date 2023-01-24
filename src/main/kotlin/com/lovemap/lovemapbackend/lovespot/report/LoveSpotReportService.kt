@@ -1,7 +1,7 @@
 package com.lovemap.lovemapbackend.lovespot.report
 
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
-import com.lovemap.lovemapbackend.lover.LoverPointService
+import com.lovemap.lovemapbackend.lover.ranking.LoverPointService
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.lovespot.LoveSpotStatisticsService

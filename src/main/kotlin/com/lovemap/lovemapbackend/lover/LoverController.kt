@@ -1,6 +1,6 @@
 package com.lovemap.lovemapbackend.lover
 
-import com.lovemap.lovemapbackend.lover.ranks.LoverRanks
+import com.lovemap.lovemapbackend.lover.ranking.LoverRanks
 import com.lovemap.lovemapbackend.lover.relation.LoverRelationsResponse
 import com.lovemap.lovemapbackend.newsfeed.model.response.NewsFeedItemResponse
 import com.lovemap.lovemapbackend.utils.ErrorCode

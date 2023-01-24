@@ -2,6 +2,7 @@ package com.lovemap.lovemapbackend.lover.relation
 
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.lover.*
+import com.lovemap.lovemapbackend.lover.ranking.LoverPointService
 import com.lovemap.lovemapbackend.lover.relation.Relation.Status.FOLLOWING
 import com.lovemap.lovemapbackend.lover.relation.Relation.Status.PARTNER
 import com.lovemap.lovemapbackend.newsfeed.NewsFeedService
@@ -145,7 +146,7 @@ class RelationService(
 
     @Transactional
     suspend fun followLover(loverId: Long, targetLoverId: Long): LoverRelationsResponse {
-        authorizationService.checkAccessFor(loverId)
+        val caller = authorizationService.checkAccessFor(loverId)
         checkBlockingBetweenLovers(loverId, targetLoverId)
         val targetLover = checkPublicProfile(targetLoverId)
 
@@ -163,7 +164,7 @@ class RelationService(
                     targetId = targetLoverId
                 )
             )
-            loverPointService.incrementFollowers(targetLover)
+            loverPointService.incrementFollowers(caller, targetLover)
         }
 
         val lover = loverService.getById(loverId)
@@ -172,12 +173,12 @@ class RelationService(
 
     @Transactional
     suspend fun unfollowLover(loverId: Long, targetLoverId: Long): LoverRelationsResponse {
-        authorizationService.checkAccessFor(loverId)
+        val caller = authorizationService.checkAccessFor(loverId)
         repository.findBySourceIdAndTargetId(loverId, targetLoverId)?.let { currentRelation ->
             if (currentRelation.status == FOLLOWING) {
                 logger.info { "'$loverId' Unfollowed '$targetLoverId'" }
                 repository.delete(currentRelation)
-                loverPointService.decrementFollowers(targetLoverId)
+                loverPointService.decrementFollowers(caller, targetLoverId)
             } else {
                 logger.info {
                     "Lover '$loverId' tried to unfollow '$targetLoverId' " +
@@ -203,13 +204,24 @@ class RelationService(
         }
     }
 
+    suspend fun getFollowings(sourceLovereId: Long): List<LoverViewWithoutRelationResponse> {
+        val caller = authorizationService.getCaller()
+        checkBlockingBetweenLovers(caller.id, sourceLovereId)
+        if (canAccessFollowers(sourceLovereId, caller)) {
+            return doListFollowings(sourceLovereId)
+        } else {
+            throw LoveMapException(HttpStatus.UNAUTHORIZED, ErrorCode.LoverIsNotPublic)
+        }
+    }
+
     @Transactional
     suspend fun removeFollower(loverId: Long, followerId: Long): List<LoverViewWithoutRelationResponse> {
-        authorizationService.checkAccessFor(loverId)
+        val targetLover = authorizationService.checkAccessFor(loverId)
         repository.findBySourceIdAndTargetId(followerId, loverId)?.let { currentRelation ->
             if (currentRelation.status == FOLLOWING) {
                 logger.info { "Removing follower '$followerId' of '$loverId'" }
                 repository.delete(currentRelation)
+                loverPointService.decrementFollowers(followerId, targetLover)
                 currentRelation
             } else {
                 null
@@ -240,7 +252,12 @@ class RelationService(
             authorizationService.isAdmin()
 
     private suspend fun doListFollowers(targetLoverId: Long) =
-        repository.findByTargetIdAndStatus(targetLoverId, FOLLOWING)
+        repository.findByTargetIdAndStatusOrderByCreatedAtDesc(targetLoverId, FOLLOWING)
+            .mapNotNull { cachedLoverService.getCachedLoverById(it.sourceId) }
+            .toList()
+
+    private suspend fun doListFollowings(sourceLovereId: Long) =
+        repository.findBySourceIdAndStatusOrderByCreatedAtDesc(sourceLovereId, FOLLOWING)
             .mapNotNull { cachedLoverService.getCachedLoverById(it.sourceId) }
             .toList()
 }

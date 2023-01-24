@@ -3,6 +3,8 @@ package com.lovemap.lovemapbackend.debug
 import com.lovemap.lovemapbackend.geolocation.CachedGeoLocationProvider
 import com.lovemap.lovemapbackend.geolocation.Cities
 import com.lovemap.lovemapbackend.geolocation.Countries
+import com.lovemap.lovemapbackend.lover.Lover
+import com.lovemap.lovemapbackend.lover.LoverRepository
 import com.lovemap.lovemapbackend.lovespot.CreateLoveSpotRequest
 import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse
 import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse.Availability.ALL_DAY
@@ -10,13 +12,17 @@ import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse.Availability.NIGHT_O
 import com.lovemap.lovemapbackend.lovespot.LoveSpotResponse.Type.PUBLIC_SPACE
 import com.lovemap.lovemapbackend.lovespot.LoveSpotService
 import com.lovemap.lovemapbackend.lovespot.query.*
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
+import mu.KotlinLogging
 import org.springframework.context.annotation.Profile
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.sql.Timestamp
+import java.time.Instant
 import java.util.*
 import kotlin.math.floor
 import kotlin.random.Random
@@ -28,8 +34,11 @@ class DebugController(
     private val loveSpotListService: LoveSpotQueryService,
     private val loveSpotService: LoveSpotService,
     private val cachedGeoLocationProvider: CachedGeoLocationProvider,
+    private val loverRepository: LoverRepository,
     private val environment: Environment,
 ) {
+    val logger = KotlinLogging.logger {}
+
     @PostMapping("/advancedSearch")
     suspend fun advancedSearch(
         @RequestParam(name = "searchType", required = true) listOrdering: ListOrderingRequest,
@@ -87,5 +96,29 @@ class DebugController(
             return ResponseEntity.ok(loveSpotFlow.map { LoveSpotResponse.of(it) }.toList())
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
+    }
+
+    @PostMapping("/createLovers")
+    suspend fun createLovers(@RequestParam amount: Int) {
+        loverRepository.findAll().map {
+            it.points = Random.nextInt(10000)
+            loverRepository.save(it)
+        }.collect()
+        if (environment.activeProfiles.contains("dev")) {
+            for (i in 0 until amount) {
+                val lover = loverRepository.save(
+                    Lover(
+                        userName = UUID.randomUUID().toString(),
+                        email = UUID.randomUUID().toString(),
+                        displayName = UUID.randomUUID().toString(),
+                        registrationCountry = "GLOBAL",
+                        points = Random.nextInt(1000),
+                        publicProfile = true,
+                        createdAt = Timestamp.from(Instant.now())
+                    )
+                )
+                logger.info { "Saved Lover '${lover.id}'" }
+            }
+        }
     }
 }
