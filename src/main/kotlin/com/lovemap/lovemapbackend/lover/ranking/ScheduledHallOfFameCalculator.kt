@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
-private const val REFRESH_RATE_MINUTES: Long = 15
+private const val REFRESH_RATE_MINUTES: Long = 30
 private const val INITIAL_DELAY_MINUTES: Long = 5
-private const val HOF_USERS = 10_000
+private const val HOF_USERS = 1_000
 
 @Component
 class ScheduledHallOfFameCalculator(
