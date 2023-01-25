@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 private const val REFRESH_RATE_MINUTES: Long = 30
-private const val INITIAL_DELAY_MINUTES: Long = 5
+private const val INITIAL_DELAY_MINUTES: Long = 10
 private const val HOF_USERS = 1_000
 
 @Component

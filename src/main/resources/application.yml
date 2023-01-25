@@ -114,7 +114,7 @@ spring:
     initial-size: 5
     pool:
       enabled: true
-      max-size: 18
+      max-size: 10
   jpa:
     properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
