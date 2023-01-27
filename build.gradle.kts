@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.lovemap"
-version = "1.15.3"
+version = "1.15.6"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
@@ -27,9 +27,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("com.google.cloud:spring-cloud-gcp-starter:3.4.2")
     implementation("io.micrometer:micrometer-registry-prometheus")
-    implementation("io.micrometer:micrometer-registry-stackdriver")
+    implementation("io.micrometer:micrometer-core:1.10.3")
+
+//    Did not work out: com.google.api.gax.rpc.UnavailableException: io.grpc.StatusRuntimeException: UNAVAILABLE: Channel shutdown invoked
+//    implementation("com.google.cloud:spring-cloud-gcp-starter:3.4.2")
+//    implementation("io.micrometer:micrometer-registry-stackdriver")
+//    implementation("com.google.cloud:google-cloud-monitoring:3.10.0")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.apache.commons:commons-lang3:3.12.0")

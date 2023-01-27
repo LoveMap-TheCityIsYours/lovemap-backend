@@ -1,40 +1,55 @@
 package com.lovemap.lovemapbackend.configuration
 
-import com.google.api.gax.core.CredentialsProvider
-import com.google.auth.oauth2.ServiceAccountCredentials
-import com.google.cloud.spring.autoconfigure.metrics.GcpStackdriverPropertiesConfigAdapter
-import org.springframework.boot.actuate.autoconfigure.metrics.export.stackdriver.StackdriverMetricsExportAutoConfiguration
-import org.springframework.boot.actuate.autoconfigure.metrics.export.stackdriver.StackdriverProperties
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Profile
-import org.springframework.core.io.ResourceLoader
+// Did not work out: com.google.api.gax.rpc.UnavailableException: io.grpc.StatusRuntimeException: UNAVAILABLE: Channel shutdown invoked
 
-@Configuration
-@Profile("!dev")
-class LoveMapGcpMonitoringConfig(
-    private val resourceLoader: ResourceLoader,
-    private val stackdriverProperties: StackdriverProperties
-) : GcpStackdriverPropertiesConfigAdapter(stackdriverProperties) {
-
-    @Bean
-    override fun credentials(): CredentialsProvider {
-        return CredentialsProvider {
-            val inputStream = resourceLoader.getResource("classpath:monitoring-account-key.json").inputStream
-            ServiceAccountCredentials.fromStream(inputStream)
-        }
-    }
-
-    override fun projectId(): String {
-        return stackdriverProperties.projectId
-    }
-}
-
-@Configuration
-@Profile("dev")
-@EnableAutoConfiguration(
-    exclude = [StackdriverMetricsExportAutoConfiguration::class]
-)
-class DevMonitoringConfig {
-}
+//@Configuration
+//@Profile("!dev")
+//class LoveMapGcpMonitoringConfig(
+//    private val resourceLoader: ResourceLoader,
+//    private val stackdriverProperties: StackdriverProperties
+//) : GcpStackdriverPropertiesConfigAdapter(stackdriverProperties) {
+//
+//    @Bean
+//    fun stackdriverConfig(credentialsProvider: CredentialsProvider): StackdriverConfig {
+//        return object : StackdriverConfig {
+//            override fun projectId(): String = stackdriverProperties.projectId
+//
+//            override fun batchSize(): Int {
+//                return 199
+//            }
+//
+//            override fun get(key: String): String? = null
+//            override fun credentials(): CredentialsProvider {
+//                return credentialsProvider
+//            }
+//        }
+//    }
+//
+//    @Bean
+//    fun meterRegistry(stackdriverConfig: StackdriverConfig): MeterRegistry {
+//        return StackdriverMeterRegistry.builder(stackdriverConfig).build()
+//    }
+//
+//    @Bean
+//    override fun credentials(): CredentialsProvider {
+//        return credentialsProvider()
+//    }
+//
+//    @Bean
+//    fun credentialsProvider(): CredentialsProvider = CredentialsProvider {
+//        val inputStream = resourceLoader.getResource("classpath:monitoring-account-key.json").inputStream
+//        ServiceAccountCredentials.fromStream(inputStream)
+//    }
+//
+//    override fun projectId(): String {
+//        return stackdriverProperties.projectId
+//    }
+//}
+//
+//@Configuration
+//@Profile("dev")
+//@EnableAutoConfiguration(
+//    exclude = [StackdriverMetricsExportAutoConfiguration::class]
+//)
+//class DevMonitoringConfig {
+//}
