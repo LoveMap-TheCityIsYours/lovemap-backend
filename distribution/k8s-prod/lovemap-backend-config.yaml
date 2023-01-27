@@ -11,4 +11,4 @@ spec:
     checkIntervalSec: 15
     port: 8090
     type: HTTP
-    requestPath: /join-us.html
+    requestPath: /actuator/health

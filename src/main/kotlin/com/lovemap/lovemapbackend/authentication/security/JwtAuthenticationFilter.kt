@@ -26,6 +26,7 @@ class JwtAuthenticationFilter(
         "/actuator/info",
         "/actuator/health",
         "/actuator/metrics",
+        "/actuator/prometheus",
         "/privacy-policy.html",
         "/terms-of-use.html",
         "/.well-known/assetlinks.json",
