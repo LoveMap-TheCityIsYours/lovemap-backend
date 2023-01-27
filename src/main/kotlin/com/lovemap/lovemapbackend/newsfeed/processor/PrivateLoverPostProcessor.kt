@@ -38,7 +38,12 @@ class PrivateLoverPostProcessor : NewsFeedPostProcessor<Context> {
                 }
                 combined.add(newsFeedItem)
             } else {
-                combined.add(next)
+                val newsFeedItem = if (nextIsPrivateLover(context, next)) {
+                    initPrivateLovers(next, context)
+                } else {
+                    next
+                }
+                combined.add(newsFeedItem)
             }
             combined
         }
