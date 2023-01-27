@@ -113,6 +113,7 @@ class PhotoLikeService(
             photoService.decrementPhotoDislikes(photo)
             loverPointService.addPointsForUndislike(photo, lover)
         }
+        newsFeedDeletionService.deleteByTypeAndReferenceId(NewsFeedItem.Type.LOVE_SPOT_PHOTO_LIKE, photoLike.id)
         photoLikeRepository.delete(photoLike)
         return null
     }

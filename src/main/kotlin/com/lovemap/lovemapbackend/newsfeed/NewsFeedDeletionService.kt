@@ -15,7 +15,11 @@ class NewsFeedDeletionService(
 
     suspend fun deleteByTypeAndReferenceId(type: NewsFeedItem.Type, referenceId: Long) {
         logger.info { "Deleting [$type] Type with [$referenceId] referenceId." }
-        newsFeedRepository.deleteByTypeAndReferenceId(type, referenceId)
-        newsFeedService.removeFromCache(NewsFeedItemDto.Type.of(type), referenceId)
+        try {
+            newsFeedRepository.deleteByTypeAndReferenceId(type, referenceId)
+            newsFeedService.removeFromCache(NewsFeedItemDto.Type.of(type), referenceId)
+        } catch (e: Exception) {
+            logger.error(e) { "Failed to delete NewsFeedItem with type '$type' and referenceId '$referenceId'" }
+        }
     }
 }
