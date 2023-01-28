@@ -204,11 +204,11 @@ class RelationService(
         }
     }
 
-    suspend fun getFollowings(sourceLovereId: Long): List<LoverViewWithoutRelationResponse> {
+    suspend fun getFollowings(sourceLoverId: Long): List<LoverViewWithoutRelationResponse> {
         val caller = authorizationService.getCaller()
-        checkBlockingBetweenLovers(caller.id, sourceLovereId)
-        if (canAccessFollowers(sourceLovereId, caller)) {
-            return doListFollowings(sourceLovereId)
+        checkBlockingBetweenLovers(caller.id, sourceLoverId)
+        if (canAccessFollowers(sourceLoverId, caller)) {
+            return doListFollowings(sourceLoverId)
         } else {
             throw LoveMapException(HttpStatus.UNAUTHORIZED, ErrorCode.LoverIsNotPublic)
         }
@@ -249,7 +249,8 @@ class RelationService(
         caller: Lover
     ) = isPublicProfile(targetLoverId) ||
             arePartners(caller.id, targetLoverId) ||
-            authorizationService.isAdmin()
+            authorizationService.isAdmin() ||
+            caller.id == targetLoverId
 
     private suspend fun doListFollowers(targetLoverId: Long) =
         repository.findByTargetIdAndStatusOrderByCreatedAtDesc(targetLoverId, FOLLOWING)
@@ -258,6 +259,6 @@ class RelationService(
 
     private suspend fun doListFollowings(sourceLoverId: Long) =
         repository.findBySourceIdAndStatusOrderByCreatedAtDesc(sourceLoverId, FOLLOWING)
-            .mapNotNull { cachedLoverService.getCachedLoverById(it.sourceId) }
+            .mapNotNull { cachedLoverService.getCachedLoverById(it.targetId) }
             .toList()
 }
