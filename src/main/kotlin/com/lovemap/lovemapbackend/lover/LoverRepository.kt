@@ -1,6 +1,7 @@
 package com.lovemap.lovemapbackend.lover
 
 import kotlinx.coroutines.flow.Flow
+import org.springframework.data.r2dbc.repository.Modifying
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.data.repository.kotlin.CoroutineSortingRepository
@@ -31,4 +32,14 @@ interface LoverRepository : CoroutineCrudRepository<Lover, Long>, CoroutineSorti
         """
     )
     fun findTopLimitOrderByPoints(limit: Int): Flow<Lover>
+
+    @Modifying
+    @Query(
+        """
+            UPDATE lover 
+            SET hall_of_fame_position = NULL
+            WHERE hall_of_fame_position IS NOT NULL
+        """
+    )
+    suspend fun nullAllHofPositions(): Int
 }

@@ -20,6 +20,7 @@ class ScheduledHallOfFameCalculator(
 ) {
     private val logger = KotlinLogging.logger {}
 
+    //    @Scheduled(fixedRate = REFRESH_RATE_MINUTES, timeUnit = TimeUnit.MINUTES)
     @Scheduled(fixedRate = REFRESH_RATE_MINUTES, initialDelay = INITIAL_DELAY_MINUTES, timeUnit = TimeUnit.MINUTES)
     fun recalculateHofPositions() {
         mono {
@@ -27,6 +28,8 @@ class ScheduledHallOfFameCalculator(
             logger.info { "Starting recalculateHofPositions" }
 
             val positionCounter = AtomicInteger(1)
+            val nulled = loverRepository.nullAllHofPositions()
+            logger.info { "Nulled HoF positions: $nulled" }
             loverRepository.findTopLimitOrderByPoints(HOF_USERS).map { lover ->
                 lover.hallOfFamePosition = positionCounter.getAndIncrement()
                 runCatching { loverRepository.save(lover) }.onFailure { e ->

@@ -81,6 +81,7 @@ class NewsFeedService(
 
     private suspend fun fillCacheFromDatabase(): List<NewsFeedItemDto> {
         logger.info { "Updating NewsFeed Cache" }
+        cacheFilled.set(true)
 
         val unprocessedFeed = newsFeedProcessor.getUnprocessedFeed()
         feedCache.clear()
