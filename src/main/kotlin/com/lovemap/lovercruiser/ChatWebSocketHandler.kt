@@ -25,8 +25,17 @@ class ChatWebSocketHandler(
     private val logger = KotlinLogging.logger {}
 
     override fun handle(session: WebSocketSession): Mono<Void> {
+
+        // should contain jwt and senderLoverId
+        session.handshakeInfo.headers
+        // register session in PeriodicMessageForwarderService
+        // this service sends the unsent messages to senderLoverId on the WS session
+
+
         Flux.interval(Duration.ofSeconds(1)).doOnNext {
             // TODO: instead of this, read new messages from mongo and send those
+            // but do this from PeriodicMessageForwarderService which will read all messages in batch
+            // and send the messages to the corresponding WS sessions
             session.send(Mono.just(session.textMessage("hahaha $it")))
                 .onErrorResume { e ->
                     logger.error(e) { "Error occurred In sender mono." }
