@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend
+package com.lovemap
 
 import com.lovemap.lovemapbackend.authentication.facebook.FacebookProperties
 import com.lovemap.lovemapbackend.authentication.security.LoveMapClients

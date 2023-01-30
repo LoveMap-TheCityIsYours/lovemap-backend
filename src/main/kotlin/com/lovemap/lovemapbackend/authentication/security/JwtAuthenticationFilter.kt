@@ -22,7 +22,8 @@ class JwtAuthenticationFilter(
 ) : WebFilter {
     private val logger = KotlinLogging.logger {}
 
-    private val exclusions = listOf(
+    private val clientSecretExclusions = listOf(
+        "/lover-cruiser",
         "/actuator/info",
         "/actuator/health",
         "/actuator/metrics",
@@ -54,7 +55,7 @@ class JwtAuthenticationFilter(
     }
 
     private fun excludedFromClientSecretFilter(exchange: ServerWebExchange) =
-        exclusions.any { exclusion -> exchange.request.path.toString().startsWith(exclusion) }
+        clientSecretExclusions.any { exclusion -> exchange.request.path.toString().startsWith(exclusion) }
                 || environment.activeProfiles.contains("dev")
 
     private fun containsValidClientSecret(exchange: ServerWebExchange): Boolean {
