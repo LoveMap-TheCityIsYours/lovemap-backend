@@ -1,4 +1,4 @@
-package com.lovemap.lovercruiser
+package com.lovemap.loverlocator
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.lovemap.lovemapbackend.authentication.security.JwtService
@@ -14,8 +14,8 @@ class WsConfig(
 ) {
 
     @Bean
-    fun webSocketHandlerAdapter(): LoverCruiserWsHandlerAdapter {
-        return LoverCruiserWsHandlerAdapter(jwtService)
+    fun webSocketHandlerAdapter(): LoverLocatorWsHandlerAdapter {
+        return LoverLocatorWsHandlerAdapter(jwtService)
     }
 
     @Bean
@@ -26,7 +26,7 @@ class WsConfig(
         return SimpleUrlHandlerMapping().apply {
             urlMap = mapOf(
                 Pair(
-                    "/lover-cruiser/chat",
+                    "/lover-locator/chat",
                     ChatWebSocketHandler(jwtService, cachedLoverService, objectMapper)
                 )
             )

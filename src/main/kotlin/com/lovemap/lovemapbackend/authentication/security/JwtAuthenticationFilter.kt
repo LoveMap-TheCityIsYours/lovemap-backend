@@ -23,7 +23,7 @@ class JwtAuthenticationFilter(
     private val logger = KotlinLogging.logger {}
 
     private val clientSecretExclusions = listOf(
-        "/lover-cruiser",
+        "/lover-locator",
         "/actuator/info",
         "/actuator/health",
         "/actuator/metrics",

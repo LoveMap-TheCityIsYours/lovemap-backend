@@ -1,4 +1,4 @@
-package com.lovemap.lovercruiser
+package com.lovemap.loverlocator
 
 import com.lovemap.lovemapbackend.authentication.security.JwtService
 import com.lovemap.lovemapbackend.utils.ErrorCode
@@ -10,7 +10,7 @@ import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAd
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
-class LoverCruiserWsHandlerAdapter(
+class LoverLocatorWsHandlerAdapter(
     private val jwtService: JwtService
 ) : WebSocketHandlerAdapter() {
 

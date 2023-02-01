@@ -47,7 +47,7 @@ class SecurityConfiguration(
             .pathMatchers("/actuator/info/**").permitAll()
             .pathMatchers("/actuator/metrics/**").permitAll()
             .pathMatchers("/actuator/prometheus/**").permitAll()
-            .pathMatchers("/lover-cruiser/**").permitAll()
+            .pathMatchers("/lover-locator/**").permitAll()
 
             .pathMatchers("/join-us/**").permitAll()
             .pathMatchers("/join-us.**").permitAll()

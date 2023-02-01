@@ -1,4 +1,4 @@
-package com.lovemap.lovercruiser.chat
+package com.lovemap.loverlocator.chat
 
 import java.time.Instant
 

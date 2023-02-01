@@ -1,11 +1,11 @@
-package com.lovemap.lovercruiser
+package com.lovemap.loverlocator
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.lovemap.lovemapbackend.authentication.security.JwtService
 import com.lovemap.lovemapbackend.lover.CachedLoverService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException
-import com.lovemap.lovercruiser.chat.ChatMessage
+import com.lovemap.loverlocator.chat.ChatMessage
 import kotlinx.coroutines.reactor.mono
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
