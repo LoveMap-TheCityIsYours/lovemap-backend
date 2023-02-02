@@ -4,9 +4,11 @@ import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 import org.springframework.http.HttpStatus
 import java.sql.Timestamp
 
+@Table
 data class Partnership(
     @Id
     var id: Long = 0,

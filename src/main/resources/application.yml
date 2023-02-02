@@ -32,6 +32,10 @@ spring:
   jackson:
     serialization:
       write-dates-as-timestamps: false
+  data:
+    mongodb:
+      auto-index-creation: true
+      uri: mongodb://localhost/lovemap?retryWrites=true&w=majority
 
 springdoc:
   packagesToScan: com.lovemap.lovemapbackend

@@ -1,0 +1,41 @@
+use $inc operator
+
+UserTrack:
+{
+	"loverId": 1,
+	"lastAppOpen": "2023-02-02T09:56:17", // new endpoint needed
+	"lastKnownLocation": { // new endpoint needed
+		"lat": 34,
+		"long": 21
+	},
+	"accessedResources": {
+		"lovespotSearches": {
+			"lastAccessed": "2023-02-02T09:56:17",
+			"accessCount": 2
+		},
+		"hallOfFame": {
+			"lastAccessed": "2023-02-02T09:56:17",
+			"accessCount": 12
+		},
+		"newsFeed": {
+			"lastAccessed": "2023-02-02T09:56:17",
+			"accessCount": 12
+		},
+		"getFollowers": {
+			"lastAccessed": "2023-02-02T09:56:17",
+			"accessCount": 12
+		},
+		"getFollowings": {
+			"lastAccessed": "2023-02-02T09:56:17",
+			"accessCount": 12
+		},
+		"loverActivities": {
+			"lastAccessed": "2023-02-02T09:56:17",
+			"accessCount": 12,
+			"idAccessCounts": {
+				"1": 2,
+				"2": 15
+			}
+		}
+	}
+}

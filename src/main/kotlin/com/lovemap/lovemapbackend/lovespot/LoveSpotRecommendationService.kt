@@ -1,15 +1,19 @@
 package com.lovemap.lovemapbackend.lovespot
 
+import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.lovespot.query.ListLocationRequest.COUNTRY
 import com.lovemap.lovemapbackend.lovespot.query.ListOrderingRequest.*
 import com.lovemap.lovemapbackend.lovespot.query.LoveSpotQueryService
 import com.lovemap.lovemapbackend.lovespot.query.LoveSpotSearchRequest
+import com.lovemap.lovemapbackend.tracking.UserTrackingService
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 
 @Service
 class LoveSpotRecommendationService(
-    private val loveSpotListService: LoveSpotQueryService
+    private val authorizationService: AuthorizationService,
+    private val loveSpotListService: LoveSpotQueryService,
+    private val userTrackingService: UserTrackingService,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -23,7 +27,12 @@ class LoveSpotRecommendationService(
             locationName = request.country,
             typeFilter = request.typeFilter
         )
-        val response = RecommendationsResponse(
+        userTrackingService.trackLocation(
+            caller = authorizationService.getCaller(),
+            latitude = request.latitude,
+            longitude = request.longitude
+        )
+        return RecommendationsResponse(
             topRatedSpots = getTopRatedSpots(listRequest),
             closestSpots = getClosestSpots(request, listRequest),
             recentlyActiveSpots = getRecentlyActiveSpots(listRequest),
@@ -31,16 +40,6 @@ class LoveSpotRecommendationService(
             newestSpots = getNewestSpots(listRequest),
             recentPhotoSpots = getRecentPhotoSpots(listRequest)
         )
-//        logger.info { "RecommendationsResponse size: ${response.size()} \n" +
-//                "topRatedSpots size: ${response.topRatedSpots.size} \n" +
-//                "closestSpots size: ${response.closestSpots.size} \n" +
-//                "recentlyActiveSpots size: ${response.recentlyActiveSpots.size} \n" +
-//                "popularSpots size: ${response.popularSpots.size} \n" +
-//                "newestSpots size: ${response.newestSpots.size} \n" +
-//                "recentPhotoSpots size: ${response.recentPhotoSpots.size}"
-//        }
-
-        return response
     }
 
     private suspend fun getTopRatedSpots(listRequest: LoveSpotSearchRequest) =

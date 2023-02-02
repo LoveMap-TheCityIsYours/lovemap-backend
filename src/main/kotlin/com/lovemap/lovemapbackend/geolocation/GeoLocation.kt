@@ -2,7 +2,9 @@ package com.lovemap.lovemapbackend.geolocation
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 
+@Table
 data class GeoLocation(
     @Id
     var id: Long = 0,

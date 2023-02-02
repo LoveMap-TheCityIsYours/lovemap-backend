@@ -12,6 +12,20 @@ services:
     ports:
       - 5432:5432
 
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/
+
 volumes:
   lovemap_postgres_data: # named volumes can be managed easier using docker-compose
     name: lovemap_postgres_data

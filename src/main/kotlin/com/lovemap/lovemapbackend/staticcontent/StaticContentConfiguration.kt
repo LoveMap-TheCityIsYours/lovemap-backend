@@ -2,6 +2,7 @@ package com.lovemap.lovemapbackend.staticcontent
 
 import com.lovemap.lovemapbackend.email.EmailService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean

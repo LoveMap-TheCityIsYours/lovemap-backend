@@ -3,6 +3,8 @@ package com.lovemap.lovemapbackend.authentication.security
 import mu.KotlinLogging
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.bind.ConstructorBinding
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
 
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
@@ -15,6 +17,7 @@ import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
 
 @Component
+@Order(value = Ordered.HIGHEST_PRECEDENCE)
 class JwtAuthenticationFilter(
     private val jwtService: JwtService,
     private val lovemapClients: LoveMapClients,

@@ -67,9 +67,13 @@ class AuthorizationService(
 
     suspend fun getCaller(): Lover {
         val securityContext = getSecurityContext()
+        return getLoverFromContext(securityContext)
+            ?: throw LoveMapException(HttpStatus.UNAUTHORIZED, ErrorMessage(ErrorCode.Forbidden))
+    }
+
+    suspend fun getLoverFromContext(securityContext: SecurityContext): Lover? {
         val userName = (securityContext.authentication.principal as User).username
         return loverRepository.findByUserName(userName)
-            ?: throw LoveMapException(HttpStatus.UNAUTHORIZED, ErrorMessage(ErrorCode.Forbidden))
     }
 
     suspend fun isAdmin(): Boolean {

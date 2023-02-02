@@ -9,12 +9,16 @@ import com.lovemap.lovemapbackend.lovespot.risk.LoveSpotRisks
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
+import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories
+import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.web.reactive.config.EnableWebFlux
 
 @EnableWebFlux
 @EnableScheduling
 @SpringBootApplication
+@EnableR2dbcRepositories
+@EnableReactiveMongoRepositories
 @EnableConfigurationProperties(
     value = [
         LoverRanks::class,

@@ -1,0 +1,37 @@
+Chats collection:
+{
+	"chatId": "c1",
+	"user1": "A",
+	"user2": "B"
+},
+{
+	"chatId": "c2",
+	"user1": "A",
+	"user2": "C"
+},
+{
+	"chatId": "c3",
+	"user1": "B",
+	"user2": "D"
+}
+
+	Backend1		Backend2
+WS: A C 			B D
+
+Flow:
+A --> Backend1 | Backend2 polls Messages, finds delivered: false message and --> B
+
+@CompositeIndex(
+	"chatId", "senderId", "sentAt", "delivered"
+)
+Messages collection:
+{
+	"id": "Long",
+	"chatId": "c1",
+	"senderId": "A",
+	"sentAt": "timestamp",
+	"content": "text",
+	"delivered": false
+}
+
+

@@ -4,9 +4,11 @@ import com.lovemap.lovemapbackend.lover.LoverView
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 import java.sql.Timestamp
 import java.time.Instant
 
+@Table
 data class Relation(
     @Id
     var id: Long = 0,

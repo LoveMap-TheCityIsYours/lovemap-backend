@@ -2,8 +2,10 @@ package com.lovemap.lovemapbackend.authentication.lover
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 import java.sql.Timestamp
 
+@Table
 data class LoverAuthentication(
     @Id
     var id: Long = 0,
