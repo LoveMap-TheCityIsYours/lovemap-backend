@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.lovemap"
-version = "1.15.11"
+version = "1.16.1"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
@@ -31,6 +31,8 @@ dependencies {
 
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("io.micrometer:micrometer-core:1.10.3")
+
+    implementation("com.google.firebase:firebase-admin:9.1.1")
 
 //    Did not work out: com.google.api.gax.rpc.UnavailableException: io.grpc.StatusRuntimeException: UNAVAILABLE: Channel shutdown invoked
 //    implementation("com.google.cloud:spring-cloud-gcp-starter:3.4.2")

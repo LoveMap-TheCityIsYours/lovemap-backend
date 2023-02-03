@@ -204,4 +204,11 @@ class LoverService(
             }
             .toList()
     }
+
+    suspend fun registerFirebaseToken(loverId: Long, token: FirebaseTokenRegistration): LoverResponse {
+        val caller = authorizationService.checkIdentity(loverId)
+        caller.firebaseToken = token.token
+        caller.hasFirebaseToken = true
+        return converter.toResponse(repository.save(caller))
+    }
 }

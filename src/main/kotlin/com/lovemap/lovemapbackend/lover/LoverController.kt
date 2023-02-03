@@ -21,6 +21,11 @@ class LoverController(
     private val validatorService: ValidatorService
 ) {
 
+    @PostMapping("/{loverId}/registerFirebaseToken")
+    suspend fun registerFirebaseToken(@PathVariable loverId: Long, @RequestBody token: FirebaseTokenRegistration): LoverResponse {
+        return loverService.registerFirebaseToken(loverId, token)
+    }
+
     @GetMapping("/{loverId}")
     suspend fun getLover(@PathVariable loverId: Long): LoverRelationsResponse {
         return loverRelationService.getWithRelations(loverId)

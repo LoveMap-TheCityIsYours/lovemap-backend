@@ -32,6 +32,14 @@ class AuthorizationService(
         return caller
     }
 
+    suspend fun checkIdentity(loverId: Long): Lover {
+        val caller = getCaller()
+        if (loverId != caller.id) {
+            throw LoveMapException(HttpStatus.UNAUTHORIZED, ErrorMessage(ErrorCode.Forbidden))
+        }
+        return caller
+    }
+
     suspend fun checkAccessFor(lover: Lover): Lover {
         val caller = getCaller()
         if (isAdmin()) {

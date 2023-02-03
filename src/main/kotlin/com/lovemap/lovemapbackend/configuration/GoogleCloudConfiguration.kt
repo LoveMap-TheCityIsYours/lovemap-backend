@@ -2,6 +2,8 @@ package com.lovemap.lovemapbackend.configuration
 
 import com.google.auth.Credentials
 import com.google.auth.oauth2.ServiceAccountCredentials
+import com.google.firebase.FirebaseApp
+import com.google.firebase.FirebaseOptions
 import com.google.maps.GeoApiContext
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -24,11 +26,20 @@ class GoogleCloudConfiguration(
             .build()
     }
 
-
     @Bean
     fun googleCredentials(): Credentials {
         val inputStream = resourceLoader.getResource("classpath:bucket-writer-key.json").inputStream
         return ServiceAccountCredentials.fromStream(inputStream)
+    }
+
+    @Bean
+    fun firebaseApp(): FirebaseApp {
+        val inputStream = resourceLoader.getResource("classpath:lovemap-firebase-adminsdk.json").inputStream
+        val credentials = ServiceAccountCredentials.fromStream(inputStream)
+        val options = FirebaseOptions.builder()
+            .setCredentials(credentials)
+            .build()
+        return FirebaseApp.initializeApp(options)
     }
 }
 

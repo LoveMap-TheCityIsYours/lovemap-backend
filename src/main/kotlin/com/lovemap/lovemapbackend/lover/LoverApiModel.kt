@@ -149,3 +149,7 @@ data class UpdateLoverRequest(
 
     val publicProfile: Boolean? = null
 )
+
+data class FirebaseTokenRegistration(
+    val token: String
+)

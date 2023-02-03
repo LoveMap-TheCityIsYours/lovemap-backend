@@ -71,7 +71,14 @@ data class Lover(
     var partnerId: Long? = null,
 
     @Column("public_profile")
-    var publicProfile: Boolean = false
+    var publicProfile: Boolean = false,
+
+    @Column("firebase_token")
+    var firebaseToken: String? = null,
+
+    @Column("has_firebase_token")
+    var hasFirebaseToken: Boolean = false,
+
 ) {
     fun toView() = LoverView(
         id = id,
