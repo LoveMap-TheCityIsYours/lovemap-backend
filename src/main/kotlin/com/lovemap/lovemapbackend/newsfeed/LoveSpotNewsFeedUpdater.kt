@@ -1,6 +1,5 @@
 package com.lovemap.lovemapbackend.newsfeed
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem.Type.LOVE_SPOT
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedRepository
 import com.lovemap.lovemapbackend.newsfeed.model.NewsFeedItemConverter
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service
 @Service
 class LoveSpotNewsFeedUpdater(
     private val newsFeedItemConverter: NewsFeedItemConverter,
-    private val objectMapper: ObjectMapper,
     private val newsFeedService: NewsFeedService,
     private val newsFeedRepository: NewsFeedRepository
 ) {
@@ -28,9 +26,12 @@ class LoveSpotNewsFeedUpdater(
                     .map { newsFeedItemConverter.dtoFromItem(it) }
                     .toList().forEach { newsFeedDto ->
                         if (newsFeedDto.newsFeedData.loveSpotId() == loveSpotId) {
-                            val dtoUpdate = newsFeedDto.copy(country = country)
-                            logger.info { "Updating Country '$dtoUpdate'" }
-                            newsFeedRepository.save(dtoUpdate.toNewsFeedItem(objectMapper))
+                            newsFeedDto.id?.let { newsFeedRepository.findById(newsFeedDto.id) }
+                                ?.let { newsFeedItem ->
+                                    logger.info { "Updating Country '$newsFeedItem'" }
+                                    newsFeedItem.country = country
+                                    newsFeedRepository.save(newsFeedItem)
+                                }
                         }
                     }
                 newsFeedService.reloadCache()
