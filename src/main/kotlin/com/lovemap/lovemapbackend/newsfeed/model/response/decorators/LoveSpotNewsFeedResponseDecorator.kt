@@ -23,8 +23,7 @@ class LoveSpotNewsFeedResponseDecorator : TypeBasedNewsFeedResponseDecorator {
                     addedBy = newsFeedData.addedBy,
                     name = newsFeedData.name,
                     description = newsFeedData.description,
-                    type = newsFeedData.type,
-                    country = newsFeedData.country
+                    type = newsFeedData.type
                 )
             )
         } else {

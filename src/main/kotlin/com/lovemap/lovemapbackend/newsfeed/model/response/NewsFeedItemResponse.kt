@@ -50,8 +50,7 @@ data class LoveSpotNewsFeedResponse(
     val addedBy: Long,
     val name: String,
     val description: String,
-    val type: LoveSpot.Type,
-    val country: String?
+    val type: LoveSpot.Type
 )
 
 data class LoveNewsFeedResponse(

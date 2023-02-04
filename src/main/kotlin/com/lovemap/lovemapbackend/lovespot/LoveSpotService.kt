@@ -6,6 +6,7 @@ import com.javadocmd.simplelatlng.util.LengthUnit
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.geolocation.GeoLocationService
 import com.lovemap.lovemapbackend.lover.ranking.LoverPointService
+import com.lovemap.lovemapbackend.newsfeed.LoveSpotNewsFeedUpdater
 import com.lovemap.lovemapbackend.utils.AsyncTaskService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
@@ -29,6 +30,7 @@ class LoveSpotService(
     private val geoLocationService: GeoLocationService,
     private val asyncTaskService: AsyncTaskService,
     private val cachedLoveSpotService: CachedLoveSpotService,
+    private val loveSpotNewsFeedUpdater: LoveSpotNewsFeedUpdater,
     private val repository: LoveSpotRepository
 ) {
 
@@ -45,7 +47,7 @@ class LoveSpotService(
 
         if (loveSpot.geoLocationId == null) {
             asyncTaskService.runAsync {
-                setGeoLocation(loveSpot)
+                setGeoLocation(loveSpot, true)
             }
         } else {
             cachedLoveSpotService.put(loveSpot)
@@ -96,12 +98,17 @@ class LoveSpotService(
         }
     }
 
-    private suspend fun setGeoLocation(loveSpot: LoveSpot) {
+    private suspend fun setGeoLocation(loveSpot: LoveSpot, updateNewsFeed: Boolean = false) {
         val geoLocation = geoLocationService.decodeLocationInfo(loveSpot)
         geoLocation?.let {
             loveSpot.geoLocationId = geoLocation.id
             repository.save(loveSpot)
             cachedLoveSpotService.put(loveSpot)
+            if (updateNewsFeed) {
+                geoLocation.country?.let {
+                    loveSpotNewsFeedUpdater.updateLoveSpotCountry(loveSpot.id, it)
+                }
+            }
         }
     }
 
