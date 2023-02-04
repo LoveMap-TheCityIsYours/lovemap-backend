@@ -101,6 +101,7 @@ class LoveSpotService(
         geoLocation?.let {
             loveSpot.geoLocationId = geoLocation.id
             repository.save(loveSpot)
+            cachedLoveSpotService.put(loveSpot)
         }
     }
 
