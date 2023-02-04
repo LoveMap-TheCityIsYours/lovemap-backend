@@ -5,12 +5,12 @@ import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 
 interface GeoLocationRepository : CoroutineCrudRepository<GeoLocation, Long> {
-    suspend fun findByPostalCodeAndCityAndCountyAndCountry(
+    fun findByPostalCodeAndCityAndCountyAndCountry(
         postalCode: String?,
         city: String?,
         county: String?,
         country: String?
-    ): GeoLocation?
+    ): Flow<GeoLocation>
 
     // TODO: use projections: https://docs.spring.io/spring-data/r2dbc/docs/current/reference/html/#projections
     fun findByCountry(country: String): Flow<GeoLocation>

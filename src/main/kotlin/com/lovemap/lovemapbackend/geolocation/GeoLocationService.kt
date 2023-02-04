@@ -7,6 +7,7 @@ import com.google.maps.model.LatLng
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.springframework.core.env.Environment
@@ -68,7 +69,7 @@ class GeoLocationService(
             geoLocation.city,
             geoLocation.county,
             geoLocation.country
-        )
+        ).firstOrNull()
         return savedLocation ?: repository.save(geoLocation)
     }
 
