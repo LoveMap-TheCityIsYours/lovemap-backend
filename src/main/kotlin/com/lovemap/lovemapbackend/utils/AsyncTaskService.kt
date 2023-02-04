@@ -11,7 +11,7 @@ class AsyncTaskService {
     fun runBlockingAsync(runnable: Runnable) {
         logger.info { "Entering async context" }
         CoroutineScope(Dispatchers.IO).async {
-            logger.info { "Executing async tasks" }
+            logger.info { "Executing async task" }
             runnable.run()
         }
     }
@@ -19,7 +19,7 @@ class AsyncTaskService {
     suspend fun <T> runAsync(function: suspend () -> T): Deferred<T> {
         logger.info { "Entering async context" }
         return CoroutineScope(Dispatchers.IO).async {
-            logger.info { "Executing async tasks" }
+            logger.info { "Executing async task" }
             function.invoke()
         }
     }

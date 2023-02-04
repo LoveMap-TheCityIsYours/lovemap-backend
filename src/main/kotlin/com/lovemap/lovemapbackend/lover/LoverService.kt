@@ -2,6 +2,7 @@ package com.lovemap.lovemapbackend.lover
 
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.newsfeed.LoverNewsFeedUpdater
+import com.lovemap.lovemapbackend.tracking.UserTrackingService
 import com.lovemap.lovemapbackend.utils.ErrorCode.*
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException
@@ -26,6 +27,7 @@ class LoverService(
     private val converter: LoverConverter,
     private val loverNewsFeedUpdater: LoverNewsFeedUpdater,
     private val cachedLoverService: CachedLoverService,
+    private val userTrackingService: UserTrackingService,
     private val repository: LoverRepository,
 ) {
     companion object {
@@ -209,6 +211,7 @@ class LoverService(
         val caller = authorizationService.checkIdentity(loverId)
         caller.firebaseToken = token.token
         caller.hasFirebaseToken = true
+        userTrackingService.saveFirebaseToken(loverId, token.token)
         return converter.toResponse(repository.save(caller))
     }
 }

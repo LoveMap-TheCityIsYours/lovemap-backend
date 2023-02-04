@@ -20,9 +20,6 @@ import java.time.ZonedDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-private const val REFRESH_RATE_MINUTES: Long = 15
-private const val INITIAL_DELAY_MINUTES: Long = 5
-
 @Component
 class ScheduledNewsFeedGenerator(
     private val newsFeedProviders: List<NewsFeedProvider>,
@@ -32,6 +29,11 @@ class ScheduledNewsFeedGenerator(
     private val generationRepository: NewsFeedGenerationRepository
 ) {
     private val logger = KotlinLogging.logger {}
+
+    companion object {
+        private const val INITIAL_DELAY_MINUTES: Long = 5
+        private const val REFRESH_RATE_MINUTES: Long = 15
+    }
 
     @Scheduled(initialDelay = INITIAL_DELAY_MINUTES, fixedRate = REFRESH_RATE_MINUTES, timeUnit = TimeUnit.MINUTES)
     fun generateNewsFeedBatch() {

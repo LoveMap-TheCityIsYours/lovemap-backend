@@ -10,18 +10,19 @@ import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
-private const val REFRESH_RATE_MINUTES: Long = 30
-private const val INITIAL_DELAY_MINUTES: Long = 10
-private const val HOF_USERS = 1_000
-
 @Component
 class ScheduledHallOfFameCalculator(
     private val loverRepository: LoverRepository
 ) {
     private val logger = KotlinLogging.logger {}
 
-    //    @Scheduled(fixedRate = REFRESH_RATE_MINUTES, timeUnit = TimeUnit.MINUTES)
-    @Scheduled(fixedRate = REFRESH_RATE_MINUTES, initialDelay = INITIAL_DELAY_MINUTES, timeUnit = TimeUnit.MINUTES)
+    companion object {
+        private const val INITIAL_DELAY_MINUTES: Long = 10
+        private const val REFRESH_RATE_MINUTES: Long = 30
+        private const val HOF_USERS = 1_000
+    }
+
+    @Scheduled(initialDelay = INITIAL_DELAY_MINUTES, fixedRate = REFRESH_RATE_MINUTES, timeUnit = TimeUnit.MINUTES)
     fun recalculateHofPositions() {
         mono {
             val start = System.currentTimeMillis()

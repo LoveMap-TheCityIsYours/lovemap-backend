@@ -79,4 +79,21 @@ class UserTrackingService(
         }
     }
 
+    suspend fun saveFirebaseToken(loverId: Long, token: String) {
+        runCatching {
+            val query = Query(Criteria.where("id").`is`(loverId))
+            val update = Update().set("firebaseToken", token)
+            mongoTemplate.upsert(query, update, UserTrack::class.java).subscribe()
+        }
+
+    }
+
+    fun updateActivityNotification(loverId: Long, instant: Instant) {
+        runCatching {
+            val query = Query(Criteria.where("id").`is`(loverId))
+            val update = Update().set("lastActivityNotificationAt", instant)
+            mongoTemplate.upsert(query, update, UserTrack::class.java).subscribe()
+        }
+    }
+
 }
