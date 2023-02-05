@@ -21,18 +21,18 @@ class CachedLoverService(
         .build()
 
     suspend fun getCachedLoverById(loverId: Long): LoverViewWithoutRelationResponse? {
-        logger.info { "Getting Lover from Cache '$loverId'." }
+        logger.debug { "Getting Lover from Cache '$loverId'." }
         return loverCache.getIfPresent(loverId)?.let { lover ->
-            logger.info { "Lover found in Cache '$loverId'." }
+            logger.debug { "Lover found in Cache '$loverId'." }
             LoverViewWithoutRelationResponse.of(lover)
         } ?: run {
-            logger.info { "Lover not found in Cache '$loverId'. Getting from DB." }
+            logger.debug { "Lover not found in Cache '$loverId'. Getting from DB." }
             val lover = loverRepository.findById(loverId)
             lover?.let {
-                logger.info { "Lover found in DB '$loverId'. Inserting into Cache." }
+                logger.debug { "Lover found in DB '$loverId'. Inserting into Cache." }
                 loverCache.put(loverId, lover)
             } ?: run {
-                logger.info { "Lover not found in DB '$loverId'. Returning null." }
+                logger.debug { "Lover not found in DB '$loverId'. Returning null." }
             }
             lover
         }?.let {
@@ -46,6 +46,6 @@ class CachedLoverService(
 
     fun put(lover: Lover) {
         loverCache.put(lover.id, lover)
-        logger.info { "Lover was put into the Cache '${lover.id}'." }
+        logger.debug { "Lover was put into the Cache '${lover.id}'." }
     }
 }

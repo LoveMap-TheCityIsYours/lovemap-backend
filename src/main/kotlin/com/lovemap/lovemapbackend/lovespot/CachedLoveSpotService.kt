@@ -30,37 +30,37 @@ class CachedLoveSpotService(
 
     suspend fun put(loveSpot: LoveSpot) {
         loveSpotCache.put(loveSpot.id, loveSpot)
-        logger.info { "LoveSpot was put into the cache '${loveSpot.id}'" }
+        logger.debug { "LoveSpot was put into the cache '${loveSpot.id}'" }
         val country = getCountryByLoveSpotId(loveSpot.id)
-        logger.info { "Country was put into the cache '$country'." }
+        logger.debug { "Country was put into the cache '$country'." }
     }
 
     suspend fun findById(loveSpotId: Long): LoveSpot? {
-        logger.info { "Getting LoveSpot from Cache '$loveSpotId'." }
+        logger.debug { "Getting LoveSpot from Cache '$loveSpotId'." }
         return loveSpotCache.getIfPresent(loveSpotId)?.let { loveSpot ->
-            logger.info { "LoveSpot found in Cache '$loveSpotId'." }
+            logger.debug { "LoveSpot found in Cache '$loveSpotId'." }
             loveSpot
         } ?: run {
-            logger.info { "LoveSpot not found in Cache '$loveSpotId'. Getting from DB." }
+            logger.debug { "LoveSpot not found in Cache '$loveSpotId'. Getting from DB." }
             val loveSpot = loveSpotRepository.findById(loveSpotId)
             loveSpot?.let {
-                logger.info { "LoveSpot found in DB '$loveSpotId'. Inserting into Cache." }
+                logger.debug { "LoveSpot found in DB '$loveSpotId'. Inserting into Cache." }
                 loveSpotCache.put(loveSpotId, loveSpot)
             } ?: run {
-                logger.info { "LoveSpot not found in DB '$loveSpotId'. Returning null." }
+                logger.debug { "LoveSpot not found in DB '$loveSpotId'. Returning null." }
             }
             loveSpot
         }
     }
 
     suspend fun getCountryByLoveSpotId(loveSpotId: Long): String {
-        logger.info { "Getting Country for LoveSpot from Cache '$loveSpotId'." }
+        logger.debug { "Getting Country for LoveSpot from Cache '$loveSpotId'." }
         val cachedCountry = loveSpotCountryCache.getIfPresent(loveSpotId)
         return if (cachedCountry == null) {
-            logger.info { "Country for LoveSpot not found in Cache '$loveSpotId'. Getting from DB." }
+            logger.debug { "Country for LoveSpot not found in Cache '$loveSpotId'. Getting from DB." }
             getCountryFromGeoLocationDb(loveSpotId)
         } else {
-            logger.info { "Found Country for LoveSpot in Cache: '$cachedCountry', '$loveSpotId'." }
+            logger.debug { "Found Country for LoveSpot in Cache: '$cachedCountry', '$loveSpotId'." }
             if (cachedCountry == GeoLocation.GLOBAL_LOCATION) {
                 getCountryFromGeoLocationDb(loveSpotId)
             } else {
@@ -75,7 +75,7 @@ class CachedLoveSpotService(
             ?.let { geoLocationService.findGeoLocationById(it) }
             ?.country
             ?.let {
-                logger.info { "Resolved Country for LoveSpot from DB: '$it', '$loveSpotId'. Inserting into Cache." }
+                logger.debug { "Resolved Country for LoveSpot from DB: '$it', '$loveSpotId'. Inserting into Cache." }
                 loveSpotCountryCache.put(loveSpotId, it)
                 it
             }
