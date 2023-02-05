@@ -74,18 +74,19 @@ class LoveSpotPhotoService(
 
     suspend fun uploadToSpot(loveSpotId: Long, fileParts: Flow<FilePart>) {
         val caller = authorizationService.getCaller()
-        loveSpotService.authorizedGetById(loveSpotId)
+        val loveSpot = loveSpotService.authorizedGetById(loveSpotId)
         val photos: List<PhotoDto> = collectPhotoObjects(fileParts)
         val deferredList: List<Deferred<LoveSpotPhoto>> = persistAllAsync(photos, loveSpotId, null, caller)
-        loveSpotPhotoStatsService.awaitAllAndUpdateStats(deferredList, caller, loveSpotId, null)
+        loveSpotPhotoStatsService.awaitAllAndUpdateStats(deferredList, caller, loveSpot, null)
     }
 
     suspend fun uploadToReview(loveSpotId: Long, reviewId: Long, fileParts: Flow<FilePart>) {
         val caller = authorizationService.getCaller()
         loveSpotReviewService.authorizedGetById(loveSpotId, reviewId)
+        val loveSpot = loveSpotService.getById(loveSpotId)
         val photos: List<PhotoDto> = collectPhotoObjects(fileParts)
         val deferredList: List<Deferred<LoveSpotPhoto>> = persistAllAsync(photos, loveSpotId, reviewId, caller)
-        loveSpotPhotoStatsService.awaitAllAndUpdateStats(deferredList, caller, loveSpotId, reviewId)
+        loveSpotPhotoStatsService.awaitAllAndUpdateStats(deferredList, caller, loveSpot, reviewId)
     }
 
     private suspend fun collectPhotoObjects(fileParts: Flow<FilePart>): List<PhotoDto> {

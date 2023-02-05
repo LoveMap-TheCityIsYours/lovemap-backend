@@ -8,6 +8,8 @@ import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotStatisticsService
 import com.lovemap.lovemapbackend.newsfeed.NewsFeedDeletionService
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem
+import com.lovemap.lovemapbackend.notification.NotificationService
+import com.lovemap.lovemapbackend.notification.NotificationType.NEW_LOVE_SPOT_REVIEW
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException
@@ -27,7 +29,8 @@ class LoveSpotReviewService(
     private val loveSpotStatService: LoveSpotStatisticsService,
     private val loverPointService: LoverPointService,
     private val repository: LoveSpotReviewRepository,
-    private val newsFeedDeletionService: NewsFeedDeletionService
+    private val newsFeedDeletionService: NewsFeedDeletionService,
+    private val notificationService: NotificationService,
 ) {
 
     fun findAllByLoveSpotIdIn(loveSpotIds: List<Long>): Flow<LoveSpotReview> {
@@ -99,6 +102,7 @@ class LoveSpotReviewService(
         val reviews = repository.findAllByLoveSpotIdIn(listOf(request.loveSpotId)).toList()
         val loveSpot = loveSpotStatService.recalculateLoveSpotReviews(request.loveSpotId, reviews)
         loverPointService.addPointsForReview(review, loveSpot)
+        notificationService.sendLoveSpotNotification(loveSpot, NEW_LOVE_SPOT_REVIEW)
         return loveSpot
     }
 

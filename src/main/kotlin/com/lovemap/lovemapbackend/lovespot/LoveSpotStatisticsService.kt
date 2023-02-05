@@ -96,8 +96,7 @@ class LoveSpotStatisticsService(
         return loveSpotService.save(loveSpot)
     }
 
-    suspend fun updatePhotoStats(loveSpotId: Long, photoCount: Int): LoveSpot {
-        val loveSpot = loveSpotService.getById(loveSpotId)
+    suspend fun updatePhotoStats(loveSpot: LoveSpot, photoCount: Int): LoveSpot {
         loveSpot.numberOfPhotos += photoCount
         loveSpot.lastPhotoAddedAt = Timestamp.from(Instant.now())
         return loveSpotService.save(loveSpot)

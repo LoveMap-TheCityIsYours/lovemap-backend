@@ -2,8 +2,11 @@ package com.lovemap.lovemapbackend.lovespot.photo
 
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.ranking.LoverPointService
+import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.lovespot.LoveSpotStatisticsService
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReviewService
+import com.lovemap.lovemapbackend.notification.NotificationService
+import com.lovemap.lovemapbackend.notification.NotificationType.NEW_LOVE_SPOT_PHOTO
 import com.lovemap.lovemapbackend.utils.AsyncTaskService
 import kotlinx.coroutines.Deferred
 import mu.KotlinLogging
@@ -15,6 +18,7 @@ class LoveSpotPhotoStatsService(
     private val repository: LoveSpotPhotoRepository,
     private val loveSpotStatisticsService: LoveSpotStatisticsService,
     private val loverPointService: LoverPointService,
+    private val notificationService: NotificationService,
     private val loveSpotReviewService: LoveSpotReviewService
 ) {
     private val logger = KotlinLogging.logger {}
@@ -22,19 +26,20 @@ class LoveSpotPhotoStatsService(
     suspend fun awaitAllAndUpdateStats(
         deferredList: List<Deferred<LoveSpotPhoto>>,
         caller: Lover,
-        loveSpotId: Long,
+        loveSpot: LoveSpot,
         reviewId: Long?
     ) {
         asyncTaskService.runAsync {
             val uploadedPhotos: List<LoveSpotPhoto> = deferredList.map { it.await() }
             logger.info { "Updating statistics for newly added photos." }
             val photoCount = uploadedPhotos.size
-            loveSpotStatisticsService.updatePhotoStats(loveSpotId, photoCount)
+            loveSpotStatisticsService.updatePhotoStats(loveSpot, photoCount)
             loverPointService.addPointsForPhotosAdded(caller.id, photoCount)
             reviewId?.let {
                 val reviewPhotoCount = repository.countByLoveSpotReviewId(reviewId).toInt()
                 loveSpotReviewService.updatePhotoCounter(reviewId, reviewPhotoCount)
             }
+            notificationService.sendLoveSpotNotification(loveSpot, NEW_LOVE_SPOT_PHOTO)
         }
     }
 }

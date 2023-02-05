@@ -7,6 +7,9 @@ import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.geolocation.GeoLocationService
 import com.lovemap.lovemapbackend.lover.ranking.LoverPointService
 import com.lovemap.lovemapbackend.newsfeed.LoveSpotNewsFeedUpdater
+import com.lovemap.lovemapbackend.notification.NotificationService
+import com.lovemap.lovemapbackend.notification.NotificationType
+import com.lovemap.lovemapbackend.notification.NotificationType.NEW_LOVE_SPOT
 import com.lovemap.lovemapbackend.utils.AsyncTaskService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
@@ -31,6 +34,7 @@ class LoveSpotService(
     private val asyncTaskService: AsyncTaskService,
     private val cachedLoveSpotService: CachedLoveSpotService,
     private val loveSpotNewsFeedUpdater: LoveSpotNewsFeedUpdater,
+    private val notificationService: NotificationService,
     private val repository: LoveSpotRepository
 ) {
 
@@ -81,6 +85,7 @@ class LoveSpotService(
             loverPointService.addPointsForSpotAdded(savedSpot)
             setGeoLocation(loveSpot)
         }
+        notificationService.sendLoveSpotNotification(savedSpot, NEW_LOVE_SPOT)
         return savedSpot
     }
 
