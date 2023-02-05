@@ -64,7 +64,7 @@ class PublicLoverPostProcessor : NewsFeedPostProcessor<Context> {
         next: NewsFeedItemDto,
         context: Context
     ): NewsFeedItemDto {
-        logger.info { "Merging 2 Lovers into 1 MultiLover" }
+        logger.debug { "Merging 2 Lovers into 1 MultiLover" }
         val currentLover = current.newsFeedData as LoverNewsFeedData
         val currentData = currentLover.copy(
             userName = context.publicLovers[current.referenceId] ?: currentLover.userName
@@ -84,7 +84,7 @@ class PublicLoverPostProcessor : NewsFeedPostProcessor<Context> {
         next: NewsFeedItemDto,
         context: Context
     ): NewsFeedItemDto {
-        logger.info { "Merging Lover into MultiLover" }
+        logger.debug { "Merging Lover into MultiLover" }
         val currentData = current.newsFeedData as MultiLoverNewsFeedData
         val nextLover = next.newsFeedData as LoverNewsFeedData
         val nextData = nextLover.copy(

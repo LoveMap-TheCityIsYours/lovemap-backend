@@ -71,7 +71,7 @@ class PrivateLoverPostProcessor : NewsFeedPostProcessor<Context> {
         next: NewsFeedItemDto,
         context: Context
     ): NewsFeedItemDto {
-        logger.info { "Merging 2 Lovers into 1 PrivateLovers" }
+        logger.debug { "Merging 2 Lovers into 1 PrivateLovers" }
         val currentLover = current.newsFeedData as LoverNewsFeedData
         val currentData = currentLover.copy(
             userName = context.privateLovers[current.referenceId] ?: currentLover.userName
@@ -91,7 +91,7 @@ class PrivateLoverPostProcessor : NewsFeedPostProcessor<Context> {
         next: NewsFeedItemDto,
         context: Context
     ): NewsFeedItemDto {
-        logger.info { "Merging Lover into PrivateLovers" }
+        logger.debug { "Merging Lover into PrivateLovers" }
         val currentData = current.newsFeedData as PrivateLoversNewsFeedData
         val nextLover = next.newsFeedData as LoverNewsFeedData
         val nextData = nextLover.copy(
@@ -109,7 +109,7 @@ class PrivateLoverPostProcessor : NewsFeedPostProcessor<Context> {
         current: NewsFeedItemDto,
         context: Context
     ): NewsFeedItemDto {
-        logger.info { "Initializing PrivateLovers with current item" }
+        logger.debug { "Initializing PrivateLovers with current item" }
         val currentLover = current.newsFeedData as LoverNewsFeedData
         val currentData = currentLover.copy(
             userName = context.privateLovers[current.referenceId] ?: currentLover.userName

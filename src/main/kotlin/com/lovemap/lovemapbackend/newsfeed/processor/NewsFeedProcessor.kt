@@ -26,30 +26,6 @@ class NewsFeedProcessor(
     private val limitLovers = 200
     private val limitTotal = 300
 
-    @Deprecated("Will be removed when new app version 74 is distributed well enough")
-    suspend fun getUnprocessedFeed(): List<NewsFeedItemDto> {
-        logger.info { "Starting NewsFeed processing v1" }
-
-        val loversFeed: Map<Long, NewsFeedItemDto> = fetchOnlyLoversFeed()
-        logger.info { "Fetched Lover NewsFeedItems: ${loversFeed.size}" }
-
-        val publicLoverIds: Map<Long, String> = filterPublicLoversFromIds(loversFeed.keys)
-        logger.info { "Fetched Public Lovers: ${publicLoverIds.size}" }
-
-        val publicLoversFeed: Map<Long, NewsFeedItemDto> =
-            loversFeed.filter { publicLoverIds.contains(it.key) }
-
-        val notLoversFeed = fetchNotLoversFeed()
-        logger.info { "Fetched Not-Lover NewsFeedItems: ${notLoversFeed.size}" }
-
-        val mergedFeed: TreeSet<NewsFeedItemDto> =
-            notLoversFeed.apply { addAll(publicLoversFeed.values) }
-
-        logger.info { "Merged Not-Lover + Public Lover NewsFeedItems: ${mergedFeed.size}" }
-
-        return mergedFeed.toList().take(limitTotal)
-    }
-
     suspend fun getProcessedFeed(): List<NewsFeedItemDto> {
         val start = System.currentTimeMillis()
         logger.info { "Starting NewsFeed processing v2" }

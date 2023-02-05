@@ -23,7 +23,6 @@ class NewsFeedService(
 ) {
     private val logger = KotlinLogging.logger {}
     private var cacheFilled = AtomicBoolean(false)
-    private val feedCache = CopyOnWriteArrayList<NewsFeedItemDto>()
     private val processedFeedCache = CopyOnWriteArrayList<NewsFeedItemDto>()
 
     suspend fun reloadCache() {
@@ -59,16 +58,6 @@ class NewsFeedService(
         }.map { newsFeedItemConverter.dtoToResponse(it) }
     }
 
-    suspend fun getNewsFeedPage(page: Int, size: Int): List<NewsFeedItemResponse> {
-        if (!cacheFilled.getAndSet(true)) {
-            fillCacheFromDatabase()
-        }
-        validatorService.validatePageRequest(page, size, feedCache.size)
-        val pageItems = feedCache.subList(page * size, min(page * size + size, feedCache.size))
-        logger.info { "Returning unprocessed page with size: ${pageItems.size}" }
-        return pageItems.map { newsFeedItemConverter.dtoToResponse(it) }
-    }
-
     suspend fun getProcessedNewsFeedPage(page: Int, size: Int): List<NewsFeedItemResponse> {
         if (!cacheFilled.getAndSet(true)) {
             fillCacheFromDatabase()
@@ -83,10 +72,6 @@ class NewsFeedService(
         logger.info { "Updating NewsFeed Cache" }
         cacheFilled.set(true)
 
-        val unprocessedFeed = newsFeedProcessor.getUnprocessedFeed()
-        feedCache.clear()
-        feedCache.addAll(unprocessedFeed)
-
         val processedFeed = newsFeedProcessor.getProcessedFeed()
         processedFeedCache.clear()
         processedFeedCache.addAll(processedFeed)
@@ -95,7 +80,6 @@ class NewsFeedService(
     }
 
     fun removeFromCache(type: NewsFeedItemDto.Type, referenceId: Long) {
-        feedCache.removeIf { it.referenceId == referenceId && it.type == type }
         processedFeedCache.removeIf { it.referenceId == referenceId && it.type == type }
     }
 }
