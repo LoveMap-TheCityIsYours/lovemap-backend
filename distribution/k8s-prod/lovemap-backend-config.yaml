@@ -8,6 +8,8 @@ spec:
     enable: true
     sampleRate: 1
   healthCheck:
+    healthyThreshold: 1
+    unhealthyThreshold: 5
     checkIntervalSec: 15
     port: 8090
     type: HTTP
