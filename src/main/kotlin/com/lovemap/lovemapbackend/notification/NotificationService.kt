@@ -31,14 +31,18 @@ class NotificationService(
 
                 val loverIds = usersToNotify.map { it.loverId }
 
-                val multicastMessage = MulticastMessage.builder()
-                    .addAllTokens(usersToNotify.mapNotNull { it.firebaseToken })
-                    .putData(NOTIFICATION_TYPE, type.name)
-                    .putData(LOVE_SPOT_ID, loveSpot.id.toString())
-                    .build()
+                logger.info { "Preparing LoveSpot notifications '$type' for lovers '$loverIds'" }
 
-                FirebaseMessaging.getInstance(firebaseApp).sendMulticast(multicastMessage)
-                logger.info { "LoveSpot notification '$type' sent to lovers '$loverIds'" }
+                if (loverIds.isNotEmpty()) {
+                    val multicastMessage = MulticastMessage.builder()
+                        .addAllTokens(usersToNotify.mapNotNull { it.firebaseToken })
+                        .putData(NOTIFICATION_TYPE, type.name)
+                        .putData(LOVE_SPOT_ID, loveSpot.id.toString())
+                        .build()
+
+                    FirebaseMessaging.getInstance(firebaseApp).sendMulticast(multicastMessage)
+                    logger.info { "LoveSpot notification '$type' sent to lovers '$loverIds'" }
+                }
 
             }.onFailure { e ->
                 logger.error(e) { "Failed to send LoveSpot notification '$type' to lovers" }
@@ -49,19 +53,23 @@ class NotificationService(
     fun sendInactivityNotifications(usersToNotify: List<UserTrack>) {
         asyncTaskService.runBlockingAsync {
             val loverIds = usersToNotify.map { it.loverId }
-            runCatching {
+            logger.info { "Preparing inactivity notifications for lovers '$loverIds'" }
 
-                val multicastMessage = MulticastMessage.builder()
-                    .addAllTokens(usersToNotify.mapNotNull { it.firebaseToken })
-                    .putData(NOTIFICATION_TYPE, NotificationType.COME_BACK_PLEASE.name)
-                    .build()
-                FirebaseMessaging.getInstance(firebaseApp).sendMulticast(multicastMessage)
-                logger.info { "Inactivity notification sent to lovers '$loverIds'" }
+            if (loverIds.isNotEmpty()) {
+                runCatching {
 
-            }.onSuccess {
-                userTrackingService.updateActivityNotifications(loverIds, Instant.now())
-            }.onFailure { e ->
-                logger.error(e) { "Failed to send inactivity notification to lovers" }
+                    val multicastMessage = MulticastMessage.builder()
+                        .addAllTokens(usersToNotify.mapNotNull { it.firebaseToken })
+                        .putData(NOTIFICATION_TYPE, NotificationType.COME_BACK_PLEASE.name)
+                        .build()
+                    FirebaseMessaging.getInstance(firebaseApp).sendMulticast(multicastMessage)
+                    logger.info { "Inactivity notification sent to lovers '$loverIds'" }
+
+                }.onSuccess {
+                    userTrackingService.updateActivityNotifications(loverIds, Instant.now())
+                }.onFailure { e ->
+                    logger.error(e) { "Failed to send inactivity notification to lovers" }
+                }
             }
         }
     }
