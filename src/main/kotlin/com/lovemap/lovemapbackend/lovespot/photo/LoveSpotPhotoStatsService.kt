@@ -24,14 +24,14 @@ class LoveSpotPhotoStatsService(
     private val logger = KotlinLogging.logger {}
 
     suspend fun awaitAllAndUpdateStats(
-        deferredList: List<Deferred<LoveSpotPhoto>>,
+        deferredList: Deferred<List<LoveSpotPhoto>>,
         caller: Lover,
         loveSpot: LoveSpot,
         reviewId: Long?
     ) {
         asyncTaskService.runAsync {
             runCatching {
-                val uploadedPhotos: List<LoveSpotPhoto> = deferredList.map { it.await() }
+                val uploadedPhotos: List<LoveSpotPhoto> = deferredList.await()
                 logger.info { "Updating statistics for newly added photos." }
                 val photoCount = uploadedPhotos.size
                 loveSpotStatisticsService.updatePhotoStats(loveSpot, photoCount)

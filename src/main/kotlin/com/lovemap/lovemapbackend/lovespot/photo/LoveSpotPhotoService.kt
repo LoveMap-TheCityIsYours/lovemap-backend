@@ -76,7 +76,7 @@ class LoveSpotPhotoService(
         val caller = authorizationService.getCaller()
         val loveSpot = loveSpotService.authorizedGetById(loveSpotId)
         val photos: List<PhotoDto> = collectPhotoObjects(fileParts)
-        val deferredList: List<Deferred<LoveSpotPhoto>> = persistAllAsync(photos, loveSpotId, null, caller)
+        val deferredList: Deferred<List<LoveSpotPhoto>> = persistAllAsync(photos, loveSpotId, null, caller)
         loveSpotPhotoStatsService.awaitAllAndUpdateStats(deferredList, caller, loveSpot, null)
     }
 
@@ -85,7 +85,7 @@ class LoveSpotPhotoService(
         loveSpotReviewService.authorizedGetById(loveSpotId, reviewId)
         val loveSpot = loveSpotService.getById(loveSpotId)
         val photos: List<PhotoDto> = collectPhotoObjects(fileParts)
-        val deferredList: List<Deferred<LoveSpotPhoto>> = persistAllAsync(photos, loveSpotId, reviewId, caller)
+        val deferredList: Deferred<List<LoveSpotPhoto>> = persistAllAsync(photos, loveSpotId, reviewId, caller)
         loveSpotPhotoStatsService.awaitAllAndUpdateStats(deferredList, caller, loveSpot, reviewId)
     }
 
@@ -104,36 +104,37 @@ class LoveSpotPhotoService(
         loveSpotId: Long,
         reviewId: Long?,
         caller: Lover
-    ): List<Deferred<LoveSpotPhoto>> {
+    ): Deferred<List<LoveSpotPhoto>> {
         val uploadedAt = Timestamp.from(Instant.now())
-        val deferredList: List<Deferred<LoveSpotPhoto>> = photos.mapNotNull { photoDto ->
-            persistPhotoAsync(photoDto, loveSpotId, reviewId, caller, uploadedAt)
+        val deferredList: Deferred<List<LoveSpotPhoto>> = asyncTaskService.runAsync {
+            photos.mapNotNull { photoDto ->
+                persistPhoto(photoDto, loveSpotId, reviewId, caller, uploadedAt)
+            }
         }
+
         return deferredList
     }
 
-    private suspend fun persistPhotoAsync(
+    private suspend fun persistPhoto(
         photoDto: PhotoDto,
         loveSpotId: Long,
         reviewId: Long?,
         caller: Lover,
         uploadedAt: Timestamp
-    ): Deferred<LoveSpotPhoto>? {
+    ): LoveSpotPhoto? {
         return runCatching {
-            asyncTaskService.runAsync {
-                val convertedPhoto = converter.convertEncoding(photoDto)
-                val url = photoStore.persist(convertedPhoto)
-                repository.save(
-                    LoveSpotPhoto(
-                        url = url,
-                        loveSpotId = loveSpotId,
-                        loveSpotReviewId = reviewId,
-                        uploadedBy = caller.id,
-                        uploadedAt = uploadedAt,
-                        fileName = photoDto.fileName
-                    )
+            val convertedPhoto = converter.convertEncoding(photoDto)
+            val url = photoStore.persist(convertedPhoto)
+            repository.save(
+                LoveSpotPhoto(
+                    url = url,
+                    loveSpotId = loveSpotId,
+                    loveSpotReviewId = reviewId,
+                    uploadedBy = caller.id,
+                    uploadedAt = uploadedAt,
+                    fileName = photoDto.fileName
                 )
-            }
+            )
         }.onFailure { e ->
             logger.error(e) { "Error occurred during persistPhotoAsync" }
         }.getOrNull()

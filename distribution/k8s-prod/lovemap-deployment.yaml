@@ -25,7 +25,9 @@ spec:
         - env:
             - name: spring_profiles_active
               value: prod
-          image: us-east1-docker.pkg.dev/smackmap/lovemap-docker/lovemap-backend:1.17.4
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=66.0 -XX:+CrashOnOutOfMemoryError"
+          image: us-east1-docker.pkg.dev/smackmap/lovemap-docker/lovemap-backend:1.17.6
           imagePullPolicy: Always
           name: lovemap
           ports:
