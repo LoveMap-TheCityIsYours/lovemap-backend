@@ -7,6 +7,7 @@ import com.lovemap.lovemapbackend.lovespot.photo.like.PhotoLikersDislikersReposi
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.reactor.awaitSingle
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.env.Environment
 import org.springframework.core.io.buffer.DataBufferUtils
@@ -18,9 +19,12 @@ import java.util.*
 @Component
 class LoveSpotPhotoConverter(
     @Value("\${lovemap.lovespot.photos.supportedFormats}") private val supportedFormats: Set<String>,
+    private val photoDownscaler: PhotoDownscaler,
     private val environment: Environment,
     private val photoLikersDislikersRepository: PhotoLikersDislikersRepository
 ) {
+    private val logger = KotlinLogging.logger {}
+
     suspend fun toPhotoResponse(
         loveSpotPhoto: LoveSpotPhoto,
         photoLikersDislikers: PhotoLikersDislikers
@@ -48,7 +52,7 @@ class LoveSpotPhotoConverter(
         return PhotoDto(
             fileName = profile + "_" + UUID.randomUUID().toString() + ".$extension",
             extension = extension,
-            byteArray = toByteArray(filePart)
+            byteArray = toByteArray(filePart, extension)
         )
     }
 
@@ -58,10 +62,19 @@ class LoveSpotPhotoConverter(
         }
     }
 
-    private suspend fun toByteArray(filePart: FilePart): ByteArray {
-        return DataBufferUtils.join(filePart.content())
-            .map { it.asByteBuffer().array() }
+    private suspend fun toByteArray(filePart: FilePart, extension: String): ByteArray {
+        val byteArray = DataBufferUtils.join(filePart.content())
+            .map { it.toByteBuffer().array() }
             .awaitSingle()
+
+        return if (photoDownscaler.supportedFormats().contains(extension)) {
+            val start = System.currentTimeMillis()
+            val scaled = photoDownscaler.scaleDown(byteArray)
+            logger.info { "Scaled down image in ${System.currentTimeMillis() - start}ms." }
+            scaled
+        } else {
+            byteArray
+        }
     }
 
     fun convertEncoding(photoDto: PhotoDto): PhotoDto {

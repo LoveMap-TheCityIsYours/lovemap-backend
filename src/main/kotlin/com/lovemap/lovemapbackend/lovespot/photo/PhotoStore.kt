@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 
 interface PhotoStore {
-    fun persist(convertedPhoto: PhotoDto): String
+    fun persist(photoDto: PhotoDto): String
     fun delete(photo: LoveSpotPhoto)
 }
 
@@ -25,24 +25,24 @@ class GooglePhotoStore(
 ) : PhotoStore {
     private val logger = KotlinLogging.logger {}
 
-    override fun persist(convertedPhoto: PhotoDto): String {
+    override fun persist(photoDto: PhotoDto): String {
         logger.info(
             "Persisting photo '{}' with size {}kB",
-            convertedPhoto.fileName,
-            convertedPhoto.byteArray.size / 1024
+            photoDto.fileName,
+            photoDto.byteArray.size / 1024
         )
         val storage = StorageOptions.newBuilder()
             .setProjectId(googleConfigProperties.projectId)
             .setCredentials(googleCredentials)
             .build().service
-        val blobId = BlobId.of(googleConfigProperties.publicPhotosBucket, convertedPhoto.fileName)
+        val blobId = BlobId.of(googleConfigProperties.publicPhotosBucket, photoDto.fileName)
         val blobInfo = BlobInfo.newBuilder(blobId).build()
 
         // Optional: set a generation-match precondition to avoid potential race
         // conditions and data corruptions. The request returns a 412 error if the
         // preconditions are not met.
         val precondition: Storage.BlobTargetOption =
-            if (storage[googleConfigProperties.publicPhotosBucket, convertedPhoto.fileName] == null) {
+            if (storage[googleConfigProperties.publicPhotosBucket, photoDto.fileName] == null) {
                 // For a target object that does not yet exist, set the DoesNotExist precondition.
                 // This will cause the request to fail if the object is created before the request runs.
                 Storage.BlobTargetOption.doesNotExist()
@@ -54,11 +54,11 @@ class GooglePhotoStore(
             }
 
         return try {
-            val blob = storage.create(blobInfo, convertedPhoto.byteArray, precondition)
-            logger.info("Photo '{}' successfully persisted.", convertedPhoto.fileName)
+            val blob = storage.create(blobInfo, photoDto.byteArray, precondition)
+            logger.info("Photo '{}' successfully persisted.", photoDto.fileName)
             blob.asBlobInfo().mediaLink
         } catch (e: Exception) {
-            logger.error("Failed to persist photo '{}'.", convertedPhoto.fileName, e)
+            logger.error("Failed to persist photo '{}'.", photoDto.fileName, e)
             throw LoveMapException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.ImageUploadFailed)
         }
     }
