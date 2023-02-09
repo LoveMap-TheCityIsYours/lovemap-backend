@@ -67,18 +67,4 @@ class PhotoConverterTest {
         println(originalByteArray.size)
     }
 
-    fun convertToBufferedImage(image: Image): BufferedImage {
-        if (image is BufferedImage) {
-            return image
-        }
-
-        val bufferedImage = BufferedImage(
-            image.getWidth(null), image.getHeight(null),
-            BufferedImage.TYPE_INT_ARGB
-        )
-        val graphics2D = bufferedImage.createGraphics()
-        graphics2D.drawImage(bufferedImage, 0, 0, null)
-        graphics2D.dispose()
-        return bufferedImage
-    }
 }

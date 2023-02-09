@@ -52,7 +52,7 @@ class LoveSpotPhotoConverter(
         return PhotoDto(
             fileName = profile + "_" + UUID.randomUUID().toString() + ".$extension",
             extension = extension,
-            byteArray = toByteArray(filePart, extension)
+            byteArray = toByteArray(filePart)
         )
     }
 
@@ -62,22 +62,21 @@ class LoveSpotPhotoConverter(
         }
     }
 
-    private suspend fun toByteArray(filePart: FilePart, extension: String): ByteArray {
-        val byteArray = DataBufferUtils.join(filePart.content())
+    private suspend fun toByteArray(filePart: FilePart): ByteArray {
+        return DataBufferUtils.join(filePart.content())
             .map { it.toByteBuffer().array() }
             .awaitSingle()
-
-        return if (photoDownscaler.supportedFormats().contains(extension)) {
-            val start = System.currentTimeMillis()
-            val scaled = photoDownscaler.scaleDown(byteArray)
-            logger.info { "Scaled down image in ${System.currentTimeMillis() - start}ms." }
-            scaled
-        } else {
-            byteArray
-        }
     }
 
     fun convertEncoding(photoDto: PhotoDto): PhotoDto {
+        if (photoDownscaler.supportedFormats().contains(photoDto.extension)) {
+            val start = System.currentTimeMillis()
+            val downScaled = photoDto.copy(
+                byteArray = photoDownscaler.scaleDown(photoDto.byteArray)
+            )
+            logger.info { "Scaled down image in ${System.currentTimeMillis() - start}ms." }
+            return downScaled
+        }
         return photoDto
     }
 }
