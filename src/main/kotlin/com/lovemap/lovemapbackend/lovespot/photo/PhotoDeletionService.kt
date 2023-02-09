@@ -51,6 +51,7 @@ class PhotoDeletionService(
             loverPointService.subtractPointsForPhotoDeleted(photo)
             repository.delete(photo)
             loveSpotStatisticsService.decrementNumberOfPhotos(loveSpotId)
+            newsFeedDeletionService.deleteByTypeAndReferenceId(NewsFeedItem.Type.LOVE_SPOT_PHOTO, photo.id)
             asyncTaskService.runAsync {
                 photoStore.delete(photo)
             }
