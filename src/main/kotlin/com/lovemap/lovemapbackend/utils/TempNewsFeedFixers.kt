@@ -19,7 +19,6 @@ import kotlinx.coroutines.reactor.mono
 import mu.KotlinLogging
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
-import org.springframework.stereotype.Component
 import java.time.Duration
 import java.time.Instant
 
@@ -204,6 +203,49 @@ class NewsFeedLoveSpotFixer(
                         .onSuccess { logger.info { "saved $it" } }
                         .getOrNull()
                 }
+
+        }.subscribe()
+    }
+}
+
+
+// disabled
+class NewsFeedPhotoFixer2(
+    private val newsFeedRepository: NewsFeedRepository,
+    private val newsFeedItemConverter: NewsFeedItemConverter,
+    private val objectMapper: ObjectMapper,
+) : ApplicationRunner {
+    private val logger = KotlinLogging.logger { }
+
+    override fun run(args: ApplicationArguments?) {
+        mono {
+            // https://storage.googleapis.com/download/storage/v1/b/lovemap-photos/o/prod_54f30ddd-7c7a-4936-bedc-f85f00de20bb.jpg?generation=1672079343642848&alt=media
+            // https://storage.googleapis.com/download/storage/v1/b/lovemap-photos/o/prod_54f30ddd-7c7a-4936-bedc-f85f00de20bb.jpg?alt=media
+
+            newsFeedRepository.findAllByType(NewsFeedItem.Type.LOVE_SPOT_PHOTO).collect { newsFeedItem ->
+                val newsFeedDto = newsFeedItemConverter.dtoFromItem(newsFeedItem)
+                val photoData = newsFeedDto.newsFeedData as LoveSpotPhotoNewsFeedData
+                if (photoData.url?.contains("generation=") == true) {
+                    val fixedUrl = photoData.url.substringBefore("generation=") + "alt=media"
+                    val fixedPhotoData = photoData.copy(url = fixedUrl)
+                    newsFeedItem.data = objectMapper.writeValueAsString(fixedPhotoData)
+                    val saved = newsFeedRepository.save(newsFeedItem)
+                    logger.info { "Updated $saved" }
+                }
+
+            }
+
+            newsFeedRepository.findAllByType(NewsFeedItem.Type.LOVE_SPOT_PHOTO_LIKE).collect { newsFeedItem ->
+                val newsFeedDto = newsFeedItemConverter.dtoFromItem(newsFeedItem)
+                val likeData = newsFeedDto.newsFeedData as PhotoLikeNewsFeedData
+                if (likeData.url?.contains("generation=") == true) {
+                    val fixedUrl = likeData.url.substringBefore("generation=") + "alt=media"
+                    val fixedLikeData: PhotoLikeNewsFeedData = likeData.copy(url = fixedUrl)
+                    newsFeedItem.data = objectMapper.writeValueAsString(fixedLikeData)
+                    val saved = newsFeedRepository.save(newsFeedItem)
+                    logger.info { "Updated $saved" }
+                }
+            }
 
         }.subscribe()
     }
