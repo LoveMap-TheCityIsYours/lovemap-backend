@@ -106,7 +106,20 @@ class LoveSpotPhotoService(
         caller: Lover
     ): List<Deferred<LoveSpotPhoto>> {
         val uploadedAt = Timestamp.from(Instant.now())
-        val deferredList: List<Deferred<LoveSpotPhoto>> = photos.map { photoDto ->
+        val deferredList: List<Deferred<LoveSpotPhoto>> = photos.mapNotNull { photoDto ->
+            persistPhotoAsync(photoDto, loveSpotId, reviewId, caller, uploadedAt)
+        }
+        return deferredList
+    }
+
+    private suspend fun persistPhotoAsync(
+        photoDto: PhotoDto,
+        loveSpotId: Long,
+        reviewId: Long?,
+        caller: Lover,
+        uploadedAt: Timestamp
+    ): Deferred<LoveSpotPhoto>? {
+        return runCatching {
             asyncTaskService.runAsync {
                 val convertedPhoto = converter.convertEncoding(photoDto)
                 val url = photoStore.persist(convertedPhoto)
@@ -121,8 +134,9 @@ class LoveSpotPhotoService(
                     )
                 )
             }
-        }
-        return deferredList
+        }.onFailure { e ->
+            logger.error(e) { "Error occurred during persistPhotoAsync" }
+        }.getOrNull()
     }
 
     suspend fun getPhotosForSpot(loveSpotId: Long): List<LoveSpotPhotoResponse> {

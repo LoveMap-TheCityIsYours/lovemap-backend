@@ -30,16 +30,20 @@ class LoveSpotPhotoStatsService(
         reviewId: Long?
     ) {
         asyncTaskService.runAsync {
-            val uploadedPhotos: List<LoveSpotPhoto> = deferredList.map { it.await() }
-            logger.info { "Updating statistics for newly added photos." }
-            val photoCount = uploadedPhotos.size
-            loveSpotStatisticsService.updatePhotoStats(loveSpot, photoCount)
-            loverPointService.addPointsForPhotosAdded(caller.id, photoCount)
-            reviewId?.let {
-                val reviewPhotoCount = repository.countByLoveSpotReviewId(reviewId).toInt()
-                loveSpotReviewService.updatePhotoCounter(reviewId, reviewPhotoCount)
+            runCatching {
+                val uploadedPhotos: List<LoveSpotPhoto> = deferredList.map { it.await() }
+                logger.info { "Updating statistics for newly added photos." }
+                val photoCount = uploadedPhotos.size
+                loveSpotStatisticsService.updatePhotoStats(loveSpot, photoCount)
+                loverPointService.addPointsForPhotosAdded(caller.id, photoCount)
+                reviewId?.let {
+                    val reviewPhotoCount = repository.countByLoveSpotReviewId(reviewId).toInt()
+                    loveSpotReviewService.updatePhotoCounter(reviewId, reviewPhotoCount)
+                }
+                notificationService.sendLoveSpotNotification(loveSpot, NEW_LOVE_SPOT_PHOTO)
+            }.onFailure { e ->
+                logger.error(e) { "Error occurred during awaiting photo upload." }
             }
-            notificationService.sendLoveSpotNotification(loveSpot, NEW_LOVE_SPOT_PHOTO)
         }
     }
 }

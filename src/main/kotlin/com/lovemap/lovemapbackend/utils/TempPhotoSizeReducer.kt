@@ -22,7 +22,6 @@ class TempPhotoSizeReducer(
 
     override fun run(args: ApplicationArguments?) {
         mono {
-
             loveSpotPhotoRepository.findAll().collect {
                 if (it.fileName == "missing") {
                     // https://storage.googleapis.com/download/storage/v1/b/lovemap-photos/o/prod_b05cd640-f76e-4728-9e9c-03fadc9bc1c5.jpg?generation=1672079809524106&alt=media
@@ -35,13 +34,14 @@ class TempPhotoSizeReducer(
                     val byteArray = outputStream.toByteArray()
                     val scaled = photoDownscaler.scaleDown(byteArray)
                     photoStore.delete(it)
-                    photoStore.persist(
+                    it.url = photoStore.persist(
                         PhotoDto(
                             fileName = it.fileName,
                             extension = format,
                             byteArray = scaled
                         )
                     )
+                    loveSpotPhotoRepository.save(it)
                 }
             }
 
