@@ -31,7 +31,7 @@ class NotificationService(
 
                 val loverIds = usersToNotify.map { it.loverId }
 
-                logger.info { "Preparing LoveSpot notifications '$type' for lovers '$loverIds'" }
+                logger.info { "Preparing LoveSpot '${loveSpot.id}' notifications '$type' for lovers '$loverIds'" }
 
                 if (loverIds.isNotEmpty()) {
                     val multicastMessage = MulticastMessage.builder()
@@ -41,11 +41,11 @@ class NotificationService(
                         .build()
 
                     FirebaseMessaging.getInstance(firebaseApp).sendMulticast(multicastMessage)
-                    logger.info { "LoveSpot notification '$type' sent to lovers '$loverIds'" }
+                    logger.info { "LoveSpot '${loveSpot.id}' notification '$type' sent to lovers '$loverIds'" }
                 }
 
             }.onFailure { e ->
-                logger.error(e) { "Failed to send LoveSpot notification '$type' to lovers" }
+                logger.error(e) { "Failed to send LoveSpot '${loveSpot.id}' notification '$type' to lovers" }
             }
         }
     }
