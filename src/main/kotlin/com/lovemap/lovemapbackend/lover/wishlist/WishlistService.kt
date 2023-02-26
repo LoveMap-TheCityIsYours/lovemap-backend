@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.toSet
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus.*
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
@@ -28,6 +29,7 @@ class WishlistService(
     private val repository: WishlistItemRepository,
     private val newsFeedDeletionService: NewsFeedDeletionService
 ) {
+    private val logger = KotlinLogging.logger {}
 
     suspend fun getWishList(loverId: Long): List<WishlistResponse> {
         authorizationService.checkAccessFor(loverId)
@@ -108,25 +110,22 @@ class WishlistService(
     }
 
     suspend fun removeFromWishlists(love: Love) {
-        repository.findByLoverIdAndLoveSpotId(love.loverId, love.loveSpotId)?.let {
-            repository.delete(it)
-        }
-        val removedForPartner: Boolean = love.loverPartnerId?.let { loverPartnerId ->
-            repository.findByLoverIdAndLoveSpotId(loverPartnerId, love.loveSpotId)?.let {
+        try {
+            var removals = 0
+            repository.findByLoverIdAndLoveSpotId(love.loverId, love.loveSpotId)?.let {
                 repository.delete(it)
-                true
+                removals++
             }
-        } ?: false
-        updateStatsForRemoval(removedForPartner, love.loveSpotId)
-    }
-
-    private suspend fun updateStatsForRemoval(removedForPartner: Boolean, loveSpotId: Long) {
-        val minusOccurrence = if (removedForPartner) {
-            -2
-        } else {
-            -1
+            love.loverPartnerId?.let { loverPartnerId ->
+                repository.findByLoverIdAndLoveSpotId(loverPartnerId, love.loveSpotId)?.let {
+                    repository.delete(it)
+                    removals++
+                }
+            }
+            loveSpotStatisticsService.changeWishlistOccurrence(love.loveSpotId, -removals)
+        } catch (e: Exception) {
+            logger.error(e) { "Failed to remove from wishlists. ${e.message}" }
         }
-        loveSpotStatisticsService.changeWishlistOccurrence(loveSpotId, minusOccurrence)
     }
 
     suspend fun deleteWishlistItem(loverId: Long, wishlistItemId: Long): List<WishlistResponse> {
@@ -135,7 +134,7 @@ class WishlistService(
             if (wishlistItem.loverId != loverId) {
                 throw LoveMapException(FORBIDDEN, Forbidden)
             }
-            updateStatsForRemoval(false, wishlistItem.loveSpotId)
+            loveSpotStatisticsService.changeWishlistOccurrence(wishlistItem.loveSpotId, -1)
             repository.delete(wishlistItem)
             return getWishList(loverId)
         } ?: throw LoveMapException(NOT_FOUND, WishlistItemNotFound)
