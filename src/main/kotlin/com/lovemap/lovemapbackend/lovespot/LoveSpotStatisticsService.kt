@@ -2,6 +2,7 @@ package com.lovemap.lovemapbackend.lovespot
 
 import com.lovemap.lovemapbackend.love.Love
 import com.lovemap.lovemapbackend.lovespot.review.LoveSpotReview
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
 import java.time.Instant
@@ -11,35 +12,44 @@ import kotlin.math.max
 class LoveSpotStatisticsService(
     private val loveSpotService: LoveSpotService,
 ) {
+    private val logger = KotlinLogging.logger {}
 
     suspend fun recordLoveMaking(newLove: Love, countOfLovesAtSpot: Long): LoveSpot {
         val loveSpot = loveSpotService.getById(newLove.loveSpotId)
-        setLastLoveAtForNew(loveSpot, newLove)
-        setLastActiveAtForNew(loveSpot)
+        setLastLoveAtForNewLove(loveSpot, newLove)
+        setLastActiveAtForNewLove(loveSpot)
         loveSpot.numberOfLoves = countOfLovesAtSpot
         updatePopularity(loveSpot)
         return loveSpotService.save(loveSpot)
     }
 
-    private fun setLastLoveAtForNew(
+    private fun setLastLoveAtForNewLove(
         loveSpot: LoveSpot,
         love: Love
     ) {
         loveSpot.lastLoveAt?.let {
             if (love.happenedAt.toInstant().isAfter(it.toInstant())) {
+                logger.info { "Updating existing lastLoveAt for LoveSpot '${loveSpot.id}'" }
                 loveSpot.lastLoveAt = love.happenedAt
+            } else {
+                logger.info { "Keeping existing lastLoveAt for LoveSpot '${loveSpot.id}'" }
             }
         } ?: run {
+            logger.info { "Setting new lastLoveAt for LoveSpot '${loveSpot.id}'" }
             loveSpot.lastLoveAt = love.happenedAt
         }
     }
 
-    private fun setLastActiveAtForNew(loveSpot: LoveSpot) {
+    private fun setLastActiveAtForNewLove(loveSpot: LoveSpot) {
         loveSpot.lastActiveAt?.let {
             if (loveSpot.lastLoveAt!!.toInstant().isAfter(it.toInstant())) {
+                logger.info { "Updating existing lastActiveAt for LoveSpot '${loveSpot.id}'" }
                 loveSpot.lastActiveAt = loveSpot.lastLoveAt
+            } else {
+                logger.info { "Keeping existing lastActiveAt for LoveSpot '${loveSpot.id}'" }
             }
         } ?: run {
+            logger.info { "Setting new lastActiveAt for LoveSpot '${loveSpot.id}'" }
             loveSpot.lastActiveAt = loveSpot.lastLoveAt
         }
     }
