@@ -8,7 +8,6 @@ import com.lovemap.lovemapbackend.geolocation.GeoLocationService
 import com.lovemap.lovemapbackend.lover.ranking.LoverPointService
 import com.lovemap.lovemapbackend.newsfeed.LoveSpotNewsFeedUpdater
 import com.lovemap.lovemapbackend.notification.NotificationService
-import com.lovemap.lovemapbackend.notification.NotificationType
 import com.lovemap.lovemapbackend.notification.NotificationType.NEW_LOVE_SPOT
 import com.lovemap.lovemapbackend.utils.AsyncTaskService
 import com.lovemap.lovemapbackend.utils.ErrorCode

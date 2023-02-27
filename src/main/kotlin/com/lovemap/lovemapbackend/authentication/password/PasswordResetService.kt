@@ -5,8 +5,8 @@ import com.lovemap.lovemapbackend.authentication.NewPasswordRequest
 import com.lovemap.lovemapbackend.authentication.ResetPasswordRequest
 import com.lovemap.lovemapbackend.authentication.lover.LoverAuthenticationService
 import com.lovemap.lovemapbackend.email.EmailService
-import com.lovemap.lovemapbackend.lover.relation.LoverRelationsResponse
 import com.lovemap.lovemapbackend.lover.LoverService
+import com.lovemap.lovemapbackend.lover.relation.LoverRelationsResponse
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 

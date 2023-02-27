@@ -7,8 +7,11 @@ import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhoto
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoResponse
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoService
 import com.lovemap.lovemapbackend.lovespot.photo.converter.LoveSpotPhotoConverter
+import com.lovemap.lovemapbackend.lovespot.photo.like.PhotoLike.Companion.DISLIKE
+import com.lovemap.lovemapbackend.lovespot.photo.like.PhotoLike.Companion.LIKE
 import com.lovemap.lovemapbackend.newsfeed.NewsFeedDeletionService
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem
+import com.lovemap.lovemapbackend.notification.NotificationService
 import kotlinx.coroutines.flow.Flow
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -21,9 +24,10 @@ class PhotoLikeService(
     private val photoService: LoveSpotPhotoService,
     private val converter: LoveSpotPhotoConverter,
     private val loverPointService: LoverPointService,
+    private val newsFeedDeletionService: NewsFeedDeletionService,
+    private val notificationService: NotificationService,
     private val photoLikeRepository: PhotoLikeRepository,
-    private val photoLikersDislikersRepository: PhotoLikersDislikersRepository,
-    private val newsFeedDeletionService: NewsFeedDeletionService
+    private val photoLikersDislikersRepository: PhotoLikersDislikersRepository
 ) {
 
     @Transactional
@@ -81,6 +85,7 @@ class PhotoLikeService(
         val disliked = photoService.decrementPhotoLikes(photo)
         photoService.incrementPhotoDislikes(disliked)
         loverPointService.subtractPointsForLikeChangeToDislike(photo, lover)
+        notificationService.sendPhotoLikeNotification(photo, DISLIKE)
         photoLike.likeOrDislike = likeOrDislike
         photoLike.happenedAt = Timestamp.from(Instant.now())
         return photoLike
@@ -95,6 +100,7 @@ class PhotoLikeService(
         val liked = photoService.incrementPhotoLikes(photo)
         photoService.decrementPhotoDislikes(liked)
         loverPointService.addPointsForDislikeChangeToLike(photo, lover)
+        notificationService.sendPhotoLikeNotification(photo, LIKE)
         photoLike.likeOrDislike = likeOrDislike
         photoLike.happenedAt = Timestamp.from(Instant.now())
         return photoLike
@@ -148,6 +154,7 @@ class PhotoLikeService(
             photoService.incrementPhotoDislikes(photo)
             loverPointService.subtractPointsForDislike(photo, lover)
         }
+        notificationService.sendPhotoLikeNotification(photo, likeOrDislike)
         return photoLike
     }
 

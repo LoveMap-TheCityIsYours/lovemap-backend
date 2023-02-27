@@ -1,7 +1,10 @@
 package com.lovemap.lovemapbackend.authentication
 
 import com.lovemap.lovemapbackend.lover.LoverResponse
-import com.lovemap.lovemapbackend.utils.*
+import com.lovemap.lovemapbackend.utils.INVALID_EMAIL
+import com.lovemap.lovemapbackend.utils.INVALID_PASSWORD
+import com.lovemap.lovemapbackend.utils.INVALID_PW_RESET_CODE
+import com.lovemap.lovemapbackend.utils.INVALID_USERNAME
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.NotNull

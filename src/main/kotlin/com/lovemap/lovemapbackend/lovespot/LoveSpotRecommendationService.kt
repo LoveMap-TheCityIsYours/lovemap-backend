@@ -5,6 +5,7 @@ import com.lovemap.lovemapbackend.lovespot.query.ListLocationRequest.COUNTRY
 import com.lovemap.lovemapbackend.lovespot.query.ListOrderingRequest.*
 import com.lovemap.lovemapbackend.lovespot.query.LoveSpotQueryService
 import com.lovemap.lovemapbackend.lovespot.query.LoveSpotSearchRequest
+import com.lovemap.lovemapbackend.notification.NotificationService
 import com.lovemap.lovemapbackend.tracking.UserTrackingService
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
@@ -14,6 +15,7 @@ class LoveSpotRecommendationService(
     private val authorizationService: AuthorizationService,
     private val loveSpotListService: LoveSpotQueryService,
     private val userTrackingService: UserTrackingService,
+    private val notificationService: NotificationService,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -27,11 +29,7 @@ class LoveSpotRecommendationService(
             locationName = request.country,
             typeFilter = request.typeFilter
         )
-        userTrackingService.trackLocation(
-            caller = authorizationService.getCaller(),
-            latitude = request.latitude,
-            longitude = request.longitude
-        )
+        trackAndNotifyUsers(request)
         return RecommendationsResponse(
             topRatedSpots = getTopRatedSpots(listRequest),
             closestSpots = getClosestSpots(request, listRequest),
@@ -40,6 +38,22 @@ class LoveSpotRecommendationService(
             newestSpots = getNewestSpots(listRequest),
             recentPhotoSpots = getRecentPhotoSpots(listRequest)
         )
+    }
+
+    private suspend fun trackAndNotifyUsers(request: RecommendationsRequest) {
+        if (request.latitude != null && request.longitude != null) {
+            val caller = authorizationService.getCaller()
+            userTrackingService.trackLocation(
+                caller = caller,
+                latitude = request.latitude,
+                longitude = request.longitude
+            )
+            notificationService.notifyUsersOfNewPublicLover(
+                caller = caller,
+                latitude = request.latitude,
+                longitude = request.longitude
+            )
+        }
     }
 
     private suspend fun getTopRatedSpots(listRequest: LoveSpotSearchRequest) =

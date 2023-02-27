@@ -7,9 +7,6 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.sql.Timestamp
 
-const val LIKE: Int = 1
-const val DISLIKE: Int = -1
-
 @Table("photo_like")
 data class PhotoLike(
     @Id
@@ -29,7 +26,12 @@ data class PhotoLike(
 
     @Column("love_location_id")
     var loveSpotId: Long
-)
+) {
+    companion object {
+        const val LIKE: Int = 1
+        const val DISLIKE: Int = -1
+    }
+}
 
 
 @Table("photo_likers_dislikers")

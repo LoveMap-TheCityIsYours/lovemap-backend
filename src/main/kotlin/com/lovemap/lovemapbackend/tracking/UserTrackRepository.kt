@@ -3,6 +3,7 @@ package com.lovemap.lovemapbackend.tracking
 import org.springframework.data.mongodb.repository.Query
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.time.Instant
 
 interface UserTrackRepository : ReactiveMongoRepository<UserTrack, Long> {
@@ -30,4 +31,6 @@ interface UserTrackRepository : ReactiveMongoRepository<UserTrack, Long> {
         ]
     } """)
     fun findUsersInAreaOf(latFrom: Double, longFrom: Double, latTo: Double, longTo: Double): Flux<UserTrack>
+
+    fun findByLoverId(loverId: Long): Mono<UserTrack>
 }

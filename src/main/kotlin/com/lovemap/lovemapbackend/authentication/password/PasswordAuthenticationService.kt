@@ -4,11 +4,10 @@ import com.lovemap.lovemapbackend.authentication.CreateLoverRequest
 import com.lovemap.lovemapbackend.authentication.LoginLoverRequest
 import com.lovemap.lovemapbackend.authentication.lover.LoverAuthenticationService
 import com.lovemap.lovemapbackend.authentication.security.JwtService
-import com.lovemap.lovemapbackend.geolocation.GeoLocation.Companion.GLOBAL_LOCATION
 import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.LoverRelationService
-import com.lovemap.lovemapbackend.lover.relation.LoverRelationsResponse
 import com.lovemap.lovemapbackend.lover.LoverService
+import com.lovemap.lovemapbackend.lover.relation.LoverRelationsResponse
 import kotlinx.coroutines.reactor.awaitSingle
 import mu.KotlinLogging
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager

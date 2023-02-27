@@ -103,6 +103,7 @@ class LoveSpotReviewService(
         val loveSpot = loveSpotStatService.recalculateLoveSpotReviews(request.loveSpotId, reviews)
         loverPointService.addPointsForReview(review, loveSpot)
         notificationService.sendLoveSpotNotification(loveSpot, NEW_LOVE_SPOT_REVIEW)
+        notificationService.sendReviewNotification(loveSpot, review)
         return loveSpot
     }
 

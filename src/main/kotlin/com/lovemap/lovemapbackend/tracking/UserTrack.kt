@@ -26,6 +26,7 @@ data class UserTrack(
     val lastActivityAt: Instant,
     val lastActivityNotificationAt: Instant? = null,
     val firebaseToken: String? = null,
+    val haveOthersBeenNotifiedAboutThisPublicUserJoining: Boolean = false,
 
     // tracking:
     val lastKnownLocation: LastKnownLocation? = null,

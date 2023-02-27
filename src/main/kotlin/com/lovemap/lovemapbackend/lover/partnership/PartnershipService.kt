@@ -8,6 +8,7 @@ import com.lovemap.lovemapbackend.lover.partnership.Partnership.Status.PARTNERSH
 import com.lovemap.lovemapbackend.lover.partnership.PartnershipReaction.ACCEPT
 import com.lovemap.lovemapbackend.lover.partnership.PartnershipReaction.DENY
 import com.lovemap.lovemapbackend.lover.relation.RelationService
+import com.lovemap.lovemapbackend.notification.NotificationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException
@@ -28,6 +29,7 @@ class PartnershipService(
     private val authorizationService: AuthorizationService,
     private val relationService: RelationService,
     private val loverService: LoverService,
+    private val notificationService: NotificationService,
     private val partnershipRepository: PartnershipRepository,
 ) {
     private val hoursToRerequestPartnership: Long = 12
@@ -85,6 +87,95 @@ class PartnershipService(
         }
     }
 
+    private suspend fun getRespondentPartnership(
+        initiatorId: Long,
+        respondentId: Long
+    ): Partnership? = partnershipRepository.findByInitiatorIdAndRespondentId(respondentId, initiatorId)
+
+
+    private suspend fun getInitiatorPartnership(
+        initiatorId: Long,
+        respondentId: Long
+    ): Partnership? = partnershipRepository.findByInitiatorIdAndRespondentId(initiatorId, respondentId)
+
+    private fun handleInitiatorPartnership(
+        initiatorPartnership: Partnership,
+        request: RequestPartnershipRequest
+    ): Partnership {
+        when (initiatorPartnership.status) {
+            PARTNERSHIP_REQUESTED -> {
+                initiatorPartnership.initiateDate!!.let {
+                    if (hoursPassedSince(hoursToRerequestPartnership, it)) {
+                        return initiatorPartnership
+                    } else {
+                        throw LoveMapException(
+                            HttpStatus.CONFLICT,
+                            ErrorMessage(
+                                ErrorCode.PartnershipRerequestTimeNotPassed,
+                                hoursToRerequestPartnership.toString(),
+                                "Already requested in the last '$hoursToRerequestPartnership' hours."
+                            )
+                        )
+                    }
+                }
+            }
+
+            PARTNER -> {
+                throw LoveMapException(
+                    HttpStatus.CONFLICT,
+                    ErrorMessage(
+                        ErrorCode.AlreadyPartners,
+                        request.respondentId.toString(),
+                        "There is already an alive partnership between " +
+                                "initiator '${request.initiatorId}' and respondent '${request.respondentId}'."
+                    )
+                )
+            }
+        }
+    }
+
+    private fun handleRespondentPartnership(
+        respondentPartnership: Partnership,
+        request: RequestPartnershipRequest
+    ): Partnership {
+        when (respondentPartnership.status) {
+            PARTNERSHIP_REQUESTED -> {
+                throw LoveMapException(
+                    HttpStatus.BAD_REQUEST,
+                    ErrorMessage(
+                        ErrorCode.PartnershipAlreadyRequested,
+                        request.respondentId.toString(),
+                        "The other user '${request.respondentId}' already " +
+                                "requested partnership from you '${request.initiatorId}'."
+                    )
+                )
+            }
+
+            PARTNER -> {
+                throw LoveMapException(
+                    HttpStatus.CONFLICT,
+                    ErrorMessage(
+                        ErrorCode.AlreadyPartners,
+                        request.respondentId.toString(),
+                        "There is already an alive partnership between " +
+                                "initiator '${request.initiatorId}' and respondent '${request.respondentId}'."
+                    )
+                )
+            }
+        }
+    }
+
+    private suspend fun createPartnershipRequest(request: RequestPartnershipRequest): Partnership {
+        val partnership = Partnership(
+            initiatorId = request.initiatorId,
+            respondentId = request.respondentId,
+            status = PARTNERSHIP_REQUESTED,
+            initiateDate = Timestamp.from(Instant.now())
+        )
+        notificationService.sendPartnershipRequestedNotification(partnership)
+        return partnershipRepository.save(partnership)
+    }
+
     suspend fun cancelPartnershipRequest(loverId: Long, request: CancelPartnershipRequest): LoverPartnership {
         val initiatorId = request.initiatorId
         authorizationService.checkAccessFor(initiatorId)
@@ -123,6 +214,7 @@ class PartnershipService(
                     "User '$initiatorId' and user '$respondentId' are already partners."
                 )
             )
+
             PARTNERSHIP_REQUESTED -> {
                 handlePartnershipResponse(request, partnership, respondentId)
             }
@@ -170,11 +262,13 @@ class PartnershipService(
                     partnership.initiatorId,
                     partnership.respondentId
                 )
-                sendPushNotification(partnership)
+                notificationService.sendPartnershipAcceptedNotification(partnership)
                 getLoverPartnership(respondentId)
             }
+
             DENY -> {
                 partnershipRepository.delete(partnership)
+                notificationService.sendPartnershipDeniedNotification(partnership)
                 getLoverPartnership(respondentId)
             }
         }
@@ -190,98 +284,6 @@ class PartnershipService(
                 partnershipRepository.delete(it)
             }
         }
-    }
-
-    private suspend fun getRespondentPartnership(
-        initiatorId: Long,
-        respondentId: Long
-    ): Partnership? = partnershipRepository.findByInitiatorIdAndRespondentId(respondentId, initiatorId)
-
-
-    private suspend fun getInitiatorPartnership(
-        initiatorId: Long,
-        respondentId: Long
-    ): Partnership? = partnershipRepository.findByInitiatorIdAndRespondentId(initiatorId, respondentId)
-
-    private fun handleInitiatorPartnership(
-        initiatorPartnership: Partnership,
-        request: RequestPartnershipRequest
-    ): Partnership {
-        when (initiatorPartnership.status) {
-            PARTNERSHIP_REQUESTED -> {
-                initiatorPartnership.initiateDate!!.let {
-                    if (hoursPassedSince(hoursToRerequestPartnership, it)) {
-                        sendPushNotification(initiatorPartnership)
-                        return initiatorPartnership
-                    } else {
-                        throw LoveMapException(
-                            HttpStatus.CONFLICT,
-                            ErrorMessage(
-                                ErrorCode.PartnershipRerequestTimeNotPassed,
-                                hoursToRerequestPartnership.toString(),
-                                "Already requested in the last '$hoursToRerequestPartnership' hours."
-                            )
-                        )
-                    }
-                }
-            }
-            PARTNER -> {
-                throw LoveMapException(
-                    HttpStatus.CONFLICT,
-                    ErrorMessage(
-                        ErrorCode.AlreadyPartners,
-                        request.respondentId.toString(),
-                        "There is already an alive partnership between " +
-                                "initiator '${request.initiatorId}' and respondent '${request.respondentId}'."
-                    )
-                )
-            }
-        }
-    }
-
-    private fun handleRespondentPartnership(
-        respondentPartnership: Partnership,
-        request: RequestPartnershipRequest
-    ): Partnership {
-        when (respondentPartnership.status) {
-            PARTNERSHIP_REQUESTED -> {
-                throw LoveMapException(
-                    HttpStatus.BAD_REQUEST,
-                    ErrorMessage(
-                        ErrorCode.PartnershipAlreadyRequested,
-                        request.respondentId.toString(),
-                        "The other user '${request.respondentId}' already " +
-                                "requested partnership from you '${request.initiatorId}'."
-                    )
-                )
-            }
-            PARTNER -> {
-                throw LoveMapException(
-                    HttpStatus.CONFLICT,
-                    ErrorMessage(
-                        ErrorCode.AlreadyPartners,
-                        request.respondentId.toString(),
-                        "There is already an alive partnership between " +
-                                "initiator '${request.initiatorId}' and respondent '${request.respondentId}'."
-                    )
-                )
-            }
-        }
-    }
-
-    private suspend fun createPartnershipRequest(request: RequestPartnershipRequest): Partnership {
-        val partnership = Partnership(
-            initiatorId = request.initiatorId,
-            respondentId = request.respondentId,
-            status = PARTNERSHIP_REQUESTED,
-            initiateDate = Timestamp.from(Instant.now())
-        )
-        sendPushNotification(partnership)
-        return partnershipRepository.save(partnership)
-    }
-
-    private fun sendPushNotification(partnership: Partnership) {
-        // TODO: implement
     }
 
     private suspend fun getPartnership(loverId: Long): Partnership? {

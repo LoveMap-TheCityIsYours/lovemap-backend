@@ -4,8 +4,11 @@ import com.javadocmd.simplelatlng.LatLng
 import com.javadocmd.simplelatlng.LatLngTool
 import com.javadocmd.simplelatlng.util.LengthUnit
 import com.lovemap.lovemapbackend.lover.Lover
+import com.lovemap.lovemapbackend.lover.LoverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactive.asFlow
+import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
@@ -18,6 +21,7 @@ import kotlin.math.sqrt
 
 @Service
 class UserTrackingService(
+    private val loverRepository: LoverRepository,
     private val repository: UserTrackRepository,
     private val mongoTemplate: ReactiveMongoTemplate,
 ) {
@@ -75,17 +79,16 @@ class UserTrackingService(
         }
     }
 
-    suspend fun trackLocation(caller: Lover, latitude: Double?, longitude: Double?) {
+    suspend fun trackLocation(caller: Lover, latitude: Double, longitude: Double) {
         runCatching {
             val now = Instant.now()
             val query = Query(Criteria.where("id").`is`(caller.id))
             val update = Update()
                 .set("lastActivityAt", now)
                 .set("displayName", caller.displayName)
-            if (latitude != null && longitude != null) {
-                update.set("lastKnownLocation.latitude", latitude)
-                update.set("lastKnownLocation.longitude", longitude)
-            }
+
+            update.set("lastKnownLocation.latitude", latitude)
+            update.set("lastKnownLocation.longitude", longitude)
             mongoTemplate.upsert(query, update, UserTrack::class.java).subscribe()
         }
     }
@@ -119,6 +122,9 @@ class UserTrackingService(
         return repository.findByLastActivityAndNotificationBefore(instant).asFlow()
     }
 
+    suspend fun findByLoverId(loverId: Long): UserTrack? {
+        return repository.findByLoverId(loverId).awaitSingleOrNull()
+    }
 
     fun findUsersWithinMetersOf(latitude: Double, longitude: Double, meters: Long): Flow<UserTrack> {
         val travelDistance = meters * sqrt(2.0)
@@ -130,5 +136,9 @@ class UserTrackingService(
         val longFrom = min(upperLeft.longitude, lowerRight.longitude)
         val longTo = max(upperLeft.longitude, lowerRight.longitude)
         return repository.findUsersInAreaOf(latFrom, longFrom, latTo, longTo).asFlow()
+    }
+
+    suspend fun save(userTrack: UserTrack): UserTrack {
+        return repository.save(userTrack).awaitSingle()
     }
 }

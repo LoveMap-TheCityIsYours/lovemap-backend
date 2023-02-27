@@ -7,6 +7,7 @@ import com.lovemap.lovemapbackend.lover.relation.Relation.Status.FOLLOWING
 import com.lovemap.lovemapbackend.lover.relation.Relation.Status.PARTNER
 import com.lovemap.lovemapbackend.newsfeed.NewsFeedService
 import com.lovemap.lovemapbackend.newsfeed.model.response.NewsFeedItemResponse
+import com.lovemap.lovemapbackend.notification.NotificationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage
 import com.lovemap.lovemapbackend.utils.LoveMapException
@@ -28,6 +29,7 @@ class RelationService(
     private val cachedLoverService: CachedLoverService,
     private val loverPointService: LoverPointService,
     private val newsFeedService: NewsFeedService,
+    private val notificationService: NotificationService,
     private val repository: RelationRepository,
 ) {
     private val logger = KotlinLogging.logger {}
@@ -166,6 +168,8 @@ class RelationService(
             )
             loverPointService.incrementFollowers(caller, targetLover)
         }
+
+        notificationService.sendNewFollowerNotification(targetLover)
 
         val lover = loverService.getById(loverId)
         return loverConverter.toRelationsResponse(lover, getRelationsFrom(loverId))
