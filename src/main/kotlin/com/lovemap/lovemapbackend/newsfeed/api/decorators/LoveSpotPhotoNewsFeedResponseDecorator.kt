@@ -1,10 +1,10 @@
-package com.lovemap.lovemapbackend.newsfeed.model.response.decorators
+package com.lovemap.lovemapbackend.newsfeed.api.decorators
 
+import com.lovemap.lovemapbackend.newsfeed.api.LoveSpotPhotoNewsFeedResponse
+import com.lovemap.lovemapbackend.newsfeed.api.NewsFeedItemResponse
 import com.lovemap.lovemapbackend.newsfeed.data.LoveSpotPhotoNewsFeedData
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedData
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem
-import com.lovemap.lovemapbackend.newsfeed.model.response.LoveSpotPhotoNewsFeedResponse
-import com.lovemap.lovemapbackend.newsfeed.model.response.NewsFeedItemResponse
 import com.lovemap.lovemapbackend.newsfeed.processor.ProcessedNewsFeedItemDto
 import org.springframework.stereotype.Component
 

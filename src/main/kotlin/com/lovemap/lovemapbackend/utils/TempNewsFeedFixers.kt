@@ -7,7 +7,6 @@ import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoService
 import com.lovemap.lovemapbackend.newsfeed.LoverNewsFeedUpdater
 import com.lovemap.lovemapbackend.newsfeed.data.*
 import com.lovemap.lovemapbackend.newsfeed.dataparser.NewsFeedDataParser
-import com.lovemap.lovemapbackend.newsfeed.model.*
 import com.lovemap.lovemapbackend.newsfeed.provider.LoveSpotNewsFeedProvider
 import com.lovemap.lovemapbackend.newsfeed.provider.LoveSpotReviewNewsFeedProvider
 import kotlinx.coroutines.flow.collect

@@ -2,7 +2,7 @@ package com.lovemap.lovemapbackend.lover
 
 import com.lovemap.lovemapbackend.authentication.security.AuthorizationService
 import com.lovemap.lovemapbackend.newsfeed.NewsFeedService
-import com.lovemap.lovemapbackend.newsfeed.model.response.NewsFeedItemResponse
+import com.lovemap.lovemapbackend.newsfeed.api.NewsFeedItemResponse
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import org.springframework.http.HttpStatus

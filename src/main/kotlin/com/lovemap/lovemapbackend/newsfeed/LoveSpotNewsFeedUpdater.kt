@@ -1,8 +1,8 @@
 package com.lovemap.lovemapbackend.newsfeed
 
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem.Type.LOVE_SPOT
+import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItemConverter
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedRepository
-import com.lovemap.lovemapbackend.newsfeed.model.NewsFeedItemConverter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import mu.KotlinLogging

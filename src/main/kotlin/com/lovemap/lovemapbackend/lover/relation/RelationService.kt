@@ -6,7 +6,7 @@ import com.lovemap.lovemapbackend.lover.ranking.LoverPointService
 import com.lovemap.lovemapbackend.lover.relation.Relation.Status.FOLLOWING
 import com.lovemap.lovemapbackend.lover.relation.Relation.Status.PARTNER
 import com.lovemap.lovemapbackend.newsfeed.NewsFeedService
-import com.lovemap.lovemapbackend.newsfeed.model.response.NewsFeedItemResponse
+import com.lovemap.lovemapbackend.newsfeed.api.NewsFeedItemResponse
 import com.lovemap.lovemapbackend.notification.NotificationService
 import com.lovemap.lovemapbackend.utils.ErrorCode
 import com.lovemap.lovemapbackend.utils.ErrorMessage

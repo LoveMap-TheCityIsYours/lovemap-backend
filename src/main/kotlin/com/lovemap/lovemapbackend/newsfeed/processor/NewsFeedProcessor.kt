@@ -3,7 +3,8 @@ package com.lovemap.lovemapbackend.newsfeed.processor
 import com.lovemap.lovemapbackend.lover.CachedLoverService
 import com.lovemap.lovemapbackend.lover.LoverRepository
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedRepository
-import com.lovemap.lovemapbackend.newsfeed.model.NewsFeedItemConverter
+import com.lovemap.lovemapbackend.newsfeed.api.NewsFeedResponseConverter
+import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItemConverter
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItemDto
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList

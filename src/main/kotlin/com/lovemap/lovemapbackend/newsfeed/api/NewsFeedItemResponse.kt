@@ -1,4 +1,4 @@
-package com.lovemap.lovemapbackend.newsfeed.model.response
+package com.lovemap.lovemapbackend.newsfeed.api
 
 import com.lovemap.lovemapbackend.lover.LoverViewWithoutRelationResponse
 import com.lovemap.lovemapbackend.lovespot.LoveSpot

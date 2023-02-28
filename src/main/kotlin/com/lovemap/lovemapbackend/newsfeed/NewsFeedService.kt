@@ -2,8 +2,9 @@ package com.lovemap.lovemapbackend.newsfeed
 
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItemDto
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedRepository
-import com.lovemap.lovemapbackend.newsfeed.model.NewsFeedItemConverter
-import com.lovemap.lovemapbackend.newsfeed.model.response.NewsFeedItemResponse
+import com.lovemap.lovemapbackend.newsfeed.api.NewsFeedResponseConverter
+import com.lovemap.lovemapbackend.newsfeed.api.NewsFeedItemResponse
+import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItemConverter
 import com.lovemap.lovemapbackend.newsfeed.processor.NewsFeedProcessor
 import com.lovemap.lovemapbackend.newsfeed.processor.ProcessedNewsFeedItemDto
 import com.lovemap.lovemapbackend.utils.ValidatorService
@@ -18,6 +19,7 @@ import kotlin.math.min
 @Service
 class NewsFeedService(
     private val newsFeedItemConverter: NewsFeedItemConverter,
+    private val newsFeedResponseConverter: NewsFeedResponseConverter,
     private val validatorService: ValidatorService,
     private val newsFeedProcessor: NewsFeedProcessor,
     private val newsFeedRepository: NewsFeedRepository
@@ -34,7 +36,7 @@ class NewsFeedService(
         val start = System.currentTimeMillis()
         val result = newsFeedRepository.findLastLimitOfLover(100, loverId)
             .map { newsFeedItemConverter.processedDtoFromItem(it) }
-            .map { newsFeedItemConverter.processedDtoToResponse(it) }
+            .map { newsFeedResponseConverter.processedDtoToResponse(it) }
             .toList()
         logger.info { "Returned NewsFeedItems for lover '$loverId' in ${System.currentTimeMillis() - start} ms" }
         return result
@@ -44,7 +46,7 @@ class NewsFeedService(
         val start = System.currentTimeMillis()
         val result = newsFeedRepository.findLastLimitOfLoverIdsIn(200, loverIds)
             .map { newsFeedItemConverter.processedDtoFromItem(it) }
-            .map { newsFeedItemConverter.processedDtoToResponse(it) }
+            .map { newsFeedResponseConverter.processedDtoToResponse(it) }
             .toList()
         logger.info { "Returned NewsFeedItems for lovers '$loverIds' in ${System.currentTimeMillis() - start} ms" }
         return result
@@ -56,7 +58,7 @@ class NewsFeedService(
         } else {
             logger.info { "Returning processedFeedCache with size: ${processedFeedCache.size}" }
             ArrayList(processedFeedCache)
-        }.map { newsFeedItemConverter.processedDtoToResponse(it) }
+        }.map { newsFeedResponseConverter.processedDtoToResponse(it) }
     }
 
     suspend fun getProcessedNewsFeedPage(page: Int, size: Int): List<NewsFeedItemResponse> {
@@ -66,7 +68,7 @@ class NewsFeedService(
         validatorService.validatePageRequest(page, size, processedFeedCache.size)
         val pageItems = processedFeedCache.subList(page * size, min(page * size + size, processedFeedCache.size))
         logger.info { "Returning processed page with size: ${pageItems.size}" }
-        return pageItems.map { newsFeedItemConverter.processedDtoToResponse(it) }
+        return pageItems.map { newsFeedResponseConverter.processedDtoToResponse(it) }
     }
 
     private suspend fun fillCacheFromDatabase(): List<ProcessedNewsFeedItemDto> {

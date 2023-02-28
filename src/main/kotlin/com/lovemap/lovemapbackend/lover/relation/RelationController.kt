@@ -2,7 +2,7 @@ package com.lovemap.lovemapbackend.lover.relation
 
 import com.lovemap.lovemapbackend.lover.LoverRelationService
 import com.lovemap.lovemapbackend.lover.LoverViewWithoutRelationResponse
-import com.lovemap.lovemapbackend.newsfeed.model.response.NewsFeedItemResponse
+import com.lovemap.lovemapbackend.newsfeed.api.NewsFeedItemResponse
 import org.springframework.web.bind.annotation.*
 
 @RestController
