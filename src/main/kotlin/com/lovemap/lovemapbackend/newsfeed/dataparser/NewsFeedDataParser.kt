@@ -1,5 +1,6 @@
 package com.lovemap.lovemapbackend.newsfeed.dataparser
 
+import com.lovemap.lovemapbackend.newsfeed.data.ComparableNewsFeedData
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedData
 import com.lovemap.lovemapbackend.utils.ErrorCode
@@ -13,7 +14,7 @@ class NewsFeedDataParser(
 ) {
     private val typeBasedParsers: Map<NewsFeedItem.Type, TypeBasedNewsFeedDataParser> = parsers.associateBy { it.supportedType() }
 
-    fun parse(type: NewsFeedItem.Type, data: String): NewsFeedData {
+    fun parse(type: NewsFeedItem.Type, data: String): ComparableNewsFeedData {
         return typeBasedParsers[type]?.parse(data) ?: throw LoveMapException(
             HttpStatus.INTERNAL_SERVER_ERROR,
             ErrorCode.InternalServerError

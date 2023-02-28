@@ -61,12 +61,10 @@ class PrivateLoverPostProcessor : NewsFeedPostProcessor<Context> {
     }
 
     private fun currentIsMergedPrivateLovers(
-        current: ProcessedNewsFeedItemDto?,
+        current: ProcessedNewsFeedItemDto,
         next: ProcessedNewsFeedItemDto
     ): Boolean {
-        return current is ProcessedNewsFeedItemDto
-                && current.processedType == PRIVATE_LOVERS
-                && next.processedType == LOVER
+        return current.processedType == PRIVATE_LOVERS && next.processedType == LOVER
     }
 
     private fun nextIsPrivateLover(

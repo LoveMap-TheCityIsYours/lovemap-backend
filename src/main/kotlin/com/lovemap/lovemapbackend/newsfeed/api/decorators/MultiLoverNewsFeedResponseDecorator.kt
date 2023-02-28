@@ -16,16 +16,16 @@ class MultiLoverNewsFeedResponseDecorator : NewsFeedDataResponseDecorator {
     }
 
     override fun decorate(
-        initializedResponse: NewsFeedItemResponse,
+        initialized: NewsFeedItemResponse,
         newsFeedData: NewsFeedData
     ): NewsFeedItemResponse {
         return if (newsFeedData is MultiLoverNewsFeedData) {
             val lovers = mapLoversToResponse(newsFeedData)
-            initializedResponse.copy(
+            initialized.copy(
                 multiLover = MultiLoverNewsFeedResponse(lovers)
             )
         } else {
-            initializedResponse
+            initialized
         }
     }
 

@@ -1,15 +1,13 @@
 package com.lovemap.lovemapbackend.newsfeed.processor
 
-import com.lovemap.lovemapbackend.newsfeed.data.LoverNewsFeedData
-import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedData
-import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItemDto
+import com.lovemap.lovemapbackend.newsfeed.data.*
 import java.time.Instant
 import java.util.*
 
 data class ProcessedNewsFeedItemDto(
     val delegate: NewsFeedItemDto,
     val processedType: ProcessedType,
-    val processedData: NewsFeedData,
+    val processedData: ComparableNewsFeedData,
     val origins: List<NewsFeedItemDto> = emptyList(),
 ) : NewsFeedItemDto(
     delegate.id,
@@ -41,7 +39,9 @@ data class ProcessedNewsFeedItemDto(
         LOVER,
 
         MULTI_LOVER,
-        PRIVATE_LOVERS;
+        PRIVATE_LOVERS,
+        LOVE_SPOT_MULTI_EVENTS,
+        LOVE_SPOT_MULTI_PHOTOS;
 
         companion object {
             fun of(type: Type): ProcessedType {
@@ -51,11 +51,11 @@ data class ProcessedNewsFeedItemDto(
     }
 }
 
-interface ProcessedNewsFeedData : NewsFeedData
+abstract class ProcessedNewsFeedData : ComparableNewsFeedData()
 
 data class MultiLoverNewsFeedData(
     val lovers: TreeSet<LoverNewsFeedData>
-) : ProcessedNewsFeedData {
+) : ProcessedNewsFeedData() {
     override fun happenedAt(): Instant = lovers.first().joinedAt
     override fun loveSpotId(): Long? = null
     override fun loverId(): Long = lovers.first().id
@@ -63,8 +63,16 @@ data class MultiLoverNewsFeedData(
 
 data class PrivateLoversNewsFeedData(
     val lovers: TreeSet<LoverNewsFeedData>
-) : ProcessedNewsFeedData {
+) : ProcessedNewsFeedData() {
     override fun happenedAt(): Instant = lovers.first().joinedAt
     override fun loveSpotId(): Long? = null
     override fun loverId(): Long = lovers.first().id
+}
+
+data class LoveSpotMultiEventsNewsFeedData(
+    val loveSpotEvents: TreeSet<ComparableNewsFeedData>
+) : ProcessedNewsFeedData() {
+    override fun happenedAt(): Instant = loveSpotEvents.first().happenedAt()
+    override fun loveSpotId(): Long? = loveSpotEvents.first().loveSpotId()
+    override fun loverId(): Long = loveSpotEvents.first().loverId()
 }

@@ -56,12 +56,10 @@ class PublicLoverPostProcessor : NewsFeedPostProcessor<Context> {
     }
 
     private fun currentIsMergedMultiLover(
-        current: ProcessedNewsFeedItemDto?,
+        current: ProcessedNewsFeedItemDto,
         next: ProcessedNewsFeedItemDto
     ): Boolean {
-        return current is ProcessedNewsFeedItemDto
-                && current.processedType == MULTI_LOVER
-                && next.processedType == LOVER
+        return current.processedType == MULTI_LOVER && next.processedType == LOVER
     }
 
     private fun maximumMultiLoversReached(current: ProcessedNewsFeedItemDto) =

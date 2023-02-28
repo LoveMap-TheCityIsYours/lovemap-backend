@@ -14,9 +14,9 @@ class WishlistNewsFeedResponseDecorator : NewsFeedDataResponseDecorator {
         return ProcessedNewsFeedItemDto.ProcessedType.WISHLIST_ITEM
     }
 
-    override fun decorate(initializedResponse: NewsFeedItemResponse, newsFeedData: NewsFeedData): NewsFeedItemResponse {
+    override fun decorate(initialized: NewsFeedItemResponse, newsFeedData: NewsFeedData): NewsFeedItemResponse {
         return if (newsFeedData is WishlistNewsFeedData) {
-            initializedResponse.copy(
+            initialized.copy(
                 wishlist = WishlistNewsFeedResponse(
                     id = newsFeedData.id,
                     loverId = newsFeedData.loverId,
@@ -25,7 +25,7 @@ class WishlistNewsFeedResponseDecorator : NewsFeedDataResponseDecorator {
                 )
             )
         } else {
-            initializedResponse
+            initialized
         }
     }
 

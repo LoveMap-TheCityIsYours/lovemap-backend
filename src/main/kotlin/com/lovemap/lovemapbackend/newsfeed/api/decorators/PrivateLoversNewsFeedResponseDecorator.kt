@@ -16,16 +16,16 @@ class PrivateLoversNewsFeedResponseDecorator : NewsFeedDataResponseDecorator {
     }
 
     override fun decorate(
-        initializedResponse: NewsFeedItemResponse,
+        initialized: NewsFeedItemResponse,
         newsFeedData: NewsFeedData
     ): NewsFeedItemResponse {
         return if (newsFeedData is PrivateLoversNewsFeedData) {
             val lovers = mapLoversToResponse(newsFeedData)
-            initializedResponse.copy(
+            initialized.copy(
                 privateLovers = PrivateLoversNewsFeedResponse(lovers)
             )
         } else {
-            initializedResponse
+            initialized
         }
     }
 

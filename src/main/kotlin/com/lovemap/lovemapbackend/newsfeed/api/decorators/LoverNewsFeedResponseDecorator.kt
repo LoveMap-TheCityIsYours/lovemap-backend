@@ -14,9 +14,9 @@ class LoverNewsFeedResponseDecorator : NewsFeedDataResponseDecorator {
         return ProcessedNewsFeedItemDto.ProcessedType.LOVER
     }
 
-    override fun decorate(initializedResponse: NewsFeedItemResponse, newsFeedData: NewsFeedData): NewsFeedItemResponse {
+    override fun decorate(initialized: NewsFeedItemResponse, newsFeedData: NewsFeedData): NewsFeedItemResponse {
         return if (newsFeedData is LoverNewsFeedData) {
-            initializedResponse.copy(
+            initialized.copy(
                 lover = LoverNewsFeedResponse(
                     id = newsFeedData.id,
                     userName = newsFeedData.userName,
@@ -29,7 +29,7 @@ class LoverNewsFeedResponseDecorator : NewsFeedDataResponseDecorator {
                 )
             )
         } else {
-            initializedResponse
+            initialized
         }
     }
 

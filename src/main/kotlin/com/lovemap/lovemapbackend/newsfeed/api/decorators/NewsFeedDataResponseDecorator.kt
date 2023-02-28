@@ -6,5 +6,5 @@ import com.lovemap.lovemapbackend.newsfeed.processor.ProcessedNewsFeedItemDto
 
 interface NewsFeedDataResponseDecorator {
     fun supportedType(): ProcessedNewsFeedItemDto.ProcessedType
-    fun decorate(initializedResponse: NewsFeedItemResponse, newsFeedData: NewsFeedData): NewsFeedItemResponse
+    fun decorate(initialized: NewsFeedItemResponse, newsFeedData: NewsFeedData): NewsFeedItemResponse
 }

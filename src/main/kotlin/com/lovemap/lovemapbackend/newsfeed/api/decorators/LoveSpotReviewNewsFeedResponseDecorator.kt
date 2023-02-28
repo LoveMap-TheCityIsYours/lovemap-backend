@@ -14,9 +14,9 @@ class LoveSpotReviewNewsFeedResponseDecorator : NewsFeedDataResponseDecorator {
         return ProcessedNewsFeedItemDto.ProcessedType.LOVE_SPOT_REVIEW
     }
 
-    override fun decorate(initializedResponse: NewsFeedItemResponse, newsFeedData: NewsFeedData): NewsFeedItemResponse {
+    override fun decorate(initialized: NewsFeedItemResponse, newsFeedData: NewsFeedData): NewsFeedItemResponse {
         return if (newsFeedData is LoveSpotReviewNewsFeedData) {
-            initializedResponse.copy(
+            initialized.copy(
                 loveSpotReview = LoveSpotReviewNewsFeedResponse(
                     id = newsFeedData.id,
                     loveSpotId = newsFeedData.loveSpotId,
@@ -28,7 +28,7 @@ class LoveSpotReviewNewsFeedResponseDecorator : NewsFeedDataResponseDecorator {
                 )
             )
         } else {
-            initializedResponse
+            initialized
         }
     }
 

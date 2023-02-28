@@ -26,6 +26,7 @@ data class NewsFeedItemResponse(
     val lover: LoverNewsFeedResponse? = null,
     val multiLover: MultiLoverNewsFeedResponse? = null,
     val privateLovers: PrivateLoversNewsFeedResponse? = null,
+    val loveSpotMultiEvents: LoveSpotMultiEventsResponse? = null,
 )
 
 enum class NewsFeedItemType {
@@ -37,14 +38,11 @@ enum class NewsFeedItemType {
     WISHLIST_ITEM,
     LOVER,
     MULTI_LOVER,
-    PRIVATE_LOVERS;
+    PRIVATE_LOVERS,
+    LOVE_SPOT_MULTI_EVENTS,
+    LOVE_SPOT_MULTI_PHOTOS;
 
     companion object {
-        fun ofType(type: NewsFeedItemDto.Type): NewsFeedItemType {
-            return valueOf(type.name)
-        }
-
-
         fun ofType(type: ProcessedNewsFeedItemDto.ProcessedType): NewsFeedItemType {
             return valueOf(type.name)
         }
@@ -126,4 +124,15 @@ data class MultiLoverNewsFeedResponse(
 
 data class PrivateLoversNewsFeedResponse(
     val lovers: List<LoverNewsFeedResponse>
+)
+
+data class LoveSpotMultiEventsItem(
+    val loveSpot: LoveSpotNewsFeedResponse? = null,
+    val love: LoveNewsFeedResponse? = null,
+    val loveSpotReview: LoveSpotReviewNewsFeedResponse? = null,
+    val loveSpotPhoto: LoveSpotPhotoNewsFeedResponse? = null,
+)
+
+data class LoveSpotMultiEventsResponse(
+    val loveSpotEvents: List<LoveSpotMultiEventsItem>
 )

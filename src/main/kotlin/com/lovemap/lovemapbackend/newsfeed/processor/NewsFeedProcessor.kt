@@ -18,6 +18,7 @@ class NewsFeedProcessor(
     private val newsFeedItemConverter: NewsFeedItemConverter,
     private val publicLoverProcessor: PublicLoverPostProcessor,
     private val privateLoverProcessor: PrivateLoverPostProcessor,
+    private val loveSpotMultiEventsPostProcessor: LoveSpotMultiEventsPostProcessor,
     private val cachedLoverService: CachedLoverService,
     private val loverRepository: LoverRepository,
     private val repository: NewsFeedRepository,
@@ -53,6 +54,8 @@ class NewsFeedProcessor(
 
         processedFeed =
             privateLoverProcessor.processNewsFeed(processedFeed, PrivateLoverPostProcessor.Context(privateLovers))
+
+        processedFeed = loveSpotMultiEventsPostProcessor.processNewsFeed(processedFeed, Unit)
 
         // for now we do not process the feed, just return it (waiting for more android rollout)
         logger.info { "Finished NewsFeed processing v2 in ${System.currentTimeMillis() - start} ms." }
