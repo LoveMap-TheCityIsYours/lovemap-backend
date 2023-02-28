@@ -2,8 +2,8 @@ package com.lovemap.lovemapbackend.newsfeed.model.response
 
 import com.lovemap.lovemapbackend.lover.LoverViewWithoutRelationResponse
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
-import com.lovemap.lovemapbackend.newsfeed.model.NewsFeedItemDto
-import com.lovemap.lovemapbackend.newsfeed.model.ProcessedNewsFeedItemDto
+import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItemDto
+import com.lovemap.lovemapbackend.newsfeed.processor.ProcessedNewsFeedItemDto
 import java.time.Instant
 
 data class NewsFeedItemResponse(
@@ -16,6 +16,7 @@ data class NewsFeedItemResponse(
     val loverId: Long,
     val publicLover: LoverViewWithoutRelationResponse?,
     val country: String,
+
     val loveSpot: LoveSpotNewsFeedResponse? = null,
     val love: LoveNewsFeedResponse? = null,
     val loveSpotReview: LoveSpotReviewNewsFeedResponse? = null,

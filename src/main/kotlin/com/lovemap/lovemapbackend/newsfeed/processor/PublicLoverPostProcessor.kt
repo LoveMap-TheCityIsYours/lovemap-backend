@@ -1,7 +1,8 @@
 package com.lovemap.lovemapbackend.newsfeed.processor
 
-import com.lovemap.lovemapbackend.newsfeed.model.*
-import com.lovemap.lovemapbackend.newsfeed.model.ProcessedNewsFeedItemDto.ProcessedType.MULTI_LOVER
+import com.lovemap.lovemapbackend.newsfeed.data.LoverNewsFeedData
+import com.lovemap.lovemapbackend.newsfeed.processor.ProcessedNewsFeedItemDto.ProcessedType.LOVER
+import com.lovemap.lovemapbackend.newsfeed.processor.ProcessedNewsFeedItemDto.ProcessedType.MULTI_LOVER
 import com.lovemap.lovemapbackend.newsfeed.processor.PublicLoverPostProcessor.Context
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
@@ -11,25 +12,25 @@ class PublicLoverPostProcessor : NewsFeedPostProcessor<Context> {
     private val logger = KotlinLogging.logger {}
 
     override fun processNewsFeed(
-        newsFeed: Collection<NewsFeedItemDto>,
+        newsFeed: Collection<ProcessedNewsFeedItemDto>,
         context: Context
-    ): List<NewsFeedItemDto> {
+    ): List<ProcessedNewsFeedItemDto> {
         logger.info { "Processing NewsFeed of size: '${newsFeed.size}'" }
 
-        val processedFeed = newsFeed.fold(ArrayList()) { combined: ArrayList<NewsFeedItemDto>,
-                                                         next: NewsFeedItemDto ->
-            val current: NewsFeedItemDto? = combined.lastOrNull()
+        val processedFeed = newsFeed.fold(ArrayList()) { combined: ArrayList<ProcessedNewsFeedItemDto>,
+                                                         next: ProcessedNewsFeedItemDto ->
+            val current: ProcessedNewsFeedItemDto? = combined.lastOrNull()
             if (current != null) {
                 val newsFeedItem = if (maximumMultiLoversReached(current)) {
                     logger.info { "Max number of MultiLovers reached: $MAXIMUM_MULTI_LOVERS" }
                     next
                 } else if (bothArePublicLovers(context, current, next)) {
-                    if (current.type == NewsFeedItemDto.Type.LOVER && next.type == NewsFeedItemDto.Type.LOVER) {
+                    if (current.processedType == LOVER && next.processedType == LOVER) {
                         combined.removeLast()
                         mergeTwoLovers(current, next, context)
                     } else if (currentIsMergedMultiLover(current, next)) {
                         combined.removeLast()
-                        mergeMultiLoverAndLover(current as ProcessedNewsFeedItemDto, next, context)
+                        mergeMultiLoverAndLover(current, next, context)
                     } else {
                         next
                     }
@@ -48,37 +49,36 @@ class PublicLoverPostProcessor : NewsFeedPostProcessor<Context> {
 
     private fun bothArePublicLovers(
         context: Context,
-        current: NewsFeedItemDto,
-        next: NewsFeedItemDto
+        current: ProcessedNewsFeedItemDto,
+        next: ProcessedNewsFeedItemDto
     ): Boolean {
         return context.publicLovers.containsKey(current.referenceId) && context.publicLovers.containsKey(next.referenceId)
     }
 
     private fun currentIsMergedMultiLover(
-        current: NewsFeedItemDto?,
-        next: NewsFeedItemDto
+        current: ProcessedNewsFeedItemDto?,
+        next: ProcessedNewsFeedItemDto
     ): Boolean {
         return current is ProcessedNewsFeedItemDto
                 && current.processedType == MULTI_LOVER
-                && next.type == NewsFeedItemDto.Type.LOVER
+                && next.processedType == LOVER
     }
 
-    private fun maximumMultiLoversReached(current: NewsFeedItemDto) =
-        current is ProcessedNewsFeedItemDto
-                && current.processedType == MULTI_LOVER
+    private fun maximumMultiLoversReached(current: ProcessedNewsFeedItemDto) =
+        current.processedType == MULTI_LOVER
                 && (current.processedData as MultiLoverNewsFeedData).lovers.size == MAXIMUM_MULTI_LOVERS
 
     private fun mergeTwoLovers(
-        current: NewsFeedItemDto,
-        next: NewsFeedItemDto,
+        current: ProcessedNewsFeedItemDto,
+        next: ProcessedNewsFeedItemDto,
         context: Context
-    ): NewsFeedItemDto {
+    ): ProcessedNewsFeedItemDto {
         logger.debug { "Merging 2 Lovers into 1 MultiLover" }
-        val currentLover = current.newsFeedData as LoverNewsFeedData
+        val currentLover = current.processedData as LoverNewsFeedData
         val currentData = currentLover.copy(
             userName = context.publicLovers[current.referenceId] ?: currentLover.userName
         )
-        val nextLover = next.newsFeedData as LoverNewsFeedData
+        val nextLover = next.processedData as LoverNewsFeedData
         val nextData = nextLover.copy(
             userName = context.publicLovers[next.referenceId] ?: nextLover.userName
         )
@@ -92,12 +92,12 @@ class PublicLoverPostProcessor : NewsFeedPostProcessor<Context> {
 
     private fun mergeMultiLoverAndLover(
         current: ProcessedNewsFeedItemDto,
-        next: NewsFeedItemDto,
+        next: ProcessedNewsFeedItemDto,
         context: Context
-    ): NewsFeedItemDto {
+    ): ProcessedNewsFeedItemDto {
         logger.debug { "Merging Lover into MultiLover" }
-        val currentData = current.newsFeedData as MultiLoverNewsFeedData
-        val nextLover = next.newsFeedData as LoverNewsFeedData
+        val currentData = current.processedData as MultiLoverNewsFeedData
+        val nextLover = next.processedData as LoverNewsFeedData
         val nextData = nextLover.copy(
             userName = context.publicLovers[next.referenceId] ?: nextLover.userName
         )

@@ -1,8 +1,7 @@
 package com.lovemap.lovemapbackend.newsfeed.dataparser
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem
-import com.lovemap.lovemapbackend.newsfeed.model.*
+import com.lovemap.lovemapbackend.newsfeed.data.*
 import org.springframework.stereotype.Component
 
 interface TypeBasedNewsFeedDataParser {

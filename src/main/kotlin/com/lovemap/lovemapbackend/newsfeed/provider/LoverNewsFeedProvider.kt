@@ -5,8 +5,8 @@ import com.lovemap.lovemapbackend.lover.Lover
 import com.lovemap.lovemapbackend.lover.LoverService
 import com.lovemap.lovemapbackend.lover.LoverViewWithoutRelationResponse
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem
-import com.lovemap.lovemapbackend.newsfeed.model.LoverNewsFeedData
-import com.lovemap.lovemapbackend.newsfeed.model.NewsFeedItemDto
+import com.lovemap.lovemapbackend.newsfeed.data.LoverNewsFeedData
+import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItemDto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import mu.KotlinLogging

@@ -2,7 +2,7 @@ package com.lovemap.lovemapbackend.newsfeed
 
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedRepository
-import com.lovemap.lovemapbackend.newsfeed.model.NewsFeedItemDto
+import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItemDto
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 

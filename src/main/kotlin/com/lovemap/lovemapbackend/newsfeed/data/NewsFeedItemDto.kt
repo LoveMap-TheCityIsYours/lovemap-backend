@@ -1,9 +1,8 @@
-package com.lovemap.lovemapbackend.newsfeed.model
+package com.lovemap.lovemapbackend.newsfeed.data
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.lovemap.lovemapbackend.lover.LoverViewWithoutRelationResponse
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
-import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem
 import java.sql.Timestamp
 import java.time.Instant
 

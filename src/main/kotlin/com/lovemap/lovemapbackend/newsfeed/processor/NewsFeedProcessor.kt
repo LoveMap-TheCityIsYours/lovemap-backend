@@ -4,8 +4,7 @@ import com.lovemap.lovemapbackend.lover.CachedLoverService
 import com.lovemap.lovemapbackend.lover.LoverRepository
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedRepository
 import com.lovemap.lovemapbackend.newsfeed.model.NewsFeedItemConverter
-import com.lovemap.lovemapbackend.newsfeed.model.NewsFeedItemDto
-import com.lovemap.lovemapbackend.newsfeed.model.ProcessedNewsFeedItemDto
+import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItemDto
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.toSet
@@ -27,7 +26,7 @@ class NewsFeedProcessor(
     private val limitLovers = 200
     private val limitTotal = 300
 
-    suspend fun getProcessedFeed(): List<NewsFeedItemDto> {
+    suspend fun getProcessedFeed(): List<ProcessedNewsFeedItemDto> {
         val start = System.currentTimeMillis()
         logger.info { "Starting NewsFeed processing v2" }
 
@@ -43,11 +42,12 @@ class NewsFeedProcessor(
         val notLoversFeed = fetchNotLoversFeed()
         logger.info { "Fetched Not-Lover NewsFeedItems: ${notLoversFeed.size}" }
 
-        val mergedFeed: TreeSet<NewsFeedItemDto> = notLoversFeed.apply { addAll(loversFeed.values) }
+        val mergedFeed: List<ProcessedNewsFeedItemDto> = notLoversFeed.apply { addAll(loversFeed.values) }
+            .map { ProcessedNewsFeedItemDto.of(it) }
 
         logger.info { "Merged Not-Lover + Lover NewsFeedItems: ${mergedFeed.size}" }
 
-        var processedFeed: List<NewsFeedItemDto> =
+        var processedFeed: List<ProcessedNewsFeedItemDto> =
             publicLoverProcessor.processNewsFeed(mergedFeed, PublicLoverPostProcessor.Context(publicLovers))
 
         processedFeed =

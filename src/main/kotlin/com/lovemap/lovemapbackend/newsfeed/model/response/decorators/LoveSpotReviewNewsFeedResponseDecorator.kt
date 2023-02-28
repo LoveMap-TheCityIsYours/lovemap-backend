@@ -1,17 +1,17 @@
 package com.lovemap.lovemapbackend.newsfeed.model.response.decorators
 
-import com.lovemap.lovemapbackend.newsfeed.model.LoveSpotReviewNewsFeedData
-import com.lovemap.lovemapbackend.newsfeed.model.NewsFeedData
-import com.lovemap.lovemapbackend.newsfeed.model.NewsFeedItemDto
+import com.lovemap.lovemapbackend.newsfeed.data.LoveSpotReviewNewsFeedData
+import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedData
 import com.lovemap.lovemapbackend.newsfeed.model.response.LoveSpotReviewNewsFeedResponse
 import com.lovemap.lovemapbackend.newsfeed.model.response.NewsFeedItemResponse
+import com.lovemap.lovemapbackend.newsfeed.processor.ProcessedNewsFeedItemDto
 import org.springframework.stereotype.Component
 
 @Component
 class LoveSpotReviewNewsFeedResponseDecorator : NewsFeedDataResponseDecorator {
 
-    override fun supportedType(): NewsFeedItemDto.Type {
-        return NewsFeedItemDto.Type.LOVE_SPOT_REVIEW
+    override fun supportedType(): ProcessedNewsFeedItemDto.ProcessedType {
+        return ProcessedNewsFeedItemDto.ProcessedType.LOVE_SPOT_REVIEW
     }
 
     override fun decorate(initializedResponse: NewsFeedItemResponse, newsFeedData: NewsFeedData): NewsFeedItemResponse {

@@ -6,8 +6,8 @@ import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoService
 import com.lovemap.lovemapbackend.lovespot.photo.like.PhotoLike
 import com.lovemap.lovemapbackend.lovespot.photo.like.PhotoLikeService
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem
-import com.lovemap.lovemapbackend.newsfeed.model.NewsFeedItemDto
-import com.lovemap.lovemapbackend.newsfeed.model.PhotoLikeNewsFeedData
+import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItemDto
+import com.lovemap.lovemapbackend.newsfeed.data.PhotoLikeNewsFeedData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import mu.KotlinLogging

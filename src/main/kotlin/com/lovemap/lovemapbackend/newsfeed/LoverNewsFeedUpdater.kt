@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem.Type.LOVER
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedRepository
 import com.lovemap.lovemapbackend.newsfeed.dataparser.LoverNewsFeedDataParser
-import com.lovemap.lovemapbackend.newsfeed.model.LoverNewsFeedData
+import com.lovemap.lovemapbackend.newsfeed.data.LoverNewsFeedData
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 

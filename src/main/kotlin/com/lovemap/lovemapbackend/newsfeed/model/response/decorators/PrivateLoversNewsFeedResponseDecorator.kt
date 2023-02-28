@@ -1,36 +1,35 @@
-package com.lovemap.lovemapbackend.newsfeed.model.response.decorators.processed
+package com.lovemap.lovemapbackend.newsfeed.model.response.decorators
 
-import com.lovemap.lovemapbackend.newsfeed.model.MultiLoverNewsFeedData
-import com.lovemap.lovemapbackend.newsfeed.model.ProcessedNewsFeedData
-import com.lovemap.lovemapbackend.newsfeed.model.ProcessedNewsFeedItemDto
+import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedData
 import com.lovemap.lovemapbackend.newsfeed.model.response.LoverNewsFeedResponse
-import com.lovemap.lovemapbackend.newsfeed.model.response.MultiLoverNewsFeedResponse
 import com.lovemap.lovemapbackend.newsfeed.model.response.NewsFeedItemResponse
-import com.lovemap.lovemapbackend.newsfeed.model.response.decorators.ProcessedNewsFeedDataResponseDecorator
+import com.lovemap.lovemapbackend.newsfeed.model.response.PrivateLoversNewsFeedResponse
+import com.lovemap.lovemapbackend.newsfeed.processor.PrivateLoversNewsFeedData
+import com.lovemap.lovemapbackend.newsfeed.processor.ProcessedNewsFeedItemDto
 import org.springframework.stereotype.Component
 
 @Component
-class MultiLoverNewsFeedResponseDecorator : ProcessedNewsFeedDataResponseDecorator {
+class PrivateLoversNewsFeedResponseDecorator : NewsFeedDataResponseDecorator {
 
     override fun supportedType(): ProcessedNewsFeedItemDto.ProcessedType {
-        return ProcessedNewsFeedItemDto.ProcessedType.MULTI_LOVER
+        return ProcessedNewsFeedItemDto.ProcessedType.PRIVATE_LOVERS
     }
 
     override fun decorate(
         initializedResponse: NewsFeedItemResponse,
-        newsFeedData: ProcessedNewsFeedData
+        newsFeedData: NewsFeedData
     ): NewsFeedItemResponse {
-        return if (newsFeedData is MultiLoverNewsFeedData) {
+        return if (newsFeedData is PrivateLoversNewsFeedData) {
             val lovers = mapLoversToResponse(newsFeedData)
             initializedResponse.copy(
-                multiLover = MultiLoverNewsFeedResponse(lovers)
+                privateLovers = PrivateLoversNewsFeedResponse(lovers)
             )
         } else {
             initializedResponse
         }
     }
 
-    private fun mapLoversToResponse(newsFeedData: MultiLoverNewsFeedData): List<LoverNewsFeedResponse> {
+    private fun mapLoversToResponse(newsFeedData: PrivateLoversNewsFeedData): List<LoverNewsFeedResponse> {
         val lovers = newsFeedData.lovers.map {
             LoverNewsFeedResponse(
                 id = it.id,

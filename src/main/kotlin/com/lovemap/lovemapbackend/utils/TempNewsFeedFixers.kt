@@ -5,8 +5,7 @@ import com.lovemap.lovemapbackend.lover.LoverRepository
 import com.lovemap.lovemapbackend.lovespot.CachedLoveSpotService
 import com.lovemap.lovemapbackend.lovespot.photo.LoveSpotPhotoService
 import com.lovemap.lovemapbackend.newsfeed.LoverNewsFeedUpdater
-import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem
-import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedRepository
+import com.lovemap.lovemapbackend.newsfeed.data.*
 import com.lovemap.lovemapbackend.newsfeed.dataparser.NewsFeedDataParser
 import com.lovemap.lovemapbackend.newsfeed.model.*
 import com.lovemap.lovemapbackend.newsfeed.provider.LoveSpotNewsFeedProvider
