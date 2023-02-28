@@ -3,6 +3,8 @@ package com.lovemap.lovemapbackend.newsfeed.processor
 import com.lovemap.lovemapbackend.newsfeed.model.LoverNewsFeedData
 import com.lovemap.lovemapbackend.newsfeed.model.NewsFeedItemDto
 import com.lovemap.lovemapbackend.newsfeed.model.PrivateLoversNewsFeedData
+import com.lovemap.lovemapbackend.newsfeed.model.ProcessedNewsFeedItemDto
+import com.lovemap.lovemapbackend.newsfeed.model.ProcessedNewsFeedItemDto.ProcessedType.PRIVATE_LOVERS
 import com.lovemap.lovemapbackend.newsfeed.processor.PrivateLoverPostProcessor.Context
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
@@ -19,15 +21,15 @@ class PrivateLoverPostProcessor : NewsFeedPostProcessor<Context> {
 
         val processedFeed = newsFeed.fold(ArrayList()) { combined: ArrayList<NewsFeedItemDto>,
                                                          next: NewsFeedItemDto ->
-            val current = combined.lastOrNull()
+            val current: NewsFeedItemDto? = combined.lastOrNull()
             if (current != null) {
                 val newsFeedItem = if (bothArePrivateLovers(context, current, next)) {
                     if (current.type == NewsFeedItemDto.Type.LOVER && next.type == NewsFeedItemDto.Type.LOVER) {
                         combined.removeLast()
                         mergeTwoLovers(current, next, context)
-                    } else if (current.type == NewsFeedItemDto.Type.PRIVATE_LOVERS && next.type == NewsFeedItemDto.Type.LOVER) {
+                    } else if (currentIsMergedPrivateLovers(current, next)) {
                         combined.removeLast()
-                        mergePrivateLoversAndLover(current, next, context)
+                        mergePrivateLoversAndLover(current as ProcessedNewsFeedItemDto, next, context)
                     } else {
                         next
                     }
@@ -59,6 +61,15 @@ class PrivateLoverPostProcessor : NewsFeedPostProcessor<Context> {
         return context.privateLovers.contains(current.referenceId) && context.privateLovers.contains(next.referenceId)
     }
 
+    private fun currentIsMergedPrivateLovers(
+        current: NewsFeedItemDto?,
+        next: NewsFeedItemDto
+    ): Boolean {
+        return current is ProcessedNewsFeedItemDto
+                && current.processedType == PRIVATE_LOVERS
+                && next.type == NewsFeedItemDto.Type.LOVER
+    }
+
     private fun nextIsPrivateLover(
         context: Context,
         next: NewsFeedItemDto
@@ -78,16 +89,18 @@ class PrivateLoverPostProcessor : NewsFeedPostProcessor<Context> {
         )
         val nextLover = next.newsFeedData as LoverNewsFeedData
         val nextData = nextLover.copy(
-            userName =  context.privateLovers[next.referenceId] ?: nextLover.userName
+            userName = context.privateLovers[next.referenceId] ?: nextLover.userName
         )
-        return current.copy(
-            type = NewsFeedItemDto.Type.PRIVATE_LOVERS,
-            newsFeedData = PrivateLoversNewsFeedData(sortedSetOf(currentData, nextData))
+        return ProcessedNewsFeedItemDto(
+            delegate = current,
+            processedType = PRIVATE_LOVERS,
+            processedData = PrivateLoversNewsFeedData(sortedSetOf(currentData, nextData)),
+            origins = listOf(current, next)
         )
     }
 
     private fun mergePrivateLoversAndLover(
-        current: NewsFeedItemDto,
+        current: ProcessedNewsFeedItemDto,
         next: NewsFeedItemDto,
         context: Context
     ): NewsFeedItemDto {
@@ -95,13 +108,15 @@ class PrivateLoverPostProcessor : NewsFeedPostProcessor<Context> {
         val currentData = current.newsFeedData as PrivateLoversNewsFeedData
         val nextLover = next.newsFeedData as LoverNewsFeedData
         val nextData = nextLover.copy(
-            userName =  context.privateLovers[next.referenceId] ?: nextLover.userName
+            userName = context.privateLovers[next.referenceId] ?: nextLover.userName
         )
-        return current.copy(
-            type = NewsFeedItemDto.Type.PRIVATE_LOVERS,
-            newsFeedData = PrivateLoversNewsFeedData(
+        return ProcessedNewsFeedItemDto(
+            delegate = current,
+            processedType = PRIVATE_LOVERS,
+            processedData = PrivateLoversNewsFeedData(
                 lovers = currentData.lovers.apply { add(nextData) }
-            )
+            ),
+            origins = current.origins + next
         )
     }
 
@@ -114,9 +129,11 @@ class PrivateLoverPostProcessor : NewsFeedPostProcessor<Context> {
         val currentData = currentLover.copy(
             userName = context.privateLovers[current.referenceId] ?: currentLover.userName
         )
-        return current.copy(
-            type = NewsFeedItemDto.Type.PRIVATE_LOVERS,
-            newsFeedData = PrivateLoversNewsFeedData(sortedSetOf(currentData))
+        return ProcessedNewsFeedItemDto(
+            delegate = current,
+            processedType = PRIVATE_LOVERS,
+            processedData = PrivateLoversNewsFeedData(sortedSetOf(currentData)),
+            origins = listOf(current)
         )
     }
 

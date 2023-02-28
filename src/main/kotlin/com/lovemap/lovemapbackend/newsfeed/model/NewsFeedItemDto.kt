@@ -6,9 +6,8 @@ import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedItem
 import java.sql.Timestamp
 import java.time.Instant
-import java.util.*
 
-data class NewsFeedItemDto(
+open class NewsFeedItemDto(
     val id: Long? = null,
     val type: Type,
     val generatedAt: Instant,
@@ -25,10 +24,7 @@ data class NewsFeedItemDto(
         LOVE_SPOT_PHOTO_LIKE,
         LOVE,
         WISHLIST_ITEM,
-        LOVER,
-        // these types are not stored in the DB, it's merged from Lovers by the NewsFeedProcessor
-        MULTI_LOVER,
-        PRIVATE_LOVERS;
+        LOVER;
 
         companion object {
             fun of(type: NewsFeedItem.Type): Type {
@@ -213,20 +209,4 @@ data class LoverNewsFeedData(
         result = 31 * result + id.hashCode()
         return result
     }
-}
-
-data class MultiLoverNewsFeedData(
-    val lovers: TreeSet<LoverNewsFeedData>
-) : NewsFeedData {
-    override fun happenedAt(): Instant = lovers.first().joinedAt
-    override fun loveSpotId(): Long? = null
-    override fun loverId(): Long = lovers.first().id
-}
-
-data class PrivateLoversNewsFeedData(
-    val lovers: TreeSet<LoverNewsFeedData>
-) : NewsFeedData {
-    override fun happenedAt(): Instant = lovers.first().joinedAt
-    override fun loveSpotId(): Long? = null
-    override fun loverId(): Long = lovers.first().id
 }

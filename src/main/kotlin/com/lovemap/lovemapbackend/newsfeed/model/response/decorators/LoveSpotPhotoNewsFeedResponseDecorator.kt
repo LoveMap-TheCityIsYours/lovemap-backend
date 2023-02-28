@@ -9,7 +9,7 @@ import com.lovemap.lovemapbackend.newsfeed.model.response.NewsFeedItemResponse
 import org.springframework.stereotype.Component
 
 @Component
-class LoveSpotPhotoNewsFeedResponseDecorator : TypeBasedNewsFeedResponseDecorator {
+class LoveSpotPhotoNewsFeedResponseDecorator : NewsFeedDataResponseDecorator {
 
     override fun supportedType(): NewsFeedItemDto.Type {
         return NewsFeedItemDto.Type.LOVE_SPOT_PHOTO

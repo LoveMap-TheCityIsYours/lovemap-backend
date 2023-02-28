@@ -8,7 +8,7 @@ import com.lovemap.lovemapbackend.newsfeed.model.response.WishlistNewsFeedRespon
 import org.springframework.stereotype.Component
 
 @Component
-class WishlistNewsFeedResponseDecorator : TypeBasedNewsFeedResponseDecorator {
+class WishlistNewsFeedResponseDecorator : NewsFeedDataResponseDecorator {
 
     override fun supportedType(): NewsFeedItemDto.Type {
         return NewsFeedItemDto.Type.WISHLIST_ITEM

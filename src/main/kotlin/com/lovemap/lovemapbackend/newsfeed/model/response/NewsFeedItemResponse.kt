@@ -3,6 +3,7 @@ package com.lovemap.lovemapbackend.newsfeed.model.response
 import com.lovemap.lovemapbackend.lover.LoverViewWithoutRelationResponse
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import com.lovemap.lovemapbackend.newsfeed.model.NewsFeedItemDto
+import com.lovemap.lovemapbackend.newsfeed.model.ProcessedNewsFeedItemDto
 import java.time.Instant
 
 data class NewsFeedItemResponse(
@@ -39,6 +40,11 @@ enum class NewsFeedItemType {
 
     companion object {
         fun ofType(type: NewsFeedItemDto.Type): NewsFeedItemType {
+            return valueOf(type.name)
+        }
+
+
+        fun ofType(type: ProcessedNewsFeedItemDto.ProcessedType): NewsFeedItemType {
             return valueOf(type.name)
         }
     }

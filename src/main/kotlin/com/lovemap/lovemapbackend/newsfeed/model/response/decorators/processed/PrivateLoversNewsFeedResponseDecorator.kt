@@ -1,21 +1,25 @@
-package com.lovemap.lovemapbackend.newsfeed.model.response.decorators
+package com.lovemap.lovemapbackend.newsfeed.model.response.decorators.processed
 
-import com.lovemap.lovemapbackend.newsfeed.model.NewsFeedData
-import com.lovemap.lovemapbackend.newsfeed.model.NewsFeedItemDto
 import com.lovemap.lovemapbackend.newsfeed.model.PrivateLoversNewsFeedData
+import com.lovemap.lovemapbackend.newsfeed.model.ProcessedNewsFeedData
+import com.lovemap.lovemapbackend.newsfeed.model.ProcessedNewsFeedItemDto
 import com.lovemap.lovemapbackend.newsfeed.model.response.LoverNewsFeedResponse
 import com.lovemap.lovemapbackend.newsfeed.model.response.NewsFeedItemResponse
 import com.lovemap.lovemapbackend.newsfeed.model.response.PrivateLoversNewsFeedResponse
+import com.lovemap.lovemapbackend.newsfeed.model.response.decorators.ProcessedNewsFeedDataResponseDecorator
 import org.springframework.stereotype.Component
 
 @Component
-class PrivateLoversNewsFeedResponseDecorator : TypeBasedNewsFeedResponseDecorator {
+class PrivateLoversNewsFeedResponseDecorator : ProcessedNewsFeedDataResponseDecorator {
 
-    override fun supportedType(): NewsFeedItemDto.Type {
-        return NewsFeedItemDto.Type.PRIVATE_LOVERS
+    override fun supportedType(): ProcessedNewsFeedItemDto.ProcessedType {
+        return ProcessedNewsFeedItemDto.ProcessedType.PRIVATE_LOVERS
     }
 
-    override fun decorate(initializedResponse: NewsFeedItemResponse, newsFeedData: NewsFeedData): NewsFeedItemResponse {
+    override fun decorate(
+        initializedResponse: NewsFeedItemResponse,
+        newsFeedData: ProcessedNewsFeedData
+    ): NewsFeedItemResponse {
         return if (newsFeedData is PrivateLoversNewsFeedData) {
             val lovers = mapLoversToResponse(newsFeedData)
             initializedResponse.copy(

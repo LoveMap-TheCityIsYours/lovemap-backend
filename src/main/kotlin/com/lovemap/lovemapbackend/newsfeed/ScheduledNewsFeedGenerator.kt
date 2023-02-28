@@ -31,7 +31,8 @@ class ScheduledNewsFeedGenerator(
     private val logger = KotlinLogging.logger {}
 
     companion object {
-        private const val INITIAL_DELAY_MINUTES: Long = 5
+//        private const val INITIAL_DELAY_MINUTES: Long = 5
+        private const val INITIAL_DELAY_MINUTES: Long = 0
         private const val REFRESH_RATE_MINUTES: Long = 15
     }
 
