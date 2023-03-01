@@ -1,19 +1,21 @@
 package com.lovemap.lovemapbackend.newsfeed.api.decorators
 
-import com.lovemap.lovemapbackend.newsfeed.api.LoveSpotMultiEventsItem
 import com.lovemap.lovemapbackend.newsfeed.api.LoveSpotMultiEventsResponse
 import com.lovemap.lovemapbackend.newsfeed.api.NewsFeedItemResponse
-import com.lovemap.lovemapbackend.newsfeed.data.*
+import com.lovemap.lovemapbackend.newsfeed.data.NewsFeedData
 import com.lovemap.lovemapbackend.newsfeed.processor.LoveSpotMultiEventsNewsFeedData
 import com.lovemap.lovemapbackend.newsfeed.processor.ProcessedNewsFeedItemDto
+import com.lovemap.lovemapbackend.utils.ErrorCode
+import com.lovemap.lovemapbackend.utils.LoveMapException
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 
 @Component
 class LoveSpotMultiEventsResponseDecorator(
     private val loveSpotDecorator: LoveSpotNewsFeedResponseDecorator,
     private val loveDecorator: LoveNewsFeedResponseDecorator,
-    private val loveSpotReviewDecorator: LoveSpotReviewNewsFeedResponseDecorator,
-    private val loveSpotPhotoDecorator: LoveSpotPhotoNewsFeedResponseDecorator,
+    private val reviewDecorator: LoveSpotReviewNewsFeedResponseDecorator,
+    private val photoDecorator: LoveSpotPhotoNewsFeedResponseDecorator,
 ) : NewsFeedDataResponseDecorator {
 
     override fun supportedType(): ProcessedNewsFeedItemDto.ProcessedType {
@@ -26,37 +28,30 @@ class LoveSpotMultiEventsResponseDecorator(
     ): NewsFeedItemResponse {
         return if (newsFeedData is LoveSpotMultiEventsNewsFeedData) {
             initialized.copy(
-                loveSpotMultiEvents = LoveSpotMultiEventsResponse(
-                    loveSpotEvents = newsFeedData.loveSpotEvents.map {
-                        loveSpotMultiEventsItem(it, initialized)
-                    }
-                )
+                loveSpotMultiEvents = loveSpotMultiEventsResponse(initialized, newsFeedData)
             )
         } else {
             initialized
         }
     }
 
-    private fun loveSpotMultiEventsItem(
-        it: ComparableNewsFeedData,
-        initialized: NewsFeedItemResponse
-    ): LoveSpotMultiEventsItem {
-        return when (it) {
-            is LoveSpotNewsFeedData -> LoveSpotMultiEventsItem(
-                loveSpot = loveSpotDecorator.decorate(initialized, it).loveSpot
-            )
+    private fun loveSpotMultiEventsResponse(
+        initialized: NewsFeedItemResponse,
+        newsFeedData: LoveSpotMultiEventsNewsFeedData
+    ) = LoveSpotMultiEventsResponse(
+        loveSpot = loveSpotDecorator.decorate(initialized, newsFeedData.loveSpot).loveSpot
+            ?: throw LoveMapException(HttpStatus.NOT_FOUND, ErrorCode.LoveSpotNotFound),
+        lovers = newsFeedData.lovers,
+        loves = newsFeedData.loves.mapNotNull {
+            loveDecorator.decorate(initialized, it).love
+        },
+        reviews = newsFeedData.reviews.mapNotNull {
+            reviewDecorator.decorate(initialized, it).loveSpotReview
+        },
+        photos = newsFeedData.photos.mapNotNull {
+            photoDecorator.decorate(initialized, it).loveSpotPhoto
+        },
+        loveSpotAddedHere = newsFeedData.loveSpotAddedHere
+    )
 
-            is LoveNewsFeedData -> LoveSpotMultiEventsItem(
-                love = loveDecorator.decorate(initialized, it).love
-            )
-
-            is LoveSpotReviewNewsFeedData -> LoveSpotMultiEventsItem(
-                loveSpotReview = loveSpotReviewDecorator.decorate(initialized, it).loveSpotReview
-            )
-
-            else -> LoveSpotMultiEventsItem(
-                loveSpotPhoto = loveSpotPhotoDecorator.decorate(initialized, it).loveSpotPhoto
-            )
-        }
-    }
 }

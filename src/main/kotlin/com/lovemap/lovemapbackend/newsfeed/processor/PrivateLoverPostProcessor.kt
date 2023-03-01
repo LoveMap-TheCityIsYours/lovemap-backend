@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 class PrivateLoverPostProcessor : NewsFeedPostProcessor<Context> {
     private val logger = KotlinLogging.logger {}
 
-    override fun processNewsFeed(
+    override suspend fun processNewsFeed(
         newsFeed: Collection<ProcessedNewsFeedItemDto>,
         context: Context
     ): List<ProcessedNewsFeedItemDto> {

@@ -44,7 +44,7 @@ springdoc:
 logging:
   level:
     root: INFO
-    com.lovemap: DEBUG
+    com.lovemap: INFO
     org.springframework.r2dbc: INFO
     org.springframework.security: INFO
     org.springframework.web: INFO

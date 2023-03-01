@@ -134,5 +134,10 @@ data class LoveSpotMultiEventsItem(
 )
 
 data class LoveSpotMultiEventsResponse(
-    val loveSpotEvents: List<LoveSpotMultiEventsItem>
+    val loveSpot: LoveSpotNewsFeedResponse,
+    val lovers: List<LoverViewWithoutRelationResponse>,
+    val loves: List<LoveNewsFeedResponse>,
+    val reviews: List<LoveSpotReviewNewsFeedResponse>,
+    val photos: List<LoveSpotPhotoNewsFeedResponse>,
+    val loveSpotAddedHere: Boolean,
 )

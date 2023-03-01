@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.lovemap.lovemapbackend.newsfeed.data.*
 import org.springframework.stereotype.Component
 
-interface TypeBasedNewsFeedDataParser {
+interface TypeBasedNewsFeedDataParser<out ComparableNewsFeedData> {
     fun supportedType(): NewsFeedItem.Type
     fun parse(data: String): ComparableNewsFeedData
 }
@@ -12,13 +12,13 @@ interface TypeBasedNewsFeedDataParser {
 @Component
 class LoveNewsFeedDataParser(
     private val objectMapper: ObjectMapper
-) : TypeBasedNewsFeedDataParser {
+) : TypeBasedNewsFeedDataParser<LoveNewsFeedData> {
 
     override fun supportedType(): NewsFeedItem.Type {
         return NewsFeedItem.Type.LOVE
     }
 
-    override fun parse(data: String): ComparableNewsFeedData {
+    override fun parse(data: String): LoveNewsFeedData {
         return objectMapper.readValue(data, LoveNewsFeedData::class.java)
     }
 }
@@ -26,13 +26,13 @@ class LoveNewsFeedDataParser(
 @Component
 class LoverNewsFeedDataParser(
     private val objectMapper: ObjectMapper
-) : TypeBasedNewsFeedDataParser {
+) : TypeBasedNewsFeedDataParser<LoverNewsFeedData> {
 
     override fun supportedType(): NewsFeedItem.Type {
         return NewsFeedItem.Type.LOVER
     }
 
-    override fun parse(data: String): ComparableNewsFeedData {
+    override fun parse(data: String): LoverNewsFeedData {
         return objectMapper.readValue(data, LoverNewsFeedData::class.java)
     }
 }
@@ -40,13 +40,13 @@ class LoverNewsFeedDataParser(
 @Component
 class LoveSpotNewsFeedDataParser(
     private val objectMapper: ObjectMapper
-) : TypeBasedNewsFeedDataParser {
+) : TypeBasedNewsFeedDataParser<LoveSpotNewsFeedData> {
 
     override fun supportedType(): NewsFeedItem.Type {
         return NewsFeedItem.Type.LOVE_SPOT
     }
 
-    override fun parse(data: String): ComparableNewsFeedData {
+    override fun parse(data: String): LoveSpotNewsFeedData {
         return objectMapper.readValue(data, LoveSpotNewsFeedData::class.java)
     }
 }
@@ -54,13 +54,13 @@ class LoveSpotNewsFeedDataParser(
 @Component
 class LoveSpotPhotoNewsFeedDataParser(
     private val objectMapper: ObjectMapper
-) : TypeBasedNewsFeedDataParser {
+) : TypeBasedNewsFeedDataParser<LoveSpotPhotoNewsFeedData> {
 
     override fun supportedType(): NewsFeedItem.Type {
         return NewsFeedItem.Type.LOVE_SPOT_PHOTO
     }
 
-    override fun parse(data: String): ComparableNewsFeedData {
+    override fun parse(data: String): LoveSpotPhotoNewsFeedData {
         return objectMapper.readValue(data, LoveSpotPhotoNewsFeedData::class.java)
     }
 }
@@ -68,13 +68,13 @@ class LoveSpotPhotoNewsFeedDataParser(
 @Component
 class LoveSpotPhotoLikeNewsFeedDataParser(
     private val objectMapper: ObjectMapper
-) : TypeBasedNewsFeedDataParser {
+) : TypeBasedNewsFeedDataParser<PhotoLikeNewsFeedData> {
 
     override fun supportedType(): NewsFeedItem.Type {
         return NewsFeedItem.Type.LOVE_SPOT_PHOTO_LIKE
     }
 
-    override fun parse(data: String): ComparableNewsFeedData {
+    override fun parse(data: String): PhotoLikeNewsFeedData {
         return objectMapper.readValue(data, PhotoLikeNewsFeedData::class.java)
     }
 }
@@ -82,13 +82,13 @@ class LoveSpotPhotoLikeNewsFeedDataParser(
 @Component
 class LoveSpotReviewNewsFeedDataParser(
     private val objectMapper: ObjectMapper
-) : TypeBasedNewsFeedDataParser {
+) : TypeBasedNewsFeedDataParser<LoveSpotReviewNewsFeedData> {
 
     override fun supportedType(): NewsFeedItem.Type {
         return NewsFeedItem.Type.LOVE_SPOT_REVIEW
     }
 
-    override fun parse(data: String): ComparableNewsFeedData {
+    override fun parse(data: String): LoveSpotReviewNewsFeedData {
         return objectMapper.readValue(data, LoveSpotReviewNewsFeedData::class.java)
     }
 }
@@ -96,13 +96,13 @@ class LoveSpotReviewNewsFeedDataParser(
 @Component
 class WishlistNewsFeedDataParser(
     private val objectMapper: ObjectMapper
-) : TypeBasedNewsFeedDataParser {
+) : TypeBasedNewsFeedDataParser<WishlistNewsFeedData> {
 
     override fun supportedType(): NewsFeedItem.Type {
         return NewsFeedItem.Type.WISHLIST_ITEM
     }
 
-    override fun parse(data: String): ComparableNewsFeedData {
+    override fun parse(data: String): WishlistNewsFeedData {
         return objectMapper.readValue(data, WishlistNewsFeedData::class.java)
     }
 }
