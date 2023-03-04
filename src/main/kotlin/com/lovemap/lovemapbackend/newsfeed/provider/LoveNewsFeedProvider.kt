@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
+import java.time.Duration
 import java.time.Instant
 
 @Component
@@ -22,8 +23,9 @@ class LoveNewsFeedProvider(
     private val logger = KotlinLogging.logger {}
 
     override suspend fun getNewsFeedFrom(generationTime: Instant, generateFrom: Instant): Flow<NewsFeedItemDto> {
-        logger.info { "Getting NewsFeed for Loves from $generateFrom" }
-        val loves = loveService.getLovesFrom(generateFrom)
+        val modifiedGenerateFrom = generateFrom.minus(Duration.ofMinutes(15))
+        logger.info { "Getting NewsFeed for Loves from $modifiedGenerateFrom" }
+        val loves = loveService.getLovesFrom(modifiedGenerateFrom)
         return loves.map {
             NewsFeedItemDto(
                 type = NewsFeedItemDto.Type.LOVE,
