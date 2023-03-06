@@ -14,14 +14,13 @@ import com.lovemap.lovemapbackend.utils.InstantConverterUtils
 import com.lovemap.lovemapbackend.utils.LoveMapException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
 import java.time.Instant
 
 @Service
-@Transactional
 class LoveService(
     private val authorizationService: AuthorizationService,
     private val loveConverter: LoveConverter,
@@ -32,6 +31,8 @@ class LoveService(
     private val loverPointService: LoverPointService,
     private val loveRepository: LoveRepository
 ) {
+    private val logger = KotlinLogging.logger {}
+
     suspend fun findAllInvolvedLovesFor(loverId: Long): List<LoveResponse> {
         val caller = authorizationService.checkAccessFor(loverId)
         val loves = loveRepository.findDistinctByLoverIdOrLoverPartnerIdOrderByHappenedAtDesc(loverId, loverId)
@@ -53,6 +54,7 @@ class LoveService(
         )
         wishlistService.removeFromWishlists(love)
         val countOfLovesAtSpot = getNumberOfLovesAtSpot(request.loveSpotId)
+        logger.info { "Recording Love. NumberOfLovesAtSpot: $countOfLovesAtSpot" }
         loveSpotStatisticsService.recordLoveMaking(love, countOfLovesAtSpot)
         loverPointService.addPointsForLovemaking(love)
         return loveConverter.toDto(caller, love)

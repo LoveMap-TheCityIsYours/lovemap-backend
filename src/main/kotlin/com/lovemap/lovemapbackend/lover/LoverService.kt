@@ -21,7 +21,6 @@ import java.util.*
 private const val HALL_OF_FAME_SIZE = 100
 
 @Service
-@Transactional
 class LoverService(
     private val authorizationService: AuthorizationService,
     private val converter: LoverConverter,
@@ -155,6 +154,7 @@ class LoverService(
         return repository.findAllAfterCreatedAt(Timestamp.from(generateFrom))
     }
 
+    @Transactional
     suspend fun updateLover(loverId: Long, update: UpdateLoverRequest): LoverResponse {
         logger.info { "Received UpdateLoverRequest $update" }
         val lover: Lover = getById(loverId)

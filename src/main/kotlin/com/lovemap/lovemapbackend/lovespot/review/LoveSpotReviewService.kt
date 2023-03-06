@@ -22,7 +22,6 @@ import java.sql.Timestamp
 import java.time.Instant
 
 @Service
-@Transactional
 class LoveSpotReviewService(
     private val authorizationService: AuthorizationService,
     private val loveService: LoveService,
@@ -62,6 +61,7 @@ class LoveSpotReviewService(
             )
     }
 
+    @Transactional
     suspend fun addOrUpdateReview(request: LoveSpotReviewRequest): LoveSpot {
         authorizationService.checkAccessFor(request.reviewerId)
         validateReview(request)
@@ -102,7 +102,7 @@ class LoveSpotReviewService(
         val reviews = repository.findAllByLoveSpotIdIn(listOf(request.loveSpotId)).toList()
         val loveSpot = loveSpotStatService.recalculateLoveSpotReviews(request.loveSpotId, reviews)
         loverPointService.addPointsForReview(review, loveSpot)
-        notificationService.sendLoveSpotNotification(loveSpot, NEW_LOVE_SPOT_REVIEW)
+        notificationService.sendNearbyLoveSpotNotification(loveSpot, NEW_LOVE_SPOT_REVIEW)
         notificationService.sendReviewNotification(loveSpot, review)
         return loveSpot
     }
@@ -128,6 +128,7 @@ class LoveSpotReviewService(
         }
     }
 
+    @Transactional
     suspend fun deleteReviewsByLove(love: Love) {
         deleteReviewByLoverAndLove(love.loveSpotId, love.loverId, love.id)
         deleteReviewByLoverAndLove(love.loveSpotId, love.loverPartnerId, love.id)
@@ -139,6 +140,7 @@ class LoveSpotReviewService(
         return listOfNotNull(review1, review2)
     }
 
+    @Transactional
     suspend fun deleteReviewByLoverAndLove(loveSpotId: Long, loverId: Long?, loveId: Long) {
         loverId?.let {
             val review = repository.findByReviewerIdAndLoveId(loverId, loveId)
@@ -152,6 +154,7 @@ class LoveSpotReviewService(
         }
     }
 
+    @Transactional
     suspend fun updatePhotoCounter(reviewId: Long, reviewPhotoCount: Int) {
         repository.findById(reviewId)?.let {
             it.numberOfPhotos = reviewPhotoCount

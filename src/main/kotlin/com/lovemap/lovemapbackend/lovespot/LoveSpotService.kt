@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
 import java.time.Instant
 
@@ -25,7 +24,6 @@ private const val TWELVE_METERS_IN_COORDINATES = 0.0001
 private const val MINIMUM_DISTANCE_IN_METERS = 20.0
 
 @Service
-@Transactional
 class LoveSpotService(
     private val authorizationService: AuthorizationService,
     private val loverPointService: LoverPointService,
@@ -84,7 +82,7 @@ class LoveSpotService(
             loverPointService.addPointsForSpotAdded(savedSpot)
             setGeoLocation(loveSpot)
         }
-        notificationService.sendLoveSpotNotification(savedSpot, NEW_LOVE_SPOT)
+        notificationService.sendNearbyLoveSpotNotification(savedSpot, NEW_LOVE_SPOT)
         return savedSpot
     }
 

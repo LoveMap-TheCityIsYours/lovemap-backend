@@ -29,7 +29,7 @@ class NotificationService(
 
     private val notificationRadiusMeters: Long = 50_000
 
-    suspend fun sendLoveSpotNotification(loveSpot: LoveSpot, type: NotificationType) {
+    suspend fun sendNearbyLoveSpotNotification(loveSpot: LoveSpot, type: NotificationType) {
         asyncTaskService.runAsync {
             runCatching {
                 val usersToNotify = userTrackingService

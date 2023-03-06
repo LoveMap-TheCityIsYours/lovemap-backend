@@ -24,7 +24,6 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit.HOURS
 
 @Service
-@Transactional
 class PartnershipService(
     private val authorizationService: AuthorizationService,
     private val relationService: RelationService,
@@ -200,6 +199,7 @@ class PartnershipService(
         return getLoverPartnership(loverId)
     }
 
+    @Transactional
     suspend fun respondToPartnershipRequest(request: RespondPartnershipRequest): LoverPartnership {
         val initiatorId = request.initiatorId
         val respondentId = request.respondentId
@@ -243,7 +243,6 @@ class PartnershipService(
             )
     }
 
-    @Transactional
     private suspend fun handlePartnershipResponse(
         request: RespondPartnershipRequest,
         partnership: Partnership,

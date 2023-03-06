@@ -6,19 +6,17 @@ import com.google.maps.model.AddressComponent
 import com.google.maps.model.LatLng
 import com.lovemap.lovemapbackend.lovespot.LoveSpot
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Propagation
-import org.springframework.transaction.annotation.Transactional
 
 private const val UNKNOWN_GEO_LOCATION: Long = 1
 
 @Service
-@Transactional(propagation = Propagation.REQUIRES_NEW)
 class GeoLocationService(
     private val environment: Environment,
     private val geoApiContext: GeoApiContext,
@@ -50,6 +48,7 @@ class GeoLocationService(
                     cachedGeoLocationProvider.insertIntoCache(geoLocation)
                     geoLocation
                 } else {
+                    delay(2000)
                     logger.info { "NOT reverse geocoding $loveSpot due to 'dev' profile." }
                     null
                 }

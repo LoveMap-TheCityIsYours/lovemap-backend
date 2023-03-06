@@ -153,6 +153,7 @@ class LoverPointService(
     }
 
     suspend fun addPointsForLovemaking(love: Love): Lover {
+        logger.info { "Adding points for lovemaking at Love $love" }
         val lover = loverService.unAuthorizedGetById(love.loverId)
         lover.points += points.loveMade
         lover.numberOfLoves += 1

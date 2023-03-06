@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-@Transactional
 class RelationService(
     private val authorizationService: AuthorizationService,
     private val loverService: LoverService,
@@ -60,6 +59,7 @@ class RelationService(
         }
     }
 
+    @Transactional
     suspend fun setPartnershipBetween(user1: Long, user2: Long) {
         if (user1 == user2) {
             throw LoveMapException(

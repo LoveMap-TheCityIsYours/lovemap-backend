@@ -55,7 +55,7 @@ class NewsFeedProcessor(
         processedFeed =
             privateLoverProcessor.processNewsFeed(processedFeed, PrivateLoverPostProcessor.Context(privateLovers))
 
-        processedFeed = loveSpotMultiEventsPostProcessor.processNewsFeed(processedFeed, Unit)
+//        processedFeed = loveSpotMultiEventsPostProcessor.processNewsFeed(processedFeed, Unit)
 
         // for now we do not process the feed, just return it (waiting for more android rollout)
         logger.info { "Finished NewsFeed processing v2 in ${System.currentTimeMillis() - start} ms." }

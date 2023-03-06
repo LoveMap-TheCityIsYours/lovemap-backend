@@ -40,7 +40,7 @@ class LoveSpotPhotoStatsService(
                     val reviewPhotoCount = repository.countByLoveSpotReviewId(reviewId).toInt()
                     loveSpotReviewService.updatePhotoCounter(reviewId, reviewPhotoCount)
                 }
-                notificationService.sendLoveSpotNotification(loveSpot, NEW_LOVE_SPOT_PHOTO)
+                notificationService.sendNearbyLoveSpotNotification(loveSpot, NEW_LOVE_SPOT_PHOTO)
             }.onFailure { e ->
                 logger.error(e) { "Error occurred during awaiting photo upload." }
             }
