@@ -155,7 +155,6 @@ class NotificationService(
         if (caller.publicProfile) {
             asyncTaskService.runAsync {
                 userTrackingService.findByLoverId(caller.id)?.let { userTrack ->
-
                     if (!userTrack.haveOthersBeenNotifiedAboutThisPublicUserJoining) {
                         doNotifyUsersOfNewPublicLover(userTrack, latitude, longitude, caller)
                     }
