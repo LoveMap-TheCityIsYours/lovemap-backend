@@ -51,6 +51,7 @@ class SecurityConfiguration(
             .pathMatchers("/join-us/**").permitAll()
             .pathMatchers("/join-us.**").permitAll()
             .pathMatchers("/privacy-policy.html").permitAll()
+            .pathMatchers("/delete-profile.html").permitAll()
             .pathMatchers("/terms-of-use.html").permitAll()
             .pathMatchers("/.well-known/assetlinks.json").permitAll()
             .pathMatchers("/favicon.ico").permitAll()

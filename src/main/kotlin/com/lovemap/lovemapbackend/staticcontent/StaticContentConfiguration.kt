@@ -17,6 +17,7 @@ class StaticContentConfiguration(
     @Value("classpath:/public/favicon.ico") private val favicon: Resource,
     @Value("classpath:/public/join-us.html") private val joinUsHtml: Resource,
     @Value("classpath:/public/privacy-policy.html") private val privacyPolicyHtml: Resource,
+    @Value("classpath:/public/delete-profile.html") private val deleteProfileHtml: Resource,
     @Value("classpath:/public/terms-of-use.html") private val termsOfUseHtml: Resource,
     @Value("classpath:/public/app-ads.txt") private val appAdsTxt: Resource,
     private val emailService: EmailService,
@@ -46,6 +47,12 @@ class StaticContentConfiguration(
             withContext(Dispatchers.IO) {
                 ok().contentType(MediaType.TEXT_HTML)
                     .bodyValue(privacyPolicyHtml).awaitSingle()
+            }
+        }
+        GET("/delete-profile.html") {
+            withContext(Dispatchers.IO) {
+                ok().contentType(MediaType.TEXT_HTML)
+                    .bodyValue(deleteProfileHtml).awaitSingle()
             }
         }
         GET("/terms-of-use.html") {
