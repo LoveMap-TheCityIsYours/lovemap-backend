@@ -42,6 +42,7 @@ springdoc:
   pathsToMatch: /**
 
 logging:
+  file: lovemap.log
   level:
     root: INFO
     com.lovemap: INFO

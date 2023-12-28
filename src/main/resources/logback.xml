@@ -2,34 +2,44 @@
 
 <configuration>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-            <layout class="com.lovemap.lovemapbackend.logging.MaskingPatternLayout">
-                <patternsProperty>(password)|(passwordHash)</patternsProperty>
-                <pattern>%date{ISO8601} [%thread] %-5level %logger{35} - %msg%n</pattern>
-            </layout>
-        </encoder>
-    </appender>
-
-    <!--    <appender name="FILE_BASED" class="h.qos.logback.core.rolling.RollingFileAppender">-->
-    <!--        <file>log/lovemap.log</file>-->
-    <!--        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">-->
-    <!--            <layout class="com.lovemap.lovemapbackend.logging.MaskingPatternLayout">-->
-    <!--                <patternsProperty>(password)|(passwordHash)</patternsProperty>-->
-    <!--                <pattern>%date{ISO8601} [%thread] %-5level %logger{35} - %msg%n</pattern>-->
-    <!--            </layout>-->
-    <!--        </encoder>-->
-    <!--        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
-    <!--            <FileNamePattern>log/lovemap-%d{yyyy-MM-dd}.log</FileNamePattern>-->
-    <!--        </rollingPolicy>-->
-    <!--        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">-->
-    <!--            <MaxFileSize>1024MB</MaxFileSize>-->
-    <!--        </triggeringPolicy>-->
-    <!--    </appender>-->
-
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+<!--    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-./log}}/}lovemap.log}"/>-->
+    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-./log}}/}lovemap.log}"/>
+    <include resource="org/springframework/boot/logging/logback/file-appender.xml" />
     <root level="INFO">
-        <!--        <appender-ref ref="FILE_BASED"/>-->
-        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE" />
+        <appender-ref ref="CONSOLE" />
     </root>
+
+<!--    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">-->
+<!--        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">-->
+<!--            <layout class="com.lovemap.lovemapbackend.logging.MaskingPatternLayout">-->
+<!--                <patternsProperty>(password)|(passwordHash)</patternsProperty>-->
+<!--                <pattern>%date{ISO8601} [%thread] %-5level %logger{35} - %msg%n</pattern>-->
+<!--            </layout>-->
+<!--        </encoder>-->
+<!--    </appender>-->
+
+<!--    <appender name="FILE_BASED" class="h.qos.logback.core.rolling.RollingFileAppender">-->
+<!--        <file>log/lovemap.log</file>-->
+<!--        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">-->
+<!--            <layout class="com.lovemap.lovemapbackend.logging.MaskingPatternLayout">-->
+<!--                <patternsProperty>(password)|(passwordHash)</patternsProperty>-->
+<!--                <pattern>%date{ISO8601} [%thread] %-5level %logger{35} - %msg%n</pattern>-->
+<!--            </layout>-->
+<!--        </encoder>-->
+<!--        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+<!--            <FileNamePattern>log/lovemap-%d{yyyy-MM-dd}.log</FileNamePattern>-->
+<!--        </rollingPolicy>-->
+<!--        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">-->
+<!--            <MaxFileSize>1024MB</MaxFileSize>-->
+<!--        </triggeringPolicy>-->
+<!--    </appender>-->
+
+<!--    <root level="INFO">-->
+<!--        <appender-ref ref="FILE_BASED"/>-->
+<!--        <appender-ref ref="STDOUT"/>-->
+<!--    </root>-->
 
 </configuration>

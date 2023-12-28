@@ -42,3 +42,5 @@ src/main/resources/application-*.yml
 src/main/resources/bucket-writer-key.json
 src/main/resources/monitoring-account-key.json
 src/main/resources/lovemap-firebase-adminsdk.json
+
+**/password*

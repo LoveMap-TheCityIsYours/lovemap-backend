@@ -5,3 +5,4 @@ metadata:
 spec:
   domains:
     - api.lovemap.app
+    - test.lovemap.app
