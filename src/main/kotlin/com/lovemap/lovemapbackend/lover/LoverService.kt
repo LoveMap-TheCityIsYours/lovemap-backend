@@ -30,7 +30,7 @@ class LoverService(
     private val repository: LoverRepository,
 ) {
     companion object {
-        const val linkPrefixVisible = "https://api.lovemap.app/join-us/lover?uuid="
+        const val linkPrefixVisible = "https://lovemap.app/join-us/lover?uuid="
     }
 
     private val logger = KotlinLogging.logger {}
